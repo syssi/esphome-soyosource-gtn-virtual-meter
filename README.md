@@ -8,6 +8,20 @@ ESPHome component to simulate the power meter to control the Soyosource GTN1200 
 
 * [ESPHome 1.18.0 or higher](https://github.com/esphome/esphome/releases).
 
+## Schematics
+
+```
+               RS485                      UART
+┌─────────┐              ┌──────────┐                ┌─────────┐
+│         │              │          │<----- RX ----->│         │
+│         │<-----B- ---->│  RS485   │<----- TX ----->│ ESP32/  │
+│ GTN1200 │<---- A+ ---->│  to TTL  │<----- GND ---->│ ESP8266 │
+│         │<--- GND ---->│  module  │<--- 5V VCC --->│         │<-- 5V VCC
+│         │              │          │                │         │<-- GND
+└─────────┘              └──────────┘                └─────────┘
+
+```
+
 ## Installation
 
 You can install this component with [ESPHome external components feature](https://esphome.io/components/external_components.html) like this:
