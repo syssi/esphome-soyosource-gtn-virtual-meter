@@ -1,12 +1,14 @@
 # esphome-soyosource-gtn-virtual-meter
 
-ESPHome component to simulate the power meter to control the Soyosource GTN1200 limiter
+ESPHome component to simulate the current clamp to control the Soyosource GTN1200 limiter
 
 ![Lovelace entities card](lovelace-entities-card.png "lovelace entities card")
 
 ## Requirements
 
 * [ESPHome 1.18.0 or higher](https://github.com/esphome/esphome/releases).
+* RS485-to-TTL module (`HW-0519` f.e.)
+* Generic ESP32 or ESP8266 board
 
 ## Schematics
 
@@ -30,11 +32,37 @@ external_components:
   - source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
 ```
 
+or just use the `esp32-example.yaml` / `esp8266-example.yaml` as proof of concept:
+
+```bash
+# Install esphome
+pip3 install esphome
+
+# Clone this external component
+git clone https://github.com/syssi/esphome-soyosource-gtn-virtual-meter.git
+cd esphome-soyosource-gtn-virtual-meter
+
+# Create a secret.yaml containing some setup specific secrets
+cat > secret.yaml <<EOF
+wifi_ssid: MY_WIFI_SSID
+wifi_password: MY_WIFI_PASSWORD
+
+mqtt_host: MY_MQTT_HOST
+mqtt_username: MY_MQTT_USERNAME
+mqtt_password: MY_MQTT_PASSWORD
+EOF
+
+# Validate the configuration, create a binary, upload it, and start logs
+# If you use a esp8266 run the esp8266-examle.yaml
+esphome run esp32-example.yaml
+
+```
+
 ## Configuration
 
 ```yaml
 substitutions:
-  name: soyosource_gtn_virtual_meter
+  name: soyosource-gtn-virtual-meter
 
 esphome:
   name: ${name}
@@ -50,10 +78,16 @@ wifi:
   password: !secret wifi_password
 
 ota:
-api:
+# api:
 
 logger:
   baud_rate: 0
+
+mqtt:
+  broker: !secret mqtt_host
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+  id: mqtt_client
 
 uart:
   baud_rate: 4800
@@ -92,14 +126,25 @@ sensor:
     error_bits:
       name: "${name} error bits"
 
-  # import smartmeter reading from homeassistant f.e.
-  - platform: homeassistant
-    id: powermeter
-    name: "${name} smartmeter instantaneous power"
-    entity_id: sensor.firstfloor_smartmeter_instantaneous_power
+  # mqtt subscribe example
+  - id: powermeter
+    internal: true
+    platform: mqtt_subscribe
+    name: "${name} instantaneous power consumption"
+    topic: "smartmeter/sensor/groundfloor/obis/1-0:16.7.0/255/value"
+    accuracy_decimals: 2
+    unit_of_measurement: W
+    device_class: power
+
+#  # import smartmeter reading from homeassistant
+#  # requires the "api" component see above
+#  - platform: homeassistant
+#    id: powermeter
+#    name: "${name} smartmeter instantaneous power"
+#    entity_id: sensor.firstfloor_smartmeter_instantaneous_power
 ```
 
-For a more advanced setup take a look at the [advanced-multiple-uarts.yaml](advanced-multiple-uarts.yaml).
+For a more advanced setup take a look at the [esp32-multiple-uarts-example.yaml](esp32-multiple-uarts-example.yaml).
 
 ## Known issues
 

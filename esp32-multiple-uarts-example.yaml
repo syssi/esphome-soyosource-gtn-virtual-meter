@@ -19,12 +19,18 @@ ethernet:
   clk_mode: GPIO17_OUT
   phy_addr: 0
 
-api:
+# api:
 ota:
 
 logger:
   baud_rate: 0
   level: INFO
+
+mqtt:
+  broker: !secret mqtt_host
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+  id: mqtt_client
 
 uart:
   - id: uart0
@@ -109,12 +115,31 @@ sensor:
     error_bits:
       name: "${device1} error bits"
 
-  # import smartmeter reading from homeassistant f.e.
-  - platform: homeassistant
-    id: powermeter0
-    name: "${device0} smartmeter instantaneous power"
-    entity_id: sensor.firstfloor_smartmeter_instantaneous_power
-  - platform: homeassistant
-    id: powermeter1
-    name: "${device1} smartmeter instantaneous power"
-    entity_id: sensor.groundfloor_smartmeter_instantaneous_power
+  # mqtt subscribe example
+  - id: powermeter0
+    internal: true
+    platform: mqtt_subscribe
+    name: "${device0} instantaneous power consumption"
+    topic: "smartmeter/sensor/firstfloor/obis/1-0:16.7.0/255/value"
+    accuracy_decimals: 2
+    unit_of_measurement: W
+    device_class: power
+  - id: powermeter1
+    internal: true
+    platform: mqtt_subscribe
+    name: "${device1} instantaneous power consumption"
+    topic: "smartmeter/sensor/groundfloor/obis/1-0:16.7.0/255/value"
+    accuracy_decimals: 2
+    unit_of_measurement: W
+    device_class: power
+
+#  # import smartmeter reading from homeassistant f.e.
+#  # requires the "api" component see above
+#  - platform: homeassistant
+#    id: powermeter0
+#    name: "${device0} smartmeter instantaneous power"
+#    entity_id: sensor.firstfloor_smartmeter_instantaneous_power
+#  - platform: homeassistant
+#    id: powermeter1
+#    name: "${device1} smartmeter instantaneous power"
+#    entity_id: sensor.groundfloor_smartmeter_instantaneous_power

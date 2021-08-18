@@ -1,10 +1,10 @@
 substitutions:
-  name: soyosource_gtn_virtual_meter
+  name: soyosource-gtn-virtual-meter
 
 esphome:
   name: ${name}
-  platform: ESP32
-  board: esp-wrover-kit
+  platform: ESP8266
+  board: d1_mini
 
 external_components:
   - source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
@@ -15,10 +15,16 @@ wifi:
   password: !secret wifi_password
 
 ota:
-api:
+# api:
 
 logger:
   baud_rate: 0
+
+mqtt:
+  broker: !secret mqtt_host
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+  id: mqtt_client
 
 uart:
   baud_rate: 4800
@@ -57,25 +63,19 @@ sensor:
     error_bits:
       name: "${name} error bits"
 
-  # import smartmeter reading from homeassistant f.e.
-  - platform: homeassistant
-    id: powermeter
-    name: "${name} smartmeter instantaneous power"
-    entity_id: sensor.firstfloor_smartmeter_instantaneous_power
+  # mqtt subscribe example
+  - id: powermeter
+    internal: true
+    platform: mqtt_subscribe
+    name: "${name} instantaneous power consumption"
+    topic: "smartmeter/sensor/groundfloor/obis/1-0:16.7.0/255/value"
+    accuracy_decimals: 2
+    unit_of_measurement: W
+    device_class: power
 
-# # mqtt subscribe example
-#   - id: powermeter
-#     internal: true
-#     platform: mqtt_subscribe
-#     name: "${name} instantaneous power consumption"
-#     topic: "smartmeter/sensor/groundfloor/obis/1-0:16.7.0/255/value"
-#     accuracy_decimals: 2
-#     unit_of_measurement: W
-#     device_class: power
-#
-# mqtt:
-#   broker: !secret mqtt_host
-#   username: !secret mqtt_username
-#   password: !secret mqtt_password
-#   id: mqtt_client
-#
+#  # import smartmeter reading from homeassistant
+#  # requires the "api" component see above
+#  - platform: homeassistant
+#    id: powermeter
+#    name: "${name} smartmeter instantaneous power"
+#    entity_id: sensor.firstfloor_smartmeter_instantaneous_power
