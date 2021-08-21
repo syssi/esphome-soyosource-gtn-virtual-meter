@@ -4,6 +4,14 @@ ESPHome component to simulate the current clamp to control the Soyosource GTN120
 
 ![Lovelace entities card](lovelace-entities-card.png "lovelace entities card")
 
+
+## Supported devices
+
+* GTN-1000LIM24, GTN-1000LIM36, GTN-1000LIM48, GTN-1000LIM72, GTN-1000LIM96
+* GTN-1200LIM48, GTN-1200LIM72, GTN-1200LIM96
+
+It looks like there is no GTW (waterproof) version of the device with limiter / RS485 support.
+
 ## Requirements
 
 * [ESPHome 1.18.0 or higher](https://github.com/esphome/esphome/releases).
