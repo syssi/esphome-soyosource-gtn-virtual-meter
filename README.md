@@ -1,5 +1,11 @@
 # esphome-soyosource-gtn-virtual-meter
 
+![GitHub actions](https://github.com/syssi/esphome-soyosource-gtn-virtual-meter/actions/workflows/ci.yaml/badge.svg)
+![GitHub stars](https://img.shields.io/github/stars/syssi/esphome-soyosource-gtn-virtual-meter)
+![GitHub forks](https://img.shields.io/github/forks/syssi/esphome-soyosource-gtn-virtual-meter)
+![GitHub watchers](https://img.shields.io/github/watchers/syssi/esphome-soyosource-gtn-virtual-meter)
+[!["Buy Me A Coffee"](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg)](https://www.buymeacoffee.com/syssi)
+
 ESPHome component to simulate the current clamp to control the Soyosource GTN1200 limiter
 
 ![Lovelace entities card](lovelace-entities-card.png "lovelace entities card")
