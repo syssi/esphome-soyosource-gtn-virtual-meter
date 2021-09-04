@@ -56,8 +56,8 @@ pip3 install esphome
 git clone https://github.com/syssi/esphome-soyosource-gtn-virtual-meter.git
 cd esphome-soyosource-gtn-virtual-meter
 
-# Create a secret.yaml containing some setup specific secrets
-cat > secret.yaml <<EOF
+# Create a secrets.yaml containing some setup specific secrets
+cat > secrets.yaml <<EOF
 wifi_ssid: MY_WIFI_SSID
 wifi_password: MY_WIFI_PASSWORD
 
