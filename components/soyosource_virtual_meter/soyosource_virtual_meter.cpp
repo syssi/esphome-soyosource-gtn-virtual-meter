@@ -21,7 +21,7 @@ void SoyosourceVirtualMeter::dump_config() {
 }
 
 void SoyosourceVirtualMeter::process_new_state_(float state) {
-  if (isnan(state))
+  if (std::isnan(state))
     return;
 
   uint16_t power_demand = (uint16_t) this->calculate_power_demand_((int16_t) ceilf(state));

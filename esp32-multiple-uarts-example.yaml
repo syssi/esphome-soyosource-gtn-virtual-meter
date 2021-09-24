@@ -83,6 +83,8 @@ sensor:
   - platform: soyosource_inverter
     soyosource_modbus_id: modbus0
     address: 0x23
+    operation_mode_id:
+      name: "${name} operation mode id"
     battery_voltage:
       name: "${device0} battery voltage"
     battery_current:
@@ -95,11 +97,11 @@ sensor:
       name: "${device0} ac frequency"
     temperature:
       name: "${device0} temperature"
-    error_bits:
-      name: "${device0} error bits"
   - platform: soyosource_inverter
     soyosource_modbus_id: modbus1
     address: 0x23
+    operation_mode_id:
+      name: "${name} operation mode id"
     battery_voltage:
       name: "${device1} battery voltage"
     battery_current:
@@ -112,8 +114,6 @@ sensor:
       name: "${device1} ac frequency"
     temperature:
       name: "${device1} temperature"
-    error_bits:
-      name: "${device1} error bits"
 
   # mqtt subscribe example
   - id: powermeter0

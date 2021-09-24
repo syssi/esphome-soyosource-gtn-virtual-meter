@@ -1,5 +1,6 @@
 #include "soyosource_modbus.h"
 #include "esphome/core/log.h"
+#include "esphome/core/helpers.h"
 
 namespace esphome {
 namespace soyosource_modbus {
@@ -34,7 +35,7 @@ bool SoyosourceModbus::parse_soyosource_modbus_byte_(uint8_t byte) {
   this->rx_buffer_.push_back(byte);
   const uint8_t *raw = &this->rx_buffer_[0];
 
-  // Soyosource info frame: 0x23 0x01 0x01 0x00 0x00 0x01 0xDB 0x00 0xA1 0x00 0xDD 0x64 0x02 0xCA 0x01
+  // Soyosource info frame: 0x23 0x01 0x01 0x00 0x00 0x02 0x3E 0x00 0x17 0x00 0xEF 0x64 0x02 0x9E 0xB5
   //                          0    1    2    3    4    5    6    7    8    9   10    11  12   13   14
 
   // Byte 0: soyosource_modbus address (match all)
@@ -42,18 +43,21 @@ bool SoyosourceModbus::parse_soyosource_modbus_byte_(uint8_t byte) {
     return true;
   uint8_t address = raw[0];
 
-  // Byte 5..15: Data
-  if (at < 5 + 9 + 1)
+  // Byte 4..15: Data + CRC
+  if (at < 4 + 10)
     return true;
 
-  if (raw[0] != 0x23 || raw[1] != 0x01 || raw[2] != 0x01 || raw[3] != 0x00 || raw[4] != 0x00) {
+  if (raw[0] != 0x23 || raw[1] != 0x01 || raw[2] != 0x01 || raw[3] != 0x00) {
     ESP_LOGW(TAG, "Invalid header.");
 
     // return false to reset buffer
     return false;
   }
 
-  std::vector<uint8_t> data(this->rx_buffer_.begin() + 5, this->rx_buffer_.begin() + 5 + 9);
+  ESP_LOGD(TAG, "CRC: 0x%02X", raw[14]);
+  ESP_LOGVV(TAG, "RX <- %s", hexencode(raw, at + 1).c_str());
+
+  std::vector<uint8_t> data(this->rx_buffer_.begin() + 4, this->rx_buffer_.begin() + 4 + 10);
 
   bool found = false;
   for (auto *device : this->devices_) {
@@ -108,6 +112,19 @@ void SoyosourceModbus::send(uint8_t address, uint16_t measurement) {
   frame[5] = measurement >> 0;
   frame[6] = 0x80;
   frame[7] = 264 - frame[4] - frame[5];
+
+  if (this->flow_control_pin_ != nullptr)
+    this->flow_control_pin_->digital_write(true);
+
+  this->write_array(frame, 8);
+  this->flush();
+
+  if (this->flow_control_pin_ != nullptr)
+    this->flow_control_pin_->digital_write(false);
+}
+
+void SoyosourceModbus::query_status() {
+  uint8_t frame[8] = {0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
   if (this->flow_control_pin_ != nullptr)
     this->flow_control_pin_->digital_write(true);

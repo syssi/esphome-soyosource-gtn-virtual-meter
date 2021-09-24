@@ -7,8 +7,11 @@
 namespace esphome {
 namespace soyosource_inverter {
 
-class SoyosourceInverter : public Component, public soyosource_modbus::SoyosourceModbusDevice {
+class SoyosourceInverter : public PollingComponent, public soyosource_modbus::SoyosourceModbusDevice {
  public:
+  void set_operation_mode_id_sensor(sensor::Sensor *operation_mode_id_sensor) {
+    operation_mode_id_sensor_ = operation_mode_id_sensor;
+  }
   void set_battery_voltage_sensor(sensor::Sensor *battery_voltage_sensor) {
     battery_voltage_sensor_ = battery_voltage_sensor;
   }
@@ -19,20 +22,21 @@ class SoyosourceInverter : public Component, public soyosource_modbus::Soyosourc
   void set_ac_voltage_sensor(sensor::Sensor *ac_voltage_sensor) { ac_voltage_sensor_ = ac_voltage_sensor; }
   void set_ac_frequency_sensor(sensor::Sensor *ac_frequency_sensor) { ac_frequency_sensor_ = ac_frequency_sensor; }
   void set_temperature_sensor(sensor::Sensor *temperature_sensor) { temperature_sensor_ = temperature_sensor; }
-  void set_error_bits_sensor(sensor::Sensor *error_bits_sensor) { error_bits_sensor_ = error_bits_sensor; }
+
+  void update() override;
 
   void on_soyosource_modbus_data(const std::vector<uint8_t> &data) override;
 
   void dump_config() override;
 
  protected:
+  sensor::Sensor *operation_mode_id_sensor_;
   sensor::Sensor *battery_voltage_sensor_;
   sensor::Sensor *battery_current_sensor_;
   sensor::Sensor *battery_power_sensor_;
   sensor::Sensor *ac_voltage_sensor_;
   sensor::Sensor *ac_frequency_sensor_;
   sensor::Sensor *temperature_sensor_;
-  sensor::Sensor *error_bits_sensor_;
 };
 
 }  // namespace soyosource_inverter

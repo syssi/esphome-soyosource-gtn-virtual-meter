@@ -28,9 +28,9 @@ CONF_BATTERY_CURRENT = "battery_current"
 CONF_BATTERY_POWER = "battery_power"
 CONF_AC_VOLTAGE = "ac_voltage"
 CONF_AC_FREQUENCY = "ac_frequency"
-CONF_ERROR_BITS = "error_bits"
+CONF_OPERATION_MODE_ID = "operation_mode_id"
 
-ICON_ERROR_BITS = "mdi:alert-circle-outline"
+ICON_OPERATION_MODE = "mdi:heart-pulse"
 
 SENSORS = [
     CONF_BATTERY_VOLTAGE,
@@ -39,7 +39,7 @@ SENSORS = [
     CONF_AC_VOLTAGE,
     CONF_AC_FREQUENCY,
     CONF_TEMPERATURE,
-    CONF_ERROR_BITS,
+    CONF_OPERATION_MODE_ID,
 ]
 
 soyosource_inverter_ns = cg.esphome_ns.namespace("soyosource_inverter")
@@ -51,6 +51,13 @@ CONFIG_SCHEMA = (
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(SoyosourceInverter),
+            cv.Optional(CONF_OPERATION_MODE_ID): sensor.sensor_schema(
+                UNIT_EMPTY,
+                ICON_OPERATION_MODE,
+                0,
+                DEVICE_CLASS_EMPTY,
+                STATE_CLASS_MEASUREMENT,
+            ),
             cv.Optional(CONF_BATTERY_VOLTAGE): sensor.sensor_schema(
                 UNIT_VOLT, ICON_EMPTY, 2, DEVICE_CLASS_VOLTAGE, STATE_CLASS_MEASUREMENT
             ),
@@ -69,7 +76,7 @@ CONFIG_SCHEMA = (
                 STATE_CLASS_MEASUREMENT,
             ),
             cv.Optional(CONF_BATTERY_POWER): sensor.sensor_schema(
-                UNIT_WATT, ICON_EMPTY, 2, DEVICE_CLASS_POWER, STATE_CLASS_MEASUREMENT
+                UNIT_WATT, ICON_EMPTY, 0, DEVICE_CLASS_POWER, STATE_CLASS_MEASUREMENT
             ),
             cv.Optional(CONF_AC_VOLTAGE): sensor.sensor_schema(
                 UNIT_VOLT, ICON_EMPTY, 1, DEVICE_CLASS_VOLTAGE, STATE_CLASS_MEASUREMENT
@@ -88,16 +95,9 @@ CONFIG_SCHEMA = (
                 DEVICE_CLASS_TEMPERATURE,
                 STATE_CLASS_MEASUREMENT,
             ),
-            cv.Optional(CONF_ERROR_BITS): sensor.sensor_schema(
-                UNIT_EMPTY,
-                ICON_ERROR_BITS,
-                0,
-                DEVICE_CLASS_EMPTY,
-                STATE_CLASS_MEASUREMENT,
-            ),
         }
     )
-    .extend(cv.COMPONENT_SCHEMA)
+    .extend(cv.polling_component_schema("5s"))
     .extend(soyosource_modbus.soyosource_modbus_device_schema(0x23))
 )
 
