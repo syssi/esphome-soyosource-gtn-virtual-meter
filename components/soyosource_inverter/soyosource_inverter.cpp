@@ -48,7 +48,7 @@ void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &d
   // Data bytes:                                             0    1    2    3    4    5    6    7    8    9   CRC
   //
   //
-  // Data byte 0:          0x04 (Operation mode)    0x00 (PV Mode?), 0x01, 0x02, 0x04
+  // Data byte 0:          0x04 (Operation mode)    0x00 (Normal), 0x01 (Startup), 0x02 (Standby), 0x04 (Error?)
   // Data byte 1...2: 0x01 0xDB (Battery voltage)
   // Data byte 3...4: 0x00 0xA1 (Battery current)
   // Data byte 5...6: 0x00 0xDD (AC voltage)
