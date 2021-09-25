@@ -2,16 +2,16 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import sensor, soyosource_modbus
 from esphome.const import (
-    CONF_ID,
     CONF_BATTERY_VOLTAGE,
+    CONF_ID,
     CONF_TEMPERATURE,
     DEVICE_CLASS_CURRENT,
     DEVICE_CLASS_EMPTY,
-    DEVICE_CLASS_TEMPERATURE,
     DEVICE_CLASS_POWER,
+    DEVICE_CLASS_TEMPERATURE,
     DEVICE_CLASS_VOLTAGE,
-    ICON_EMPTY,
     ICON_CURRENT_AC,
+    ICON_EMPTY,
     STATE_CLASS_MEASUREMENT,
     UNIT_AMPERE,
     UNIT_CELSIUS,
