@@ -125,6 +125,8 @@ sensor:
       name: "${name} power demand"
 
   - platform: soyosource_inverter
+    operation_mode_id:
+      name: "${name} operation mode id"
     battery_voltage:
       name: "${name} battery voltage"
     battery_current:
@@ -137,8 +139,6 @@ sensor:
       name: "${name} ac frequency"
     temperature:
       name: "${name} temperature"
-    error_bits:
-      name: "${name} error bits"
 
   # mqtt subscribe example
   - id: powermeter
