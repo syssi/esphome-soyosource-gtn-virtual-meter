@@ -89,7 +89,7 @@ sensor:
   - platform: soyosource_inverter
     soyosource_inverter_id: inverter0
     operation_mode_id:
-      name: "${name} operation mode id"
+      name: "${device0} operation mode id"
     battery_voltage:
       name: "${device0} battery voltage"
     battery_current:
@@ -105,7 +105,7 @@ sensor:
   - platform: soyosource_inverter
     soyosource_inverter_id: inverter1
     operation_mode_id:
-      name: "${name} operation mode id"
+      name: "${device1} operation mode id"
     battery_voltage:
       name: "${device1} battery voltage"
     battery_current:
@@ -147,3 +147,13 @@ sensor:
 #    id: powermeter1
 #    name: "${device1} smartmeter instantaneous power"
 #    entity_id: sensor.groundfloor_smartmeter_instantaneous_power
+
+text_sensor:
+  - platform: soyosource_inverter
+    soyosource_inverter_id: inverter0
+    operation_mode:
+      name: "${device0} operation mode"
+  - platform: soyosource_inverter
+    soyosource_inverter_id: inverter1
+    operation_mode:
+      name: "${device1} operation mode"
