@@ -48,6 +48,12 @@ soyosource_modbus:
   - id: modbus1
     uart_id: uart1
 
+soyosource_inverter:
+  - id: inverter0
+    modbus_id: modbus0
+  - id: inverter1
+    modbus_id: modbus1
+
 soyosource_virtual_meter:
   - id: virtualmeter0
     soyosource_modbus_id: modbus0
@@ -81,8 +87,7 @@ sensor:
       name: "${device1} power demand"
 
   - platform: soyosource_inverter
-    soyosource_modbus_id: modbus0
-    address: 0x23
+    soyosource_inverter_id: inverter0
     operation_mode_id:
       name: "${name} operation mode id"
     battery_voltage:
@@ -98,8 +103,7 @@ sensor:
     temperature:
       name: "${device0} temperature"
   - platform: soyosource_inverter
-    soyosource_modbus_id: modbus1
-    address: 0x23
+    soyosource_inverter_id: inverter1
     operation_mode_id:
       name: "${name} operation mode id"
     battery_voltage:
