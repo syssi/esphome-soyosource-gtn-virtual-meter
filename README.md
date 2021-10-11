@@ -110,6 +110,8 @@ uart:
 
 soyosource_modbus:
 
+soyosource_inverter:
+
 soyosource_virtual_meter:
   # the state of this sensor (instantaneous power in watt) is used as source
   power_id: powermeter
@@ -156,6 +158,11 @@ sensor:
 #    id: powermeter
 #    name: "${name} smartmeter instantaneous power"
 #    entity_id: sensor.firstfloor_smartmeter_instantaneous_power
+
+text_sensor:
+  - platform: soyosource_inverter
+    operation_mode:
+      name: "${name} operation mode"
 ```
 
 For a more advanced setup take a look at the [esp32-multiple-uarts-example.yaml](esp32-multiple-uarts-example.yaml).
