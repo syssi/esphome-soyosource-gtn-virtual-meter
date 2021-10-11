@@ -50,9 +50,9 @@ soyosource_modbus:
 
 soyosource_inverter:
   - id: inverter0
-    modbus_id: modbus0
+    soyosource_modbus_id: modbus0
   - id: inverter1
-    modbus_id: modbus1
+    soyosource_modbus_id: modbus1
 
 soyosource_virtual_meter:
   - id: virtualmeter0
