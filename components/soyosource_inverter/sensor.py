@@ -1,9 +1,8 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import sensor, soyosource_modbus
+from esphome.components import sensor
 from esphome.const import (
     CONF_BATTERY_VOLTAGE,
-    CONF_ID,
     CONF_TEMPERATURE,
     DEVICE_CLASS_CURRENT,
     DEVICE_CLASS_EMPTY,
@@ -21,7 +20,10 @@ from esphome.const import (
     UNIT_WATT,
 )
 
-AUTO_LOAD = ["soyosource_modbus"]
+from . import CONF_SOYOSOURCE_INVERTER_ID, SoyosourceInverter
+
+DEPENDENCIES = ["soyosource_inverter"]
+
 CODEOWNERS = ["@syssi"]
 
 CONF_BATTERY_CURRENT = "battery_current"
@@ -42,73 +44,61 @@ SENSORS = [
     CONF_OPERATION_MODE_ID,
 ]
 
-soyosource_inverter_ns = cg.esphome_ns.namespace("soyosource_inverter")
-SoyosourceInverter = soyosource_inverter_ns.class_(
-    "SoyosourceInverter", cg.PollingComponent, soyosource_modbus.SoyosourceModbusDevice
-)
-
-CONFIG_SCHEMA = (
-    cv.Schema(
-        {
-            cv.GenerateID(): cv.declare_id(SoyosourceInverter),
-            cv.Optional(CONF_OPERATION_MODE_ID): sensor.sensor_schema(
-                UNIT_EMPTY,
-                ICON_OPERATION_MODE,
-                0,
-                DEVICE_CLASS_EMPTY,
-                STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional(CONF_BATTERY_VOLTAGE): sensor.sensor_schema(
-                UNIT_VOLT, ICON_EMPTY, 2, DEVICE_CLASS_VOLTAGE, STATE_CLASS_MEASUREMENT
-            ),
-            cv.Optional(CONF_BATTERY_CURRENT): sensor.sensor_schema(
-                UNIT_AMPERE,
-                ICON_EMPTY,
-                2,
-                DEVICE_CLASS_CURRENT,
-                STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional(CONF_BATTERY_CURRENT): sensor.sensor_schema(
-                UNIT_AMPERE,
-                ICON_EMPTY,
-                2,
-                DEVICE_CLASS_CURRENT,
-                STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional(CONF_BATTERY_POWER): sensor.sensor_schema(
-                UNIT_WATT, ICON_EMPTY, 0, DEVICE_CLASS_POWER, STATE_CLASS_MEASUREMENT
-            ),
-            cv.Optional(CONF_AC_VOLTAGE): sensor.sensor_schema(
-                UNIT_VOLT, ICON_EMPTY, 1, DEVICE_CLASS_VOLTAGE, STATE_CLASS_MEASUREMENT
-            ),
-            cv.Optional(CONF_AC_FREQUENCY): sensor.sensor_schema(
-                UNIT_HERTZ,
-                ICON_CURRENT_AC,
-                1,
-                DEVICE_CLASS_EMPTY,
-                STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional(CONF_TEMPERATURE): sensor.sensor_schema(
-                UNIT_CELSIUS,
-                ICON_EMPTY,
-                1,
-                DEVICE_CLASS_TEMPERATURE,
-                STATE_CLASS_MEASUREMENT,
-            ),
-        }
-    )
-    .extend(cv.polling_component_schema("5s"))
-    .extend(soyosource_modbus.soyosource_modbus_device_schema(0x23))
+CONFIG_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(CONF_SOYOSOURCE_INVERTER_ID): cv.use_id(SoyosourceInverter),
+        cv.Optional(CONF_OPERATION_MODE_ID): sensor.sensor_schema(
+            UNIT_EMPTY,
+            ICON_OPERATION_MODE,
+            0,
+            DEVICE_CLASS_EMPTY,
+            STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_BATTERY_VOLTAGE): sensor.sensor_schema(
+            UNIT_VOLT, ICON_EMPTY, 2, DEVICE_CLASS_VOLTAGE, STATE_CLASS_MEASUREMENT
+        ),
+        cv.Optional(CONF_BATTERY_CURRENT): sensor.sensor_schema(
+            UNIT_AMPERE,
+            ICON_EMPTY,
+            2,
+            DEVICE_CLASS_CURRENT,
+            STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_BATTERY_CURRENT): sensor.sensor_schema(
+            UNIT_AMPERE,
+            ICON_EMPTY,
+            2,
+            DEVICE_CLASS_CURRENT,
+            STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_BATTERY_POWER): sensor.sensor_schema(
+            UNIT_WATT, ICON_EMPTY, 0, DEVICE_CLASS_POWER, STATE_CLASS_MEASUREMENT
+        ),
+        cv.Optional(CONF_AC_VOLTAGE): sensor.sensor_schema(
+            UNIT_VOLT, ICON_EMPTY, 1, DEVICE_CLASS_VOLTAGE, STATE_CLASS_MEASUREMENT
+        ),
+        cv.Optional(CONF_AC_FREQUENCY): sensor.sensor_schema(
+            UNIT_HERTZ,
+            ICON_CURRENT_AC,
+            1,
+            DEVICE_CLASS_EMPTY,
+            STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_TEMPERATURE): sensor.sensor_schema(
+            UNIT_CELSIUS,
+            ICON_EMPTY,
+            1,
+            DEVICE_CLASS_TEMPERATURE,
+            STATE_CLASS_MEASUREMENT,
+        ),
+    }
 )
 
 
 async def to_code(config):
-    var = cg.new_Pvariable(config[CONF_ID])
-    await cg.register_component(var, config)
-    await soyosource_modbus.register_soyosource_modbus_device(var, config)
-
+    hub = await cg.get_variable(config[CONF_SOYOSOURCE_INVERTER_ID])
     for key in SENSORS:
         if key in config:
             conf = config[key]
             sens = await sensor.new_sensor(conf)
-            cg.add(getattr(var, f"set_{key}_sensor")(sens))
+            cg.add(getattr(hub, f"set_{key}_sensor")(sens))

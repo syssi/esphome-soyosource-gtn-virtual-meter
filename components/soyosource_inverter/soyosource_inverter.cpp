@@ -6,6 +6,15 @@ namespace soyosource_inverter {
 
 static const char *const TAG = "soyosource_inverter";
 
+static const uint8_t OPERATION_MODES_SIZE = 5;
+static const char *const OPERATION_MODES[OPERATION_MODES_SIZE] = {
+    "Normal",                  // 0x00
+    "Startup",                 // 0x01
+    "Standby",                 // 0x02
+    "Startup aborted",         // 0x03
+    "Error or battery mode?",  // 0x04
+};
+
 void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &data) {
   if (data.size() != 10) {
     ESP_LOGW(TAG, "Invalid size for soyosource status packet!");
@@ -18,7 +27,8 @@ void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &d
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
 
-  float operation_mode_id = (float) data[0];
+  uint8_t raw_operation_mode = data[0];
+  float operation_mode_id = (float) raw_operation_mode;
 
   uint16_t raw_battery_voltage = soyosource_get_16bit(1);
   float battery_voltage = raw_battery_voltage * 0.1f;
@@ -55,35 +65,42 @@ void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &d
   // Data byte 5...6: 0x00 0xDD (AC voltage)
   // Data byte 7:          0x64 (AC frequency / 2)
   // Data byte 8...9: 0x02 0xCA (Temperature / 10.0 + 2 * 10)
+  this->publish_state_(this->operation_mode_id_sensor_, operation_mode_id);
+  this->publish_state_(this->battery_voltage_sensor_, battery_voltage);
+  this->publish_state_(this->battery_current_sensor_, battery_current);
+  this->publish_state_(this->battery_power_sensor_, battery_power);
+  this->publish_state_(this->ac_voltage_sensor_, ac_voltage);
+  this->publish_state_(this->ac_frequency_sensor_, ac_frequency);
+  this->publish_state_(this->temperature_sensor_, temperature);
 
-  if (this->operation_mode_id_sensor_ != nullptr)
-    this->operation_mode_id_sensor_->publish_state(operation_mode_id);
-
-  if (this->battery_voltage_sensor_ != nullptr)
-    this->battery_voltage_sensor_->publish_state(battery_voltage);
-
-  if (this->battery_current_sensor_ != nullptr)
-    this->battery_current_sensor_->publish_state(battery_current);
-
-  if (this->battery_power_sensor_ != nullptr)
-    this->battery_power_sensor_->publish_state(battery_power);
-
-  if (this->ac_voltage_sensor_ != nullptr)
-    this->ac_voltage_sensor_->publish_state(ac_voltage);
-
-  if (this->ac_frequency_sensor_ != nullptr)
-    this->ac_frequency_sensor_->publish_state(ac_frequency);
-
-  if (this->temperature_sensor_ != nullptr)
-    this->temperature_sensor_->publish_state(temperature);
+  if (raw_operation_mode < OPERATION_MODES_SIZE) {
+    this->publish_state_(this->operation_mode_text_sensor_, OPERATION_MODES[raw_operation_mode]);
+  } else {
+    this->publish_state_(this->operation_mode_text_sensor_, "Unknown");
+  }
 }
 
 void SoyosourceInverter::update() { this->query_status(); }
+
+void SoyosourceInverter::publish_state_(sensor::Sensor *sensor, float value) {
+  if (sensor == nullptr)
+    return;
+
+  sensor->publish_state(value);
+}
+
+void SoyosourceInverter::publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state) {
+  if (text_sensor == nullptr)
+    return;
+
+  text_sensor->publish_state(state);
+}
 
 void SoyosourceInverter::dump_config() {
   ESP_LOGCONFIG(TAG, "SoyosourceInverter:");
   ESP_LOGCONFIG(TAG, "  Address: 0x%02X", this->address_);
   LOG_SENSOR("", "Operation Mode ID", this->operation_mode_id_sensor_);
+  LOG_TEXT_SENSOR("", "Operation Mode", this->operation_mode_text_sensor_);
   LOG_SENSOR("", "Battery Voltage", this->battery_voltage_sensor_);
   LOG_SENSOR("", "Battery Current", this->battery_current_sensor_);
   LOG_SENSOR("", "Battery Power", this->battery_power_sensor_);

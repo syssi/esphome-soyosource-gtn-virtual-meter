@@ -33,6 +33,8 @@ uart:
 
 soyosource_modbus:
 
+soyosource_inverter:
+
 soyosource_virtual_meter:
   # the state of this sensor (instantaneous power in watt) is used as source
   power_id: powermeter
@@ -72,6 +74,11 @@ sensor:
     accuracy_decimals: 2
     unit_of_measurement: W
     device_class: power
+
+text_sensor:
+  - platform: soyosource_inverter
+    operation_mode:
+      name: "${name} operation mode"
 
 #  # import smartmeter reading from homeassistant
 #  # requires the "api" component see above

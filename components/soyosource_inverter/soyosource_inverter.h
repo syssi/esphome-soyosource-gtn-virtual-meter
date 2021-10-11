@@ -2,6 +2,7 @@
 
 #include "esphome/core/component.h"
 #include "esphome/components/sensor/sensor.h"
+#include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/soyosource_modbus/soyosource_modbus.h"
 
 namespace esphome {
@@ -23,6 +24,10 @@ class SoyosourceInverter : public PollingComponent, public soyosource_modbus::So
   void set_ac_frequency_sensor(sensor::Sensor *ac_frequency_sensor) { ac_frequency_sensor_ = ac_frequency_sensor; }
   void set_temperature_sensor(sensor::Sensor *temperature_sensor) { temperature_sensor_ = temperature_sensor; }
 
+  void set_operation_mode_text_sensor(text_sensor::TextSensor *operation_mode_text_sensor) {
+    operation_mode_text_sensor_ = operation_mode_text_sensor;
+  }
+
   void update() override;
 
   void on_soyosource_modbus_data(const std::vector<uint8_t> &data) override;
@@ -37,6 +42,11 @@ class SoyosourceInverter : public PollingComponent, public soyosource_modbus::So
   sensor::Sensor *ac_voltage_sensor_;
   sensor::Sensor *ac_frequency_sensor_;
   sensor::Sensor *temperature_sensor_;
+
+  text_sensor::TextSensor *operation_mode_text_sensor_;
+
+  void publish_state_(sensor::Sensor *sensor, float value);
+  void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
 };
 
 }  // namespace soyosource_inverter
