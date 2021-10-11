@@ -20,7 +20,8 @@ from esphome.const import (
     UNIT_VOLT,
     UNIT_WATT,
 )
-from . import SoyosourceInverter, CONF_SOYOSOURCE_INVERTER_ID
+
+from . import CONF_SOYOSOURCE_INVERTER_ID, SoyosourceInverter
 
 DEPENDENCIES = ["soyosource_inverter"]
 
@@ -44,56 +45,54 @@ SENSORS = [
     CONF_OPERATION_MODE_ID,
 ]
 
-CONFIG_SCHEMA = (
-    cv.Schema(
-        {
-            cv.GenerateID(CONF_SOYOSOURCE_INVERTER_ID): cv.use_id(SoyosourceInverter),
-            cv.Optional(CONF_OPERATION_MODE_ID): sensor.sensor_schema(
-                UNIT_EMPTY,
-                ICON_OPERATION_MODE,
-                0,
-                DEVICE_CLASS_EMPTY,
-                STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional(CONF_BATTERY_VOLTAGE): sensor.sensor_schema(
-                UNIT_VOLT, ICON_EMPTY, 2, DEVICE_CLASS_VOLTAGE, STATE_CLASS_MEASUREMENT
-            ),
-            cv.Optional(CONF_BATTERY_CURRENT): sensor.sensor_schema(
-                UNIT_AMPERE,
-                ICON_EMPTY,
-                2,
-                DEVICE_CLASS_CURRENT,
-                STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional(CONF_BATTERY_CURRENT): sensor.sensor_schema(
-                UNIT_AMPERE,
-                ICON_EMPTY,
-                2,
-                DEVICE_CLASS_CURRENT,
-                STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional(CONF_BATTERY_POWER): sensor.sensor_schema(
-                UNIT_WATT, ICON_EMPTY, 0, DEVICE_CLASS_POWER, STATE_CLASS_MEASUREMENT
-            ),
-            cv.Optional(CONF_AC_VOLTAGE): sensor.sensor_schema(
-                UNIT_VOLT, ICON_EMPTY, 1, DEVICE_CLASS_VOLTAGE, STATE_CLASS_MEASUREMENT
-            ),
-            cv.Optional(CONF_AC_FREQUENCY): sensor.sensor_schema(
-                UNIT_HERTZ,
-                ICON_CURRENT_AC,
-                1,
-                DEVICE_CLASS_EMPTY,
-                STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional(CONF_TEMPERATURE): sensor.sensor_schema(
-                UNIT_CELSIUS,
-                ICON_EMPTY,
-                1,
-                DEVICE_CLASS_TEMPERATURE,
-                STATE_CLASS_MEASUREMENT,
-            ),
-        }
-    )
+CONFIG_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(CONF_SOYOSOURCE_INVERTER_ID): cv.use_id(SoyosourceInverter),
+        cv.Optional(CONF_OPERATION_MODE_ID): sensor.sensor_schema(
+            UNIT_EMPTY,
+            ICON_OPERATION_MODE,
+            0,
+            DEVICE_CLASS_EMPTY,
+            STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_BATTERY_VOLTAGE): sensor.sensor_schema(
+            UNIT_VOLT, ICON_EMPTY, 2, DEVICE_CLASS_VOLTAGE, STATE_CLASS_MEASUREMENT
+        ),
+        cv.Optional(CONF_BATTERY_CURRENT): sensor.sensor_schema(
+            UNIT_AMPERE,
+            ICON_EMPTY,
+            2,
+            DEVICE_CLASS_CURRENT,
+            STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_BATTERY_CURRENT): sensor.sensor_schema(
+            UNIT_AMPERE,
+            ICON_EMPTY,
+            2,
+            DEVICE_CLASS_CURRENT,
+            STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_BATTERY_POWER): sensor.sensor_schema(
+            UNIT_WATT, ICON_EMPTY, 0, DEVICE_CLASS_POWER, STATE_CLASS_MEASUREMENT
+        ),
+        cv.Optional(CONF_AC_VOLTAGE): sensor.sensor_schema(
+            UNIT_VOLT, ICON_EMPTY, 1, DEVICE_CLASS_VOLTAGE, STATE_CLASS_MEASUREMENT
+        ),
+        cv.Optional(CONF_AC_FREQUENCY): sensor.sensor_schema(
+            UNIT_HERTZ,
+            ICON_CURRENT_AC,
+            1,
+            DEVICE_CLASS_EMPTY,
+            STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_TEMPERATURE): sensor.sensor_schema(
+            UNIT_CELSIUS,
+            ICON_EMPTY,
+            1,
+            DEVICE_CLASS_TEMPERATURE,
+            STATE_CLASS_MEASUREMENT,
+        ),
+    }
 )
 
 
