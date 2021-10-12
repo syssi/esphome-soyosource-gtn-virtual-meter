@@ -75,6 +75,7 @@ void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &d
   this->publish_state_(this->ac_voltage_sensor_, ac_voltage);
   this->publish_state_(this->ac_frequency_sensor_, ac_frequency);
   this->publish_state_(this->temperature_sensor_, temperature);
+  this->publish_state_(this->fan_running_binary_sensor_, (bool) (temperature >= 45.0));
 
   if (raw_operation_mode < OPERATION_MODES_SIZE) {
     this->publish_state_(this->operation_mode_text_sensor_, OPERATION_MODES[raw_operation_mode]);
@@ -84,6 +85,13 @@ void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &d
 }
 
 void SoyosourceInverter::update() { this->query_status(); }
+
+void SoyosourceInverter::publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state) {
+  if (binary_sensor == nullptr)
+    return;
+
+  binary_sensor->publish_state(state);
+}
 
 void SoyosourceInverter::publish_state_(sensor::Sensor *sensor, float value) {
   if (sensor == nullptr)
@@ -110,6 +118,7 @@ void SoyosourceInverter::dump_config() {
   LOG_SENSOR("", "AC Voltage", this->ac_voltage_sensor_);
   LOG_SENSOR("", "AC Frequency", this->ac_frequency_sensor_);
   LOG_SENSOR("", "Temperature", this->temperature_sensor_);
+  LOG_BINARY_SENSOR("", "Fan Running", this->fan_running_binary_sensor_);
 }
 
 }  // namespace soyosource_inverter

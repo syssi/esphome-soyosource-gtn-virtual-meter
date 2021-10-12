@@ -21,7 +21,7 @@ CONFIG_SCHEMA = (
 )
 
 
-def to_code(config):
+async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    yield cg.register_component(var, config)
-    yield soyosource_modbus.register_soyosource_modbus_device(var, config)
+    await cg.register_component(var, config)
+    await soyosource_modbus.register_soyosource_modbus_device(var, config)
