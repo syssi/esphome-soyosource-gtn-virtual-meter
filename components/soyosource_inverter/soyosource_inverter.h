@@ -1,6 +1,7 @@
 #pragma once
 
 #include "esphome/core/component.h"
+#include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/soyosource_modbus/soyosource_modbus.h"
@@ -10,6 +11,10 @@ namespace soyosource_inverter {
 
 class SoyosourceInverter : public PollingComponent, public soyosource_modbus::SoyosourceModbusDevice {
  public:
+  void set_fan_running_binary_sensor(binary_sensor::BinarySensor *fan_running_binary_sensor) {
+    fan_running_binary_sensor_ = fan_running_binary_sensor;
+  }
+
   void set_operation_mode_id_sensor(sensor::Sensor *operation_mode_id_sensor) {
     operation_mode_id_sensor_ = operation_mode_id_sensor;
   }
@@ -35,6 +40,8 @@ class SoyosourceInverter : public PollingComponent, public soyosource_modbus::So
   void dump_config() override;
 
  protected:
+  binary_sensor::BinarySensor *fan_running_binary_sensor_;
+
   sensor::Sensor *operation_mode_id_sensor_;
   sensor::Sensor *battery_voltage_sensor_;
   sensor::Sensor *battery_current_sensor_;
@@ -45,6 +52,7 @@ class SoyosourceInverter : public PollingComponent, public soyosource_modbus::So
 
   text_sensor::TextSensor *operation_mode_text_sensor_;
 
+  void publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state);
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
 };

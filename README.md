@@ -121,6 +121,11 @@ soyosource_virtual_meter:
   # A negative buffer value (-10) exports power to the grid (demand + 10 watts)
   buffer: 10
 
+binary_sensor:
+  - platform: soyosource_inverter
+    fan_running:
+      name: "${name} fan running"
+
 sensor:
   - platform: soyosource_virtual_meter
     power_demand:
