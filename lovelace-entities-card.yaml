@@ -1,0 +1,21 @@
+type: entities
+entities:
+  - entity: sensor.attic_solar_powerwall_battery_power
+    name: Battery Power
+  - entity: sensor.attic_solar_powerwall_battery_current
+    name: Battery Current
+  - entity: sensor.attic_solar_powerwall_battery_voltage
+    name: Battery Voltage
+  - entity: sensor.attic_solar_powerwall_ac_frequency
+    name: AC Frequency
+  - entity: sensor.attic_solar_powerwall_ac_voltage
+    name: AC Voltage
+  - entity: binary_sensor.attic_solar_powerwall_fan_running
+    name: Fan running
+  - entity: sensor.attic_solar_powerwall_operation_mode
+    name: Operation Mode
+  - entity: sensor.attic_solar_powerwall_operation_mode_id
+    name: Operation Mode ID
+  - entity: sensor.attic_solar_powerwall_temperature
+    name: Temperature
+
