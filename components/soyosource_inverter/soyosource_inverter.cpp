@@ -41,7 +41,7 @@ void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &d
   float ac_voltage = raw_ac_voltage * 1.0f;
 
   float ac_frequency = data[7] * 0.5f;
-  float temperature = soyosource_get_16bit(8) * 0.04f;
+  float temperature = (soyosource_get_16bit(8) - 300) * 0.1f;
 
   ESP_LOGVV(TAG, "Temperature (raw): 0x%02X 0x%02X", data[8], data[9]);
   ESP_LOGVV(TAG, "Temperature (uint16): %d", soyosource_get_16bit(8));
