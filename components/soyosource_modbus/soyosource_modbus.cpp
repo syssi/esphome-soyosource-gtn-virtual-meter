@@ -54,8 +54,8 @@ bool SoyosourceModbus::parse_soyosource_modbus_byte_(uint8_t byte) {
     return false;
   }
 
-  ESP_LOGD(TAG, "CRC: 0x%02X", raw[14]);
   ESP_LOGVV(TAG, "RX <- %s", hexencode(raw, at + 1).c_str());
+  ESP_LOGVV(TAG, "CRC: 0x%02X", raw[14]);
 
   std::vector<uint8_t> data(this->rx_buffer_.begin() + 4, this->rx_buffer_.begin() + 4 + 10);
 
