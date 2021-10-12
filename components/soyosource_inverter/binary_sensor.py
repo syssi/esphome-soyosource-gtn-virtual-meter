@@ -30,7 +30,7 @@ CONFIG_SCHEMA = cv.Schema(
 )
 
 
-def to_code(config):
+async def to_code(config):
     hub = await cg.get_variable(config[CONF_SOYOSOURCE_INVERTER_ID])
     for key in BINARY_SENSORS:
         if key in config:
