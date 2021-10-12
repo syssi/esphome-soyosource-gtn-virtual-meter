@@ -41,7 +41,10 @@ void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &d
   float ac_voltage = raw_ac_voltage * 1.0f;
 
   float ac_frequency = data[7] * 0.5f;
-  float temperature = (data[8] * 10.0f) + (data[9] * 0.1f);
+  float temperature = soyosource_get_16bit(8) * 0.04f;
+
+  ESP_LOGVV(TAG, "Temperature (raw): 0x%02X 0x%02X", data[8], data[9]);
+  ESP_LOGVV(TAG, "Temperature (uint16): %d", soyosource_get_16bit(8));
 
   if (battery_power > 2500 || ac_voltage > 300 || ac_frequency > 100 || temperature > 200) {
     ESP_LOGW(TAG, "Frame dropped because of unlikely measurements!");
