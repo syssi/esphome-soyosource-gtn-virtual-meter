@@ -6,13 +6,21 @@ namespace soyosource_inverter {
 
 static const char *const TAG = "soyosource_inverter";
 
-static const uint8_t OPERATION_MODES_SIZE = 5;
+static const uint8_t OPERATION_MODES_SIZE = 13;
 static const char *const OPERATION_MODES[OPERATION_MODES_SIZE] = {
     "Normal",                  // 0x00
     "Startup",                 // 0x01
     "Standby",                 // 0x02
     "Startup aborted",         // 0x03
     "Error or battery mode?",  // 0x04
+    "Unknown",                 // 0x05
+    "Unknown",                 // 0x06
+    "Unknown",                 // 0x07
+    "Unknown",                 // 0x08
+    "Unknown",                 // 0x09
+    "AC input low",            // 0x10
+    "Unknown",                 // 0x11
+    "Unknown",                 // 0x12
 };
 
 void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &data) {
