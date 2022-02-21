@@ -44,6 +44,7 @@ SENSORS = [
     CONF_OPERATION_MODE_ID,
 ]
 
+# pylint: disable=too-many-function-args
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_SOYOSOURCE_INVERTER_ID): cv.use_id(SoyosourceInverter),
