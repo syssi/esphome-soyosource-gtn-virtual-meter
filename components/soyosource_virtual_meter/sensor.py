@@ -9,6 +9,7 @@ DEPENDENCIES = ["soyosource_virtual_meter"]
 
 CONF_POWER_DEMAND = "power_demand"
 
+# pylint: disable=too-many-function-args
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_SOYOSOURCE_VIRTUAL_METER_ID): cv.use_id(
