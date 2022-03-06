@@ -40,7 +40,7 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   int16_t max_power_demand_;
   int16_t power_consumption_;
 
-  bool manual_mode_;
+  bool manual_mode_{false};
 
   void publish_state_(sensor::Sensor *sensor, float value);
   int16_t calculate_power_demand_(int16_t consumption);
