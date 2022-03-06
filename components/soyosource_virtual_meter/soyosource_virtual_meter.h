@@ -27,7 +27,6 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   float get_setup_priority() const override { return setup_priority::DATA; }
 
  protected:
-  void process_new_state_(float state);
   int16_t calculate_power_demand_(int16_t consumption);
 
   sensor::Sensor *power_sensor_;

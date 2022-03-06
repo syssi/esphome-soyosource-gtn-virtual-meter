@@ -11,20 +11,18 @@ void SoyosourceVirtualMeter::on_soyosource_modbus_data(const std::vector<uint8_t
 }
 
 void SoyosourceVirtualMeter::setup() {
-  this->power_sensor_->add_on_state_callback([this](float state) { this->process_new_state_(state); });
+  this->power_sensor_->add_on_state_callback([this](float state) {
+    if (std::isnan(state))
+      return;
+
+    this->power_consumption_ = (int16_t) ceilf(state);
+  });
 }
 
 void SoyosourceVirtualMeter::dump_config() {
   ESP_LOGCONFIG(TAG, "SoyosourceVirtualMeter:");
   ESP_LOGCONFIG(TAG, "  Address: 0x%02X", this->address_);
   LOG_SENSOR("", "Power Demand", this->power_demand_sensor_);
-}
-
-void SoyosourceVirtualMeter::process_new_state_(float state) {
-  if (std::isnan(state))
-    return;
-
-  this->power_consumption_ = (int16_t) ceilf(state);
 }
 
 void SoyosourceVirtualMeter::update() {
