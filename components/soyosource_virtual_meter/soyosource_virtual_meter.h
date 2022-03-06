@@ -17,7 +17,9 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   void set_min_power_demand(int16_t min_power_demand) { this->min_power_demand_ = min_power_demand; }
   void set_max_power_demand(int16_t max_power_demand) { this->max_power_demand_ = max_power_demand; }
 
-  void set_manual_power_demand_number(number::Number *manual_power_demand_number) { manual_power_demand_number_ = manual_power_demand_number; }
+  void set_manual_power_demand_number(number::Number *manual_power_demand_number) {
+    manual_power_demand_number_ = manual_power_demand_number;
+  }
 
   void set_manual_mode_switch(switch_::Switch *manual_mode_switch) { manual_mode_switch_ = manual_mode_switch; }
 
@@ -45,7 +47,7 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   int16_t min_power_demand_;
   int16_t max_power_demand_;
   int16_t power_consumption_;
-  uint16_t manual_power_demand_;
+  uint16_t manual_power_demand_{0};
 
   bool manual_mode_{false};
 
