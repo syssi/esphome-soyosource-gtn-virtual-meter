@@ -44,6 +44,7 @@ soyosource_virtual_meter:
   # A positive buffer value (10) tries to avoid exporting power to the grid (demand - 10 watts)
   # A negative buffer value (-10) exports power to the grid (demand + 10 watts)
   buffer: 10
+  update_interval: 3s
 
 binary_sensor:
   - platform: soyosource_inverter

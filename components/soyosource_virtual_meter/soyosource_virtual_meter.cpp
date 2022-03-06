@@ -24,12 +24,24 @@ void SoyosourceVirtualMeter::process_new_state_(float state) {
   if (std::isnan(state))
     return;
 
-  uint16_t power_demand = (uint16_t) this->calculate_power_demand_((int16_t) ceilf(state));
+  this->power_consumption_ = (int16_t) ceilf(state);
+}
+
+void SoyosourceVirtualMeter::update() {
+  uint16_t power_demand = 0;
+
+  if (this->manual_mode_switch_) {
+    power_demand = 123;
+  } else {
+    power_demand = (uint16_t) this->calculate_power_demand_(this->power_consumption_);
+  }
+
   ESP_LOGD(TAG, "Setting the limiter to %d watts", power_demand);
   this->send(power_demand);
 
-  if (this->power_demand_sensor_ != nullptr)
+  if (this->power_demand_sensor_ != nullptr) {
     this->power_demand_sensor_->publish_state(power_demand);
+  }
 }
 
 int16_t SoyosourceVirtualMeter::calculate_power_demand_(int16_t consumption) {

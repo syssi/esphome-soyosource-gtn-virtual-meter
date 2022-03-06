@@ -7,7 +7,7 @@
 namespace esphome {
 namespace soyosource_virtual_meter {
 
-class SoyosourceVirtualMeter : public Component, public soyosource_modbus::SoyosourceModbusDevice {
+class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus::SoyosourceModbusDevice {
  public:
   void set_power_sensor(sensor::Sensor *power_sensor) { power_sensor_ = power_sensor; }
   void set_power_demand_sensor(sensor::Sensor *power_demand_sensor) { power_demand_sensor_ = power_demand_sensor; }
@@ -35,6 +35,7 @@ class SoyosourceVirtualMeter : public Component, public soyosource_modbus::Soyos
   int16_t buffer_;
   int16_t min_power_demand_;
   int16_t max_power_demand_;
+  int16_t power_consumption_;
 };
 
 }  // namespace soyosource_virtual_meter

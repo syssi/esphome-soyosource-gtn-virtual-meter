@@ -37,6 +37,7 @@ soyosource_modbus:
 soyosource_inverter:
 
 soyosource_virtual_meter:
+  update_interval: 3s
   # the state of this sensor (instantaneous power in watt) is used as source
   power_id: powermeter
   min_power_demand: 0
