@@ -28,6 +28,7 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   float get_setup_priority() const override { return setup_priority::DATA; }
 
   void set_manual_mode(bool enabled) { this->manual_mode_ = enabled; }
+  void set_manual_power_demand(uint16_t power_demand) { this->manual_power_demand_ = power_demand; }
 
  protected:
   sensor::Sensor *power_sensor_;
@@ -39,6 +40,7 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   int16_t min_power_demand_;
   int16_t max_power_demand_;
   int16_t power_consumption_;
+  uint16_t manual_power_demand_;
 
   bool manual_mode_{false};
 
