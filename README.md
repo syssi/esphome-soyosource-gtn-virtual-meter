@@ -32,11 +32,13 @@ It looks like there is no GTW (waterproof) version of the device with limiter / 
 │         │              │          │<----- RX ----->│         │
 │         │<-----B- ---->│  RS485   │<----- TX ----->│ ESP32/  │
 │ GTN1200 │<---- A+ ---->│  to TTL  │<----- GND ---->│ ESP8266 │
-│         │<--- GND ---->│  module  │<--- 5V VCC --->│         │<-- 5V VCC
+│         │<--- GND ---->│  module  │<-- 3.3 VCC --->│         │<-- VCC
 │         │              │          │                │         │<-- GND
 └─────────┘              └──────────┘                └─────────┘
 
 ```
+
+Please make sure to power the RS485 module with 3.3V because it affects the TTL (transistor-transistor logic) voltage between RS485 module and ESP.
 
 ## Installation
 
