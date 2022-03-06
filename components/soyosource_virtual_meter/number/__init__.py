@@ -8,6 +8,8 @@ from esphome.const import (
     CONF_MIN_VALUE,
     CONF_MULTIPLY,
     CONF_STEP,
+    CONF_UNIT_OF_MEASUREMENT,
+    UNIT_WATT,
 )
 
 from .. import (
@@ -35,6 +37,18 @@ SoyosourceNumber = soyosource_virtual_meter_ns.class_(
     "SoyosourceNumber", number.Number, cg.Component
 )
 
+
+def validate_min_max(config):
+    max_power_demand = cv.int_(config[CONF_MAX_VALUE])
+    min_power_demand = cv.int_(config[CONF_MIN_VALUE])
+    if (max_power_demand - min_power_demand) < 0:
+        raise cv.Invalid(
+            "Maximum power demand must be greater than minimum power demand."
+        )
+
+    return config
+
+
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_SOYOSOURCE_VIRTUAL_METER_ID): cv.use_id(
@@ -51,6 +65,9 @@ CONFIG_SCHEMA = cv.Schema(
                     CONF_MAX_VALUE, default=DEFAULT_MAX_POWER_DEMAND
                 ): cv.float_,
                 cv.Optional(CONF_STEP, default=DEFAULT_STEP): cv.float_,
+                cv.Optional(
+                    CONF_UNIT_OF_MEASUREMENT, default=UNIT_WATT
+                ): cv.string_strict,
             }
         ).extend(cv.COMPONENT_SCHEMA),
     }
