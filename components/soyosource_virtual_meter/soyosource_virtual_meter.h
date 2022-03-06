@@ -1,6 +1,7 @@
 #pragma once
 
 #include "esphome/core/component.h"
+#include "esphome/components/number/number.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/switch/switch.h"
 #include "esphome/components/soyosource_modbus/soyosource_modbus.h"
@@ -15,6 +16,8 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   void set_buffer(int16_t buffer) { this->buffer_ = buffer; }
   void set_min_power_demand(int16_t min_power_demand) { this->min_power_demand_ = min_power_demand; }
   void set_max_power_demand(int16_t max_power_demand) { this->max_power_demand_ = max_power_demand; }
+
+  void set_manual_power_demand_number(number::Number *manual_power_demand_number) { manual_power_demand_number_ = manual_power_demand_number; }
 
   void set_manual_mode_switch(switch_::Switch *manual_mode_switch) { manual_mode_switch_ = manual_mode_switch; }
 
@@ -33,6 +36,8 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
  protected:
   sensor::Sensor *power_sensor_;
   sensor::Sensor *power_demand_sensor_;
+
+  number::Number *manual_power_demand_number_;
 
   switch_::Switch *manual_mode_switch_;
 
