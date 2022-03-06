@@ -12,8 +12,8 @@ from esphome.const import (
 
 from .. import (
     CONF_SOYOSOURCE_VIRTUAL_METER_ID,
-    DEFAULT_MIN_POWER_DEMAND,
     DEFAULT_MAX_POWER_DEMAND,
+    DEFAULT_MIN_POWER_DEMAND,
     SoyosourceVirtualMeter,
     soyosource_virtual_meter_ns,
 )
@@ -44,8 +44,12 @@ CONFIG_SCHEMA = cv.Schema(
             {
                 cv.GenerateID(): cv.declare_id(SoyosourceNumber),
                 cv.Optional(CONF_ICON, default=ICON_MANUAL_POWER_DEMAND): number.icon,
-                cv.Optional(CONF_MIN_VALUE, default=DEFAULT_MIN_POWER_DEMAND): cv.float_,
-                cv.Optional(CONF_MAX_VALUE, default=DEFAULT_MAX_POWER_DEMAND): cv.float_,
+                cv.Optional(
+                    CONF_MIN_VALUE, default=DEFAULT_MIN_POWER_DEMAND
+                ): cv.float_,
+                cv.Optional(
+                    CONF_MAX_VALUE, default=DEFAULT_MAX_POWER_DEMAND
+                ): cv.float_,
                 cv.Optional(CONF_STEP, default=DEFAULT_STEP): cv.float_,
             }
         ).extend(cv.COMPONENT_SCHEMA),
