@@ -26,10 +26,9 @@ SoyosourceVirtualMeter = soyosource_virtual_meter_ns.class_(
 
 
 def validate_min_max(config):
-    if (
-        cv.int_(config[CONF_MAX_POWER_DEMAND]) - cv.int_(config[CONF_MIN_POWER_DEMAND])
-        < 0
-    ):
+    max_power_demand = cv.int_(config[CONF_MAX_POWER_DEMAND])
+    min_power_demand = cv.int_(config[CONF_MIN_POWER_DEMAND])
+    if (max_power_demand - min_power_demand) < 0:
         raise cv.Invalid(
             "Maximum power demand must be greater than minimum power demand."
         )
