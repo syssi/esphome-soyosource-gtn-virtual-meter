@@ -3,7 +3,7 @@ import esphome.config_validation as cv
 from esphome.components import sensor, soyosource_modbus
 from esphome.const import CONF_ID
 
-AUTO_LOAD = ["soyosource_modbus"]
+AUTO_LOAD = ["soyosource_modbus", "sensor", "switch"]
 CODEOWNERS = ["@syssi"]
 MULTI_CONF = True
 
@@ -53,7 +53,7 @@ CONFIG_SCHEMA = cv.All(
         }
     )
     .extend(soyosource_modbus.soyosource_modbus_device_schema(0x24))
-    .extend(cv.COMPONENT_SCHEMA),
+    .extend(cv.polling_component_schema("3s")),
     validate_min_max,
 )
 

@@ -1,5 +1,6 @@
 substitutions:
   name: soyosource-gtn-virtual-meter
+  external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
 
 esphome:
   name: ${name}
@@ -7,7 +8,7 @@ esphome:
   board: esp-wrover-kit
 
 external_components:
-  - source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
+  - source: ${external_components_source}
     refresh: 0s
 
 wifi:
@@ -39,10 +40,11 @@ soyosource_virtual_meter:
   # the state of this sensor (instantaneous power in watt) is used as source
   power_id: powermeter
   min_power_demand: 0
-  max_power_demand: 1000
+  max_power_demand: 900
   # A positive buffer value (10) tries to avoid exporting power to the grid (demand - 10 watts)
   # A negative buffer value (-10) exports power to the grid (demand + 10 watts)
   buffer: 10
+  update_interval: 3s
 
 binary_sensor:
   - platform: soyosource_inverter
@@ -84,6 +86,11 @@ text_sensor:
   - platform: soyosource_inverter
     operation_mode:
       name: "${name} operation mode"
+
+switch:
+  - platform: soyosource_virtual_meter
+    manual_mode:
+      name: "${name} manual mode"
 
 #  # import smartmeter reading from homeassistant
 #  # requires the "api" component see above

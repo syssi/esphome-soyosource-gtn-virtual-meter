@@ -2,6 +2,7 @@ substitutions:
   name: soyosource_gtn_virtual_meter
   device0: firstfloor_soyosource_gtn_virtual_meter
   device1: groundfloor_soyosource_gtn_virtual_meter
+  external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
 
 esphome:
   name: ${name}
@@ -9,7 +10,7 @@ esphome:
   board: esp-wrover-kit
 
 external_components:
-  - source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
+  - source: ${external_components_source}
     refresh: 0s
 
 ethernet:
@@ -57,21 +58,21 @@ soyosource_inverter:
 soyosource_virtual_meter:
   - id: virtualmeter0
     soyosource_modbus_id: modbus0
+    update_interval: 3s
     # the state of this sensor (instantaneous power in watt) is used as source
     power_id: powermeter0
-    address: 0x24
     min_power_demand: 0
-    max_power_demand: 1000
+    max_power_demand: 900
     # A positive buffer value (10) tries to avoid exporting power to the grid (demand - 10 watts)
     # A negative buffer value (-10) exports power to the grid (demand + 10 watts)
     buffer: 10
   - id: virtualmeter1
     soyosource_modbus_id: modbus1
+    update_interval: 3s
     # the state of this sensor (instantaneous power in watt) is used as source
     power_id: powermeter1
-    address: 0x24
     min_power_demand: 0
-    max_power_demand: 1000
+    max_power_demand: 900
     # A positive buffer value (10) tries to avoid exporting power to the grid (demand - 10 watts)
     # A negative buffer value (-10) exports power to the grid (demand + 10 watts)
     buffer: 10
@@ -167,3 +168,13 @@ text_sensor:
     soyosource_inverter_id: inverter1
     operation_mode:
       name: "${device1} operation mode"
+
+switch:
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter0
+    manual_mode:
+      name: "${device0} manual mode"
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter1
+    manual_mode:
+      name: "${device1} manual mode"

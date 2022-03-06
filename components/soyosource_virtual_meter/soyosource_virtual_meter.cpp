@@ -11,7 +11,19 @@ void SoyosourceVirtualMeter::on_soyosource_modbus_data(const std::vector<uint8_t
 }
 
 void SoyosourceVirtualMeter::setup() {
-  this->power_sensor_->add_on_state_callback([this](float state) { this->process_new_state_(state); });
+  this->power_sensor_->add_on_state_callback([this](float state) {
+    if (std::isnan(state))
+      return;
+
+    this->power_consumption_ = (int16_t) ceilf(state);
+  });
+}
+
+void SoyosourceVirtualMeter::publish_state_(sensor::Sensor *sensor, float value) {
+  if (sensor == nullptr)
+    return;
+
+  sensor->publish_state(value);
 }
 
 void SoyosourceVirtualMeter::dump_config() {
@@ -20,16 +32,19 @@ void SoyosourceVirtualMeter::dump_config() {
   LOG_SENSOR("", "Power Demand", this->power_demand_sensor_);
 }
 
-void SoyosourceVirtualMeter::process_new_state_(float state) {
-  if (std::isnan(state))
-    return;
+void SoyosourceVirtualMeter::update() {
+  uint16_t power_demand = 0;
 
-  uint16_t power_demand = (uint16_t) this->calculate_power_demand_((int16_t) ceilf(state));
+  if (this->manual_mode_) {
+    power_demand = 123;
+  } else {
+    power_demand = (uint16_t) this->calculate_power_demand_(this->power_consumption_);
+  }
+
   ESP_LOGD(TAG, "Setting the limiter to %d watts", power_demand);
   this->send(power_demand);
 
-  if (this->power_demand_sensor_ != nullptr)
-    this->power_demand_sensor_->publish_state(power_demand);
+  this->publish_state_(power_demand_sensor_, power_demand);
 }
 
 int16_t SoyosourceVirtualMeter::calculate_power_demand_(int16_t consumption) {
