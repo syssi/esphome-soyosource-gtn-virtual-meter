@@ -1,5 +1,6 @@
 substitutions:
   name: soyosource-gtn-virtual-meter
+  external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
 
 esphome:
   name: ${name}
@@ -7,7 +8,7 @@ esphome:
   board: esp-wrover-kit
 
 external_components:
-  - source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
+  - source: ${external_components_source}
     refresh: 0s
 
 wifi:
