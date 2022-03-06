@@ -60,6 +60,12 @@ def to_code(config):
             conf = config[key]
             var = cg.new_Pvariable(conf[CONF_ID])
             yield cg.register_component(var, conf)
-            yield number.register_number(var, conf)
+            yield number.register_number(
+                var,
+                conf,
+                min_value=conf[CONF_MIN_VALUE],
+                max_value=conf[CONF_MAX_VALUE],
+                step=conf[CONF_STEP],
+            )
             cg.add(getattr(hub, f"set_{key}_number")(var))
             cg.add(var.set_parent(hub))
