@@ -15,7 +15,7 @@ CONF_BUFFER = "buffer"
 
 DEFAULT_BUFFER = 0
 DEFAULT_MIN_POWER_DEMAND = 0
-DEFAULT_MAX_POWER_DEMAND = 2000
+DEFAULT_MAX_POWER_DEMAND = 900
 
 soyosource_virtual_meter_ns = cg.esphome_ns.namespace("soyosource_virtual_meter")
 SoyosourceVirtualMeter = soyosource_virtual_meter_ns.class_(
@@ -42,14 +42,14 @@ CONFIG_SCHEMA = cv.All(
             cv.GenerateID(): cv.declare_id(SoyosourceVirtualMeter),
             cv.Required(CONF_POWER_ID): cv.use_id(sensor.Sensor),
             cv.Optional(CONF_BUFFER, default=DEFAULT_BUFFER): cv.int_range(
-                min=-6000, max=6000
+                min=-200, max=200
             ),
             cv.Optional(
                 CONF_MIN_POWER_DEMAND, default=DEFAULT_MIN_POWER_DEMAND
-            ): cv.int_range(min=0, max=6000),
+            ): cv.int_range(min=0, max=2000),
             cv.Optional(
                 CONF_MAX_POWER_DEMAND, default=DEFAULT_MAX_POWER_DEMAND
-            ): cv.int_range(min=1, max=6000),
+            ): cv.int_range(min=1, max=2000),
         }
     )
     .extend(soyosource_modbus.soyosource_modbus_device_schema(0x24))
