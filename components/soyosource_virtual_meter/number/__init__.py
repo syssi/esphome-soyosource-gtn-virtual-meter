@@ -6,7 +6,6 @@ from esphome.const import (
     CONF_ID,
     CONF_MAX_VALUE,
     CONF_MIN_VALUE,
-    CONF_MULTIPLY,
     CONF_STEP,
     CONF_UNIT_OF_MEASUREMENT,
     UNIT_WATT,
