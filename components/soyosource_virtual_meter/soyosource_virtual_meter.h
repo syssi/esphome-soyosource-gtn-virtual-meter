@@ -15,6 +15,8 @@ class SoyosourceVirtualMeter : public Component, public soyosource_modbus::Soyos
   void set_min_power_demand(int16_t min_power_demand) { this->min_power_demand_ = min_power_demand; }
   void set_max_power_demand(int16_t max_power_demand) { this->max_power_demand_ = max_power_demand; }
 
+  void set_manual_mode_switch(switch_::Switch *manual_mode_switch) { manual_mode_switch_ = manual_mode_switch; }
+
   void setup() override;
   void on_soyosource_modbus_data(const std::vector<uint8_t> &data) override;
   void dump_config() override;
@@ -27,6 +29,9 @@ class SoyosourceVirtualMeter : public Component, public soyosource_modbus::Soyos
 
   sensor::Sensor *power_sensor_;
   sensor::Sensor *power_demand_sensor_;
+
+  switch_::Switch *manual_mode_switch_;
+
   int16_t buffer_;
   int16_t min_power_demand_;
   int16_t max_power_demand_;

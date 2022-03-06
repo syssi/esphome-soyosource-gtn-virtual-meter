@@ -3,7 +3,11 @@ import esphome.config_validation as cv
 from esphome.components import switch
 from esphome.const import CONF_ICON, CONF_ID
 
-from .. import CONF_SOYOSOURCE_VIRTUAL_METER_ID, SoyosourceVirtualMeter, soyosource_virtual_meter_ns
+from .. import (
+    CONF_SOYOSOURCE_VIRTUAL_METER_ID,
+    SoyosourceVirtualMeter,
+    soyosource_virtual_meter_ns,
+)
 
 DEPENDENCIES = ["soyosource_virtual_meter"]
 
@@ -17,11 +21,15 @@ SWITCHES = {
     CONF_MANUAL_MODE: 0x1039,
 }
 
-SoyosourceSwitch = soyosource_virtual_meter_ns.class_("SoyosourceSwitch", switch.Switch, cg.Component)
+SoyosourceSwitch = soyosource_virtual_meter_ns.class_(
+    "SoyosourceSwitch", switch.Switch, cg.Component
+)
 
 CONFIG_SCHEMA = cv.Schema(
     {
-        cv.GenerateID(CONF_SOYOSOURCE_VIRTUAL_METER_ID): cv.use_id(SoyosourceVirtualMeter),
+        cv.GenerateID(CONF_SOYOSOURCE_VIRTUAL_METER_ID): cv.use_id(
+            SoyosourceVirtualMeter
+        ),
         cv.Optional(CONF_MANUAL_MODE): switch.SWITCH_SCHEMA.extend(
             {
                 cv.GenerateID(): cv.declare_id(SoyosourceSwitch),
