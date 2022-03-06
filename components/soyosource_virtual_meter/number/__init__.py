@@ -44,9 +44,9 @@ CONFIG_SCHEMA = cv.Schema(
             {
                 cv.GenerateID(): cv.declare_id(SoyosourceNumber),
                 cv.Optional(CONF_ICON, default=ICON_MANUAL_POWER_DEMAND): number.icon,
-                cv.Required(CONF_MIN_VALUE, default=DEFAULT_MIN_POWER_DEMAND): cv.float_,
-                cv.Required(CONF_MAX_VALUE, default=DEFAULT_MAX_POWER_DEMAND): cv.float_,
-                cv.Required(CONF_STEP, default=DEFAULT_STEP): cv.float_,
+                cv.Optional(CONF_MIN_VALUE, default=DEFAULT_MIN_POWER_DEMAND): cv.float_,
+                cv.Optional(CONF_MAX_VALUE, default=DEFAULT_MAX_POWER_DEMAND): cv.float_,
+                cv.Optional(CONF_STEP, default=DEFAULT_STEP): cv.float_,
             }
         ).extend(cv.COMPONENT_SCHEMA),
     }
