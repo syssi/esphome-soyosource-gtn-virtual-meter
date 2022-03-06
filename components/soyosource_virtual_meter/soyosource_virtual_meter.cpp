@@ -19,6 +19,13 @@ void SoyosourceVirtualMeter::setup() {
   });
 }
 
+void SoyosourceVirtualMeter::publish_state_(sensor::Sensor *sensor, float value) {
+  if (sensor == nullptr)
+    return;
+
+  sensor->publish_state(value);
+}
+
 void SoyosourceVirtualMeter::dump_config() {
   ESP_LOGCONFIG(TAG, "SoyosourceVirtualMeter:");
   ESP_LOGCONFIG(TAG, "  Address: 0x%02X", this->address_);
@@ -37,9 +44,7 @@ void SoyosourceVirtualMeter::update() {
   ESP_LOGD(TAG, "Setting the limiter to %d watts", power_demand);
   this->send(power_demand);
 
-  if (this->power_demand_sensor_ != nullptr) {
-    this->power_demand_sensor_->publish_state(power_demand);
-  }
+  this->publish_state_(power_demand_sensor_, power_demand);
 }
 
 int16_t SoyosourceVirtualMeter::calculate_power_demand_(int16_t consumption) {
