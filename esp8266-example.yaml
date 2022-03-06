@@ -91,3 +91,8 @@ text_sensor:
   - platform: soyosource_inverter
     operation_mode:
       name: "${name} operation mode"
+
+switch:
+  - platform: soyosource_virtual_meter
+    manual_mode:
+      name: "${name} manual mode"

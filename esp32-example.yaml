@@ -85,6 +85,11 @@ text_sensor:
     operation_mode:
       name: "${name} operation mode"
 
+switch:
+  - platform: soyosource_virtual_meter
+    manual_mode:
+      name: "${name} manual mode"
+
 #  # import smartmeter reading from homeassistant
 #  # requires the "api" component see above
 #  - platform: homeassistant
