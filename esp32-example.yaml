@@ -87,6 +87,11 @@ text_sensor:
     operation_mode:
       name: "${name} operation mode"
 
+number:
+  - platform: soyosource_virtual_meter
+    manual_power_demand:
+      name: "${name} manual power demand"
+
 switch:
   - platform: soyosource_virtual_meter
     manual_mode:

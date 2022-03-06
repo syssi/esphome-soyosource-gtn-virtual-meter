@@ -178,3 +178,13 @@ switch:
     soyosource_virtual_meter_id: virtualmeter1
     manual_mode:
       name: "${device1} manual mode"
+
+number:
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter0
+    manual_power_demand:
+      name: "${device0} manual power demand"
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter1
+    manual_power_demand:
+      name: "${device1} manual power demand"
