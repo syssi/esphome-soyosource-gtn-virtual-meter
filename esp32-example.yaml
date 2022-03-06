@@ -40,7 +40,7 @@ soyosource_virtual_meter:
   # the state of this sensor (instantaneous power in watt) is used as source
   power_id: powermeter
   min_power_demand: 0
-  max_power_demand: 1000
+  max_power_demand: 900
   # A positive buffer value (10) tries to avoid exporting power to the grid (demand - 10 watts)
   # A negative buffer value (-10) exports power to the grid (demand + 10 watts)
   buffer: 10
