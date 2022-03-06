@@ -18,8 +18,11 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   void set_manual_mode_switch(switch_::Switch *manual_mode_switch) { manual_mode_switch_ = manual_mode_switch; }
 
   void setup() override;
+
   void on_soyosource_modbus_data(const std::vector<uint8_t> &data) override;
   void dump_config() override;
+
+  void update() override;
 
   float get_setup_priority() const override { return setup_priority::DATA; }
 

@@ -12,7 +12,6 @@ class SoyosourceVirtualMeter;
 class SoyosourceSwitch : public switch_::Switch, public Component {
  public:
   void set_parent(SoyosourceVirtualMeter *parent) { this->parent_ = parent; };
-  void set_holding_register(uint16_t holding_register) { this->holding_register_ = holding_register; };
   void dump_config() override;
   void loop() override {}
   float get_setup_priority() const override { return setup_priority::DATA; }
@@ -20,7 +19,6 @@ class SoyosourceSwitch : public switch_::Switch, public Component {
  protected:
   void write_state(bool state) override;
   SoyosourceVirtualMeter *parent_;
-  uint16_t holding_register_;
 };
 
 }  // namespace soyosource_virtual_meter

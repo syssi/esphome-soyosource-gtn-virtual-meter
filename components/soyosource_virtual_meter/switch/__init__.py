@@ -17,9 +17,9 @@ CONF_MANUAL_MODE = "manual_mode"
 
 ICON_MANUAL_MODE = "mdi:auto-fix"
 
-SWITCHES = {
-    CONF_MANUAL_MODE: 0x1039,
-}
+SWITCHES = [
+    CONF_MANUAL_MODE,
+]
 
 SoyosourceSwitch = soyosource_virtual_meter_ns.class_(
     "SoyosourceSwitch", switch.Switch, cg.Component
@@ -42,7 +42,7 @@ CONFIG_SCHEMA = cv.Schema(
 
 def to_code(config):
     hub = yield cg.get_variable(config[CONF_SOYOSOURCE_VIRTUAL_METER_ID])
-    for key, address in SWITCHES.items():
+    for key in SWITCHES:
         if key in config:
             conf = config[key]
             var = cg.new_Pvariable(conf[CONF_ID])
@@ -50,4 +50,3 @@ def to_code(config):
             yield switch.register_switch(var, conf)
             cg.add(getattr(hub, f"set_{key}_switch")(var))
             cg.add(var.set_parent(hub))
-            cg.add(var.set_holding_register(address))
