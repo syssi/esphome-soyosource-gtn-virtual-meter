@@ -51,10 +51,7 @@ void SoyosourceSwitch::dump_config() {
   }
   ESP_LOGCONFIG(TAG, "  Restore Mode: %s", LOG_STR_ARG(restore_mode));
 }
-void SoyosourceSwitch::write_state(bool state) {
-  this->parent_->set_manual_mode(state);
-  this->publish_state(state);
-}
+void SoyosourceSwitch::write_state(bool state) { this->publish_state(state); }
 
 }  // namespace soyosource_virtual_meter
 }  // namespace esphome

@@ -35,10 +35,16 @@ void SoyosourceVirtualMeter::dump_config() {
 void SoyosourceVirtualMeter::update() {
   uint16_t power_demand = 0;
 
-  if (this->manual_mode_ && manual_power_demand_number_ != nullptr) {
-    power_demand = this->manual_power_demand_;
+  if (this->manual_mode_switch_ != nullptr && this->manual_mode_switch_->state &&
+      this->manual_power_demand_number_ != nullptr && this->manual_power_demand_number_->has_state()) {
+    power_demand = (uint16_t) this->manual_power_demand_number_->state;
   } else {
     power_demand = (uint16_t) this->calculate_power_demand_(this->power_consumption_);
+  }
+
+  // Override power demand on emergency power off
+  if (this->emergency_power_off_switch_ != nullptr && this->emergency_power_off_switch_->state) {
+    power_demand = 0;
   }
 
   ESP_LOGD(TAG, "Setting the limiter to %d watts", power_demand);
