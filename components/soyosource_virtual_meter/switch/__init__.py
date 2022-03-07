@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import switch
-from esphome.const import CONF_ICON, CONF_ID
+from esphome.const import CONF_ICON, CONF_ID, CONF_RESTORE_MODE
 
 from .. import (
     CONF_SOYOSOURCE_VIRTUAL_METER_ID,
@@ -24,6 +24,16 @@ SWITCHES = [
 SoyosourceSwitch = soyosource_virtual_meter_ns.class_(
     "SoyosourceSwitch", switch.Switch, cg.Component
 )
+SoyosourceSwitchRestoreMode = soyosource_virtual_meter_ns.enum(
+    "SoyosourceSwitchRestoreMode"
+)
+
+RESTORE_MODES = {
+    "RESTORE_DEFAULT_OFF": SoyosourceSwitchRestoreMode.SOYOSOURCE_SWITCH_RESTORE_DEFAULT_OFF,
+    "RESTORE_DEFAULT_ON": SoyosourceSwitchRestoreMode.SOYOSOURCE_SWITCH_RESTORE_DEFAULT_ON,
+    "ALWAYS_OFF": SoyosourceSwitchRestoreMode.SOYOSOURCE_SWITCH_ALWAYS_OFF,
+    "ALWAYS_ON": SoyosourceSwitchRestoreMode.SOYOSOURCE_SWITCH_ALWAYS_ON,
+}
 
 CONFIG_SCHEMA = cv.Schema(
     {
@@ -34,6 +44,9 @@ CONFIG_SCHEMA = cv.Schema(
             {
                 cv.GenerateID(): cv.declare_id(SoyosourceSwitch),
                 cv.Optional(CONF_ICON, default=ICON_MANUAL_MODE): switch.icon,
+                cv.Optional(CONF_RESTORE_MODE, default="RESTORE_DEFAULT_OFF"): cv.enum(
+                    RESTORE_MODES, upper=True, space="_"
+                ),
             }
         ).extend(cv.COMPONENT_SCHEMA),
     }
@@ -50,3 +63,4 @@ def to_code(config):
             yield switch.register_switch(var, conf)
             cg.add(getattr(hub, f"set_{key}_switch")(var))
             cg.add(var.set_parent(hub))
+            cg.add(var.set_restore_mode(conf[CONF_RESTORE_MODE]))

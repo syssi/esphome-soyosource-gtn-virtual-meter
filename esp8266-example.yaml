@@ -103,3 +103,4 @@ switch:
   - platform: soyosource_virtual_meter
     manual_mode:
       name: "${name} manual mode"
+      restore_mode: RESTORE_DEFAULT_ON
