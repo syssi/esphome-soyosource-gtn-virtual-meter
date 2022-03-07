@@ -29,10 +29,10 @@ SoyosourceSwitchRestoreMode = soyosource_virtual_meter_ns.enum(
 )
 
 RESTORE_MODES = {
-    "RESTORE_DEFAULT_OFF": SoyosourceSwitchRestoreMode.GPIO_SWITCH_RESTORE_DEFAULT_OFF,
-    "RESTORE_DEFAULT_ON": SoyosourceSwitchRestoreMode.GPIO_SWITCH_RESTORE_DEFAULT_ON,
-    "ALWAYS_OFF": SoyosourceSwitchRestoreMode.GPIO_SWITCH_ALWAYS_OFF,
-    "ALWAYS_ON": SoyosourceSwitchRestoreMode.GPIO_SWITCH_ALWAYS_ON,
+    "RESTORE_DEFAULT_OFF": SoyosourceSwitchRestoreMode.SOYOSOURCE_SWITCH_RESTORE_DEFAULT_OFF,
+    "RESTORE_DEFAULT_ON": SoyosourceSwitchRestoreMode.SOYOSOURCE_SWITCH_RESTORE_DEFAULT_ON,
+    "ALWAYS_OFF": SoyosourceSwitchRestoreMode.SOYOSOURCE_SWITCH_ALWAYS_OFF,
+    "ALWAYS_ON": SoyosourceSwitchRestoreMode.SOYOSOURCE_SWITCH_ALWAYS_ON,
 }
 
 CONFIG_SCHEMA = cv.Schema(
