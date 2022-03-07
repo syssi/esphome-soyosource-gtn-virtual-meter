@@ -56,6 +56,5 @@ void SoyosourceSwitch::write_state(bool state) {
   this->publish_state(state);
 }
 
-
 }  // namespace soyosource_virtual_meter
 }  // namespace esphome

@@ -19,9 +19,7 @@ class SoyosourceVirtualMeter;
 class SoyosourceSwitch : public switch_::Switch, public Component {
  public:
   void set_parent(SoyosourceVirtualMeter *parent) { this->parent_ = parent; };
-  void set_restore_mode(SoyosourceSwitchRestoreMode restore_mode) {
-    this->restore_mode_ = restore_mode;
-  }
+  void set_restore_mode(SoyosourceSwitchRestoreMode restore_mode) { this->restore_mode_ = restore_mode; }
 
   void setup() override;
   void dump_config() override;
