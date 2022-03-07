@@ -43,7 +43,8 @@ void SoyosourceVirtualMeter::update() {
   }
 
   // Override power demand on emergency power off
-  if (this->emergency_power_off_switch_ != nullptr && this->emergency_power_off_switch_ == true) {
+  if (this->emergency_power_off_switch_ != nullptr && this->emergency_power_off_switch_->has_state() &&
+      this->emergency_power_off_switch_->state == true) {
     power_demand = 0;
   }
 
