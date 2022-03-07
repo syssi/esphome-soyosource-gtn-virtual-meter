@@ -63,4 +63,4 @@ def to_code(config):
             yield switch.register_switch(var, conf)
             cg.add(getattr(hub, f"set_{key}_switch")(var))
             cg.add(var.set_parent(hub))
-            cg.add(var.set_restore_mode(config[CONF_RESTORE_MODE]))
+            cg.add(var.set_restore_mode(conf[CONF_RESTORE_MODE]))
