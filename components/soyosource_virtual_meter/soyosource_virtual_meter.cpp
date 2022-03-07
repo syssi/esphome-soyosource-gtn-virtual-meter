@@ -36,8 +36,8 @@ void SoyosourceVirtualMeter::update() {
   uint16_t power_demand = 0;
 
   if (this->manual_mode_switch_ != nullptr && this->manual_mode_switch_->state == true &&
-      this->manual_power_demand_number_ != nullptr) {
-    power_demand = this->manual_power_demand_;
+      this->manual_power_demand_number_ != nullptr && this->manual_power_demand_number_->has_state()) {
+    power_demand = (uint16_t) this->manual_power_demand_number_->state;
   } else {
     power_demand = (uint16_t) this->calculate_power_demand_(this->power_consumption_);
   }
