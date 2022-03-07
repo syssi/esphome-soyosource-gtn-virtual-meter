@@ -35,7 +35,7 @@ void SoyosourceVirtualMeter::dump_config() {
 void SoyosourceVirtualMeter::update() {
   uint16_t power_demand = 0;
 
-  if (this->manual_mode_switch_ != nullptr && this->manual_mode_switch_->state == true &&
+  if (this->manual_mode_switch_ != nullptr && this->manual_mode_switch_->state &&
       this->manual_power_demand_number_ != nullptr && this->manual_power_demand_number_->has_state()) {
     power_demand = (uint16_t) this->manual_power_demand_number_->state;
   } else {
@@ -43,7 +43,7 @@ void SoyosourceVirtualMeter::update() {
   }
 
   // Override power demand on emergency power off
-  if (this->emergency_power_off_switch_ != nullptr && this->emergency_power_off_switch_->state == true) {
+  if (this->emergency_power_off_switch_ != nullptr && this->emergency_power_off_switch_->state) {
     power_demand = 0;
   }
 
