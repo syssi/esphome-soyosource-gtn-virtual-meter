@@ -56,9 +56,6 @@ void SoyosourceSwitch::write_state(bool state) {
   this->publish_state(state);
 }
 
-void SoyosourceSwitch::set_restore_mode(SoyosourceSwitchRestoreMode restore_mode) {
-  this->restore_mode_ = restore_mode;
-}
 
 }  // namespace soyosource_virtual_meter
 }  // namespace esphome
