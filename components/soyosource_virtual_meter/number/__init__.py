@@ -106,5 +106,5 @@ def to_code(config):
             )
             cg.add(getattr(hub, f"set_{key}_number")(var))
             cg.add(var.set_parent(hub))
-            cg.add(var.set_initial_value(config[CONF_INITIAL_VALUE]))
-            cg.add(var.set_restore_value(config[CONF_RESTORE_VALUE]))
+            cg.add(var.set_initial_value(conf[CONF_INITIAL_VALUE]))
+            cg.add(var.set_restore_value(conf[CONF_RESTORE_VALUE]))
