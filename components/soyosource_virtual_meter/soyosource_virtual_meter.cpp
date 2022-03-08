@@ -15,7 +15,6 @@ void SoyosourceVirtualMeter::setup() {
     if (std::isnan(state))
       return;
 
-    // this->power_consumption_ = (int16_t) ceilf(state);
     ESP_LOGD(TAG, "calculate_power_demand_ %d %d", (int16_t) ceilf(state), this->last_power_demand_);
     this->power_demand_ = this->calculate_power_demand_((int16_t) ceilf(state), this->last_power_demand_);
     ESP_LOGD(TAG, "New calculated demand: %d / last demand: %d", this->power_demand_, this->last_power_demand_);
@@ -64,7 +63,7 @@ void SoyosourceVirtualMeter::update() {
   ESP_LOGD(TAG, "Setting the limiter to %d watts", power_demand);
   this->send(power_demand);
   this->last_power_demand_ = power_demand;
-  ESP_LOGD(TAG, "New last demand: %d", this->last_power_demand_);
+  ESP_LOGD(TAG, "Updating last demand to: %d", this->last_power_demand_);
 
   this->publish_state_(power_demand_sensor_, power_demand);
 }
