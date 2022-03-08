@@ -4,8 +4,10 @@ from esphome.components import number
 from esphome.const import (
     CONF_ICON,
     CONF_ID,
+    CONF_INITIAL_VALUE,
     CONF_MAX_VALUE,
     CONF_MIN_VALUE,
+    CONF_RESTORE_VALUE,
     CONF_STEP,
     CONF_UNIT_OF_MEASUREMENT,
     UNIT_WATT,
@@ -48,27 +50,42 @@ def validate_min_max(config):
     return config
 
 
+def validate(config):
+    if CONF_INITIAL_VALUE not in config:
+        config[CONF_INITIAL_VALUE] = config[CONF_MIN_VALUE]
+
+    return config
+
+
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_SOYOSOURCE_VIRTUAL_METER_ID): cv.use_id(
             SoyosourceVirtualMeter
         ),
-        cv.Optional(CONF_MANUAL_POWER_DEMAND): number.NUMBER_SCHEMA.extend(
-            {
-                cv.GenerateID(): cv.declare_id(SoyosourceNumber),
-                cv.Optional(CONF_ICON, default=ICON_MANUAL_POWER_DEMAND): number.icon,
-                cv.Optional(
-                    CONF_MIN_VALUE, default=DEFAULT_MIN_POWER_DEMAND
-                ): cv.float_,
-                cv.Optional(
-                    CONF_MAX_VALUE, default=DEFAULT_MAX_POWER_DEMAND
-                ): cv.float_,
-                cv.Optional(CONF_STEP, default=DEFAULT_STEP): cv.float_,
-                cv.Optional(
-                    CONF_UNIT_OF_MEASUREMENT, default=UNIT_WATT
-                ): cv.string_strict,
-            }
-        ).extend(cv.COMPONENT_SCHEMA),
+        cv.Optional(CONF_MANUAL_POWER_DEMAND): cv.All(
+            number.NUMBER_SCHEMA.extend(
+                {
+                    cv.GenerateID(): cv.declare_id(SoyosourceNumber),
+                    cv.Optional(
+                        CONF_ICON, default=ICON_MANUAL_POWER_DEMAND
+                    ): number.icon,
+                    cv.Optional(
+                        CONF_MIN_VALUE, default=DEFAULT_MIN_POWER_DEMAND
+                    ): cv.float_,
+                    cv.Optional(
+                        CONF_MAX_VALUE, default=DEFAULT_MAX_POWER_DEMAND
+                    ): cv.float_,
+                    cv.Optional(CONF_STEP, default=DEFAULT_STEP): cv.float_,
+                    cv.Optional(
+                        CONF_UNIT_OF_MEASUREMENT, default=UNIT_WATT
+                    ): cv.string_strict,
+                    cv.Optional(CONF_INITIAL_VALUE): cv.float_,
+                    cv.Optional(CONF_RESTORE_VALUE, default=False): cv.boolean,
+                }
+            ).extend(cv.COMPONENT_SCHEMA),
+            validate_min_max,
+            validate,
+        ),
     }
 )
 
@@ -89,3 +106,5 @@ def to_code(config):
             )
             cg.add(getattr(hub, f"set_{key}_number")(var))
             cg.add(var.set_parent(hub))
+            cg.add(var.set_initial_value(config[CONF_INITIAL_VALUE]))
+            cg.add(var.set_restore_value(config[CONF_RESTORE_VALUE]))
