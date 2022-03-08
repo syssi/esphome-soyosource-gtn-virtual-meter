@@ -59,8 +59,11 @@ soyosource_virtual_meter:
   - id: virtualmeter0
     soyosource_modbus_id: modbus0
     update_interval: 3s
+
     # the state of this sensor (instantaneous power in watt) is used as source
     power_id: powermeter0
+    power_sensor_inactivity_timeout: 20s
+    power_demand_calculation: NEGATIVE_MEASUREMENTS_REQUIRED
     min_power_demand: 0
     max_power_demand: 900
     # A positive buffer value (10) tries to avoid exporting power to the grid (demand - 10 watts)
@@ -71,6 +74,8 @@ soyosource_virtual_meter:
     update_interval: 3s
     # the state of this sensor (instantaneous power in watt) is used as source
     power_id: powermeter1
+    power_sensor_inactivity_timeout: 20s
+    power_demand_calculation: NEGATIVE_MEASUREMENTS_REQUIRED
     min_power_demand: 0
     max_power_demand: 900
     # A positive buffer value (10) tries to avoid exporting power to the grid (demand - 10 watts)
@@ -139,6 +144,9 @@ sensor:
     accuracy_decimals: 2
     unit_of_measurement: W
     device_class: power
+    filters:
+      - throttle_average: 15s
+
   - id: powermeter1
     internal: true
     platform: mqtt_subscribe
@@ -147,6 +155,8 @@ sensor:
     accuracy_decimals: 2
     unit_of_measurement: W
     device_class: power
+    filters:
+      - throttle_average: 15s
 
 #  # import smartmeter reading from homeassistant f.e.
 #  # requires the "api" component see above

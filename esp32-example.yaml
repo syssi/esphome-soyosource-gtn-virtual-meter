@@ -39,6 +39,8 @@ soyosource_inverter:
 soyosource_virtual_meter:
   # the state of this sensor (instantaneous power in watt) is used as source
   power_id: powermeter
+  power_sensor_inactivity_timeout: 20s
+  power_demand_calculation: NEGATIVE_MEASUREMENTS_REQUIRED
   min_power_demand: 0
   max_power_demand: 900
   # A positive buffer value (10) tries to avoid exporting power to the grid (demand - 10 watts)
@@ -81,6 +83,8 @@ sensor:
     accuracy_decimals: 2
     unit_of_measurement: W
     device_class: power
+    filters:
+      - throttle_average: 15s
 
 text_sensor:
   - platform: soyosource_inverter
@@ -107,3 +111,6 @@ switch:
 #    id: powermeter
 #    name: "${name} smartmeter instantaneous power"
 #    entity_id: sensor.firstfloor_smartmeter_instantaneous_power
+#    filters:
+#      - throttle_average: 15s
+#      - filter_out: nan

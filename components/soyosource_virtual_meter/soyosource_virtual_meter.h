@@ -9,6 +9,11 @@
 namespace esphome {
 namespace soyosource_virtual_meter {
 
+enum PowerDemandCalculation {
+  POWER_DEMAND_CALCULATION_DUMB_OEM_BEHAVIOR,
+  POWER_DEMAND_CALCULATION_NEGATIVE_MEASUREMENTS_REQUIRED,
+};
+
 class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus::SoyosourceModbusDevice {
  public:
   void set_power_sensor(sensor::Sensor *power_sensor) { power_sensor_ = power_sensor; }
@@ -16,6 +21,12 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   void set_buffer(int16_t buffer) { this->buffer_ = buffer; }
   void set_min_power_demand(int16_t min_power_demand) { this->min_power_demand_ = min_power_demand; }
   void set_max_power_demand(int16_t max_power_demand) { this->max_power_demand_ = max_power_demand; }
+  void set_power_sensor_inactivity_timeout(uint16_t power_sensor_inactivity_timeout_s) {
+    this->power_sensor_inactivity_timeout_s_ = power_sensor_inactivity_timeout_s;
+  }
+  void set_power_demand_calculation(PowerDemandCalculation power_demand_calculation) {
+    this->power_demand_calculation_ = power_demand_calculation;
+  }
 
   void set_manual_power_demand_number(number::Number *manual_power_demand_number) {
     manual_power_demand_number_ = manual_power_demand_number;
@@ -36,6 +47,8 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   float get_setup_priority() const override { return setup_priority::DATA; }
 
  protected:
+  PowerDemandCalculation power_demand_calculation_{POWER_DEMAND_CALCULATION_DUMB_OEM_BEHAVIOR};
+
   sensor::Sensor *power_sensor_;
   sensor::Sensor *power_demand_sensor_;
 
@@ -47,10 +60,16 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   int16_t buffer_;
   int16_t min_power_demand_;
   int16_t max_power_demand_;
-  int16_t power_consumption_;
+  int16_t power_demand_;
+  uint16_t power_sensor_inactivity_timeout_s_;
+
+  uint32_t last_power_demand_received_{0};
+  uint16_t last_power_demand_{0};
 
   void publish_state_(sensor::Sensor *sensor, float value);
-  int16_t calculate_power_demand_(int16_t consumption);
+  int16_t calculate_power_demand_(int16_t consumption, uint16_t last_power_demand);
+  int16_t calculate_power_demand_negative_measurements_(int16_t consumption, uint16_t last_power_demand);
+  int16_t calculate_power_demand_oem_(int16_t consumption);
 };
 
 }  // namespace soyosource_virtual_meter

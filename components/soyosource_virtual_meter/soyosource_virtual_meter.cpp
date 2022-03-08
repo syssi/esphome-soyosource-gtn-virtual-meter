@@ -15,7 +15,11 @@ void SoyosourceVirtualMeter::setup() {
     if (std::isnan(state))
       return;
 
-    this->power_consumption_ = (int16_t) ceilf(state);
+    ESP_LOGD(TAG, "calculate_power_demand_ %d %d", (int16_t) ceilf(state), this->last_power_demand_);
+    this->power_demand_ = this->calculate_power_demand_((int16_t) ceilf(state), this->last_power_demand_);
+    ESP_LOGD(TAG, "New calculated demand: %d / last demand: %d", this->power_demand_, this->last_power_demand_);
+
+    this->last_power_demand_received_ = millis();
   });
 }
 
@@ -35,11 +39,20 @@ void SoyosourceVirtualMeter::dump_config() {
 void SoyosourceVirtualMeter::update() {
   uint16_t power_demand = 0;
 
-  if (this->manual_mode_switch_ != nullptr && this->manual_mode_switch_->state &&
-      this->manual_power_demand_number_ != nullptr && this->manual_power_demand_number_->has_state()) {
-    power_demand = (uint16_t) this->manual_power_demand_number_->state;
+  // Manual mode
+  if (this->manual_mode_switch_ != nullptr && this->manual_mode_switch_->state) {
+    if (this->manual_power_demand_number_ != nullptr && this->manual_power_demand_number_->has_state()) {
+      power_demand = (uint16_t) this->manual_power_demand_number_->state;
+    }  // else default = 0
   } else {
-    power_demand = (uint16_t) this->calculate_power_demand_(this->power_consumption_);
+    // Automatic mode
+    if (millis() - this->last_power_demand_received_ < (this->power_sensor_inactivity_timeout_s_ * 1000)) {
+      power_demand = (uint16_t) this->power_demand_;
+    } else {
+      power_demand = 0;
+      ESP_LOGW(TAG, "No power sensor update received since %d seconds. Shutting down for safety reasons.",
+               this->power_sensor_inactivity_timeout_s_);
+    }
   }
 
   // Override power demand on emergency power off
@@ -49,11 +62,46 @@ void SoyosourceVirtualMeter::update() {
 
   ESP_LOGD(TAG, "Setting the limiter to %d watts", power_demand);
   this->send(power_demand);
+  this->last_power_demand_ = power_demand;
+  ESP_LOGD(TAG, "Updating last demand to: %d", this->last_power_demand_);
 
   this->publish_state_(power_demand_sensor_, power_demand);
 }
 
-int16_t SoyosourceVirtualMeter::calculate_power_demand_(int16_t consumption) {
+int16_t SoyosourceVirtualMeter::calculate_power_demand_(int16_t consumption, uint16_t last_power_demand) {
+  if (this->power_demand_calculation_ == POWER_DEMAND_CALCULATION_NEGATIVE_MEASUREMENTS_REQUIRED) {
+    return this->calculate_power_demand_negative_measurements_(consumption, last_power_demand);
+  }
+
+  return this->calculate_power_demand_oem_(consumption);
+}
+
+int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(int16_t consumption,
+                                                                              uint16_t last_power_demand) {
+  // importing_now   consumption   buffer   last_power_demand   power_demand   return
+  //     1000           1010         10          500               1500         900
+  //      400            410         10          500                900         900
+  //      300            310         10          500                800         800
+  //       10             20         10          500                510         510
+  //        0             10         10          500                500         500
+  //     -200           -190         10          500                300         300
+  //     -500           -490         10          500                  0           0
+  //     -700           -690         10          500               -200           0
+  int16_t importing_now = consumption - this->buffer_;
+  int16_t power_demand = importing_now + last_power_demand;
+
+  if (power_demand >= this->max_power_demand_) {
+    return this->max_power_demand_;
+  }
+
+  if (power_demand > 0) {
+    return power_demand;
+  }
+
+  return 0;
+}
+
+int16_t SoyosourceVirtualMeter::calculate_power_demand_oem_(int16_t consumption) {
   // 5000 > 2000 + 10: 2000
   // 2011 > 2000 + 10: 2000
   // 2010 > 2000 + 10: continue
