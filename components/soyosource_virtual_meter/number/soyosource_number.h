@@ -16,6 +16,7 @@ class SoyosourceNumber : public number::Number, public Component {
   void set_initial_value(float initial_value) { initial_value_ = initial_value; }
   void set_restore_value(bool restore_value) { this->restore_value_ = restore_value; }
 
+  void setup() override;
   void dump_config() override;
 
  protected:
