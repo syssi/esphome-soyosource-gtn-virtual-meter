@@ -15,7 +15,6 @@ void SoyosourceVirtualMeter::setup() {
     if (std::isnan(state))
       return;
 
-    ESP_LOGD(TAG, "calculate_power_demand_ %d %d", (int16_t) ceilf(state), this->last_power_demand_);
     this->power_demand_ = this->calculate_power_demand_((int16_t) ceilf(state), this->last_power_demand_);
     ESP_LOGD(TAG, "New calculated demand: %d / last demand: %d", this->power_demand_, this->last_power_demand_);
 
@@ -78,6 +77,8 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_(int16_t consumption, uin
 
 int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(int16_t consumption,
                                                                               uint16_t last_power_demand) {
+  ESP_LOGD(TAG, "Using the new method to calculate the power demand: %d %d", consumption, last_power_demand);
+
   // importing_now   consumption   buffer   last_power_demand   power_demand   return
   //     1000           1010         10          500               1500         900
   //      400            410         10          500                900         900
@@ -102,6 +103,8 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(in
 }
 
 int16_t SoyosourceVirtualMeter::calculate_power_demand_oem_(int16_t consumption) {
+  ESP_LOGD(TAG, "Using the dumb OEM method to calculate the power demand: %d", consumption);
+
   // 5000 > 2000 + 10: 2000
   // 2011 > 2000 + 10: 2000
   // 2010 > 2000 + 10: continue
