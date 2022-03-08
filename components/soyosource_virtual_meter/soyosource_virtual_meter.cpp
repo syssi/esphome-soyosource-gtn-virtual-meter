@@ -62,7 +62,7 @@ void SoyosourceVirtualMeter::update() {
   ESP_LOGD(TAG, "Setting the limiter to %d watts", power_demand);
   this->send(power_demand);
   this->last_power_demand_ = power_demand;
-  ESP_LOGD(TAG, "Updating last demand to: %d", this->last_power_demand_);
+  ESP_LOGVV(TAG, "Updating last demand to: %d", this->last_power_demand_);
 
   this->publish_state_(power_demand_sensor_, power_demand);
 }
