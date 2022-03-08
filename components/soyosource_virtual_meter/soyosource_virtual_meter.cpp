@@ -73,7 +73,7 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_(int16_t consumption, uin
     return this->calculate_power_demand_negative_measurements_(consumption, last_power_demand);
   }
 
-  return this->calculate_power_demand_legacy_(consumption);
+  return this->calculate_power_demand_oem_(consumption);
 }
 
 int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(int16_t consumption,
