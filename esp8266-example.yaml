@@ -109,6 +109,10 @@ number:
   - platform: soyosource_virtual_meter
     manual_power_demand:
       name: "${name} manual power demand"
+    max_power_demand:
+      name: "${name} max power demand"
+      initial_value: 600
+      restore_value: true
 
 switch:
   - platform: soyosource_virtual_meter

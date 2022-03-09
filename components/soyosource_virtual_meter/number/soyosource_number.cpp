@@ -24,6 +24,10 @@ void SoyosourceNumber::setup() {
 }
 
 void SoyosourceNumber::control(float value) {
+  if (this->address_ == 0x01) {
+    this->parent_->set_max_power_demand((int16_t) value);
+  }
+
   this->publish_state(value);
 
   if (this->restore_value_)
