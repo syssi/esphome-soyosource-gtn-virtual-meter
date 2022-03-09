@@ -37,6 +37,10 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
     emergency_power_off_switch_ = emergency_power_off_switch;
   }
 
+  void set_operation_mode_text_sensor(text_sensor::TextSensor *operation_mode_text_sensor) {
+    operation_mode_text_sensor_ = operation_mode_text_sensor;
+  }
+
   void setup() override;
 
   void on_soyosource_modbus_data(const std::vector<uint8_t> &data) override;
@@ -49,13 +53,15 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
  protected:
   PowerDemandCalculation power_demand_calculation_{POWER_DEMAND_CALCULATION_DUMB_OEM_BEHAVIOR};
 
+  number::Number *manual_power_demand_number_;
+
   sensor::Sensor *power_sensor_;
   sensor::Sensor *power_demand_sensor_;
 
-  number::Number *manual_power_demand_number_;
-
   switch_::Switch *manual_mode_switch_;
   switch_::Switch *emergency_power_off_switch_;
+
+  text_sensor::TextSensor *operation_mode_text_sensor_;
 
   int16_t buffer_;
   int16_t min_power_demand_;
@@ -67,6 +73,8 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   uint16_t last_power_demand_{0};
 
   void publish_state_(sensor::Sensor *sensor, float value);
+  void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
+
   int16_t calculate_power_demand_(int16_t consumption, uint16_t last_power_demand);
   int16_t calculate_power_demand_negative_measurements_(int16_t consumption, uint16_t last_power_demand);
   int16_t calculate_power_demand_oem_(int16_t consumption);

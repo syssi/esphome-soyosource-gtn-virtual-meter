@@ -29,6 +29,13 @@ void SoyosourceVirtualMeter::publish_state_(sensor::Sensor *sensor, float value)
   sensor->publish_state(value);
 }
 
+void SoyosourceInverter::publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state) {
+  if (text_sensor == nullptr)
+    return;
+
+  text_sensor->publish_state(state);
+}
+
 void SoyosourceVirtualMeter::dump_config() {
   ESP_LOGCONFIG(TAG, "SoyosourceVirtualMeter:");
   ESP_LOGCONFIG(TAG, "  Address: 0x%02X", this->address_);
@@ -40,6 +47,7 @@ void SoyosourceVirtualMeter::update() {
 
   // Manual mode
   if (this->manual_mode_switch_ != nullptr && this->manual_mode_switch_->state) {
+    this->publish_state_(this->operation_mode_text_sensor_, "Manual");
     if (this->manual_power_demand_number_ != nullptr && this->manual_power_demand_number_->has_state()) {
       power_demand = (uint16_t) this->manual_power_demand_number_->state;
     }  // else default = 0
@@ -47,16 +55,19 @@ void SoyosourceVirtualMeter::update() {
     // Automatic mode
     if (millis() - this->last_power_demand_received_ < (this->power_sensor_inactivity_timeout_s_ * 1000)) {
       power_demand = (uint16_t) this->power_demand_;
+      this->publish_state_(this->operation_mode_text_sensor_, "Auto");
     } else {
       power_demand = 0;
       ESP_LOGW(TAG, "No power sensor update received since %d seconds. Shutting down for safety reasons.",
                this->power_sensor_inactivity_timeout_s_);
+      this->publish_state_(this->operation_mode_text_sensor_, "Inactivity timeout");
     }
   }
 
   // Override power demand on emergency power off
   if (this->emergency_power_off_switch_ != nullptr && this->emergency_power_off_switch_->state) {
     power_demand = 0;
+    this->publish_state_(this->operation_mode_text_sensor_, "Off");
   }
 
   ESP_LOGD(TAG, "Setting the limiter to %d watts", power_demand);
