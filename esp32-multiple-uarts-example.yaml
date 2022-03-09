@@ -206,3 +206,16 @@ number:
     soyosource_virtual_meter_id: virtualmeter1
     manual_power_demand:
       name: "${device1} manual power demand"
+
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter0
+    max_power_demand:
+      name: "${device0} max power demand"
+      initial_value: 600
+      restore_value: true
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter1
+    max_power_demand:
+      name: "${device1} max power demand"
+      initial_value: 600
+      restore_value: true

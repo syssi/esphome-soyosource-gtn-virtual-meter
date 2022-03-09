@@ -32,6 +32,9 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   void set_manual_power_demand_number(number::Number *manual_power_demand_number) {
     manual_power_demand_number_ = manual_power_demand_number;
   }
+  void set_max_power_demand_number(number::Number *max_power_demand_number) {
+    max_power_demand_number_ = max_power_demand_number;
+  }
 
   void set_manual_mode_switch(switch_::Switch *manual_mode_switch) { manual_mode_switch_ = manual_mode_switch; }
   void set_emergency_power_off_switch(switch_::Switch *emergency_power_off_switch) {
@@ -55,6 +58,7 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   PowerDemandCalculation power_demand_calculation_{POWER_DEMAND_CALCULATION_DUMB_OEM_BEHAVIOR};
 
   number::Number *manual_power_demand_number_;
+  number::Number *max_power_demand_number_;
 
   sensor::Sensor *power_sensor_;
   sensor::Sensor *power_demand_sensor_;
