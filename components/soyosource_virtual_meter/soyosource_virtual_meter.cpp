@@ -108,7 +108,7 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(in
     return this->max_power_demand_;
   }
 
-  if (power_demand > 0) {
+  if (power_demand >= this->min_power_demand_) {
     return power_demand;
   }
 
