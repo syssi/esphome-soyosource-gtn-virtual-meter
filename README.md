@@ -178,6 +178,26 @@ For a more advanced setup take a look at the [esp32-multiple-uarts-example.yaml]
 
 None.
 
+## Debugging
+
+If this component doesn't work out of the box for your device please update your configuration to enable the debug output of the UART component and increase the log level to the see outgoing and incoming serial traffic:
+
+```
+logger:
+  level: DEBUG
+  logs:
+    api.service: WARN
+    ota: WARN
+    sensor: DEBUG
+
+uart:
+  baud_rate: 4800
+  tx_pin: GPIO1
+  rx_pin: GPIO3
+  debug:
+    direction: BOTH
+```
+
 ## References
 
 * https://github.com/drcross/virtual-meter
