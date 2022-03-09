@@ -29,7 +29,7 @@ void SoyosourceVirtualMeter::publish_state_(sensor::Sensor *sensor, float value)
   sensor->publish_state(value);
 }
 
-void SoyosourceInverter::publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state) {
+void SoyosourceVirtualMeter::publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state) {
   if (text_sensor == nullptr)
     return;
 
