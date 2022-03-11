@@ -23,7 +23,10 @@ It looks like there is no GTW (waterproof) version of the device with limiter / 
 * [ESPHome 1.18.0 or higher](https://github.com/esphome/esphome/releases).
 * RS485-to-TTL module (`HW-0519` f.e.)
 * Generic ESP32 or ESP8266 board
-* Required ![Soyosource inverter configuration](soyosource-config.jpg "Soyosource config panel")
+* Required ![Soyosource inverter settings](soyosource-settings.jpg "Soyosource config panel")
+  * `Battery CP Grid` **N**
+  * `Bat CP Mode Power` **Upper power limit**
+  * `Bat AutoLimit Grid` **Y**
 
 ## Schematics
 
