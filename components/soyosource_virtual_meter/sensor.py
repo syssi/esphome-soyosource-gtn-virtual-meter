@@ -16,7 +16,10 @@ CONFIG_SCHEMA = cv.Schema(
             SoyosourceVirtualMeter
         ),
         cv.Optional(CONF_POWER_DEMAND): sensor.sensor_schema(
-            UNIT_WATT, ICON_EMPTY, 0, DEVICE_CLASS_POWER
+            unit_of_measurement=UNIT_WATT,
+            icon=ICON_EMPTY,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_POWER,
         ),
     }
 )
