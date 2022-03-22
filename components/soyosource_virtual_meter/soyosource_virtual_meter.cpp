@@ -44,6 +44,7 @@ void SoyosourceVirtualMeter::dump_config() {
 
 void SoyosourceVirtualMeter::update() {
   uint16_t power_demand = 0;
+  uint16_t power_demand_per_device = 0;
   std::string operation_mode = "Unknown";
 
   // Manual mode
@@ -71,8 +72,10 @@ void SoyosourceVirtualMeter::update() {
     operation_mode = "Off";
   }
 
-  ESP_LOGD(TAG, "Setting the limiter to %d watts", power_demand);
-  this->send(power_demand);
+  power_demand_per_device = ceilf(power_demand / float(this->power_demand_divider_));
+
+  ESP_LOGD(TAG, "Setting the limiter to %d watts per inverter (%d in total)", power_demand_per_device, power_demand);
+  this->send(power_demand_per_device);
   this->last_power_demand_ = power_demand;
   ESP_LOGVV(TAG, "Updating last demand to: %d", this->last_power_demand_);
 

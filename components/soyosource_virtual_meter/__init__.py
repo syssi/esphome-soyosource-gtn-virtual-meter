@@ -1,6 +1,6 @@
 import esphome.codegen as cg
-import esphome.config_validation as cv
 from esphome.components import sensor, soyosource_modbus
+import esphome.config_validation as cv
 from esphome.const import CONF_ID
 
 AUTO_LOAD = ["soyosource_modbus", "number", "sensor", "switch", "text_sensor"]
@@ -14,10 +14,12 @@ CONF_POWER_DEMAND_CALCULATION = "power_demand_calculation"
 CONF_MIN_POWER_DEMAND = "min_power_demand"
 CONF_MAX_POWER_DEMAND = "max_power_demand"
 CONF_BUFFER = "buffer"
+CONF_POWER_DEMAND_DIVIDER = "power_demand_divider"
 
 DEFAULT_BUFFER = 0
 DEFAULT_MIN_POWER_DEMAND = 0
 DEFAULT_MAX_POWER_DEMAND = 900
+DEFAULT_POWER_DEMAND_DIVIDER = 1
 
 soyosource_virtual_meter_ns = cg.esphome_ns.namespace("soyosource_virtual_meter")
 SoyosourceVirtualMeter = soyosource_virtual_meter_ns.class_(
@@ -59,6 +61,9 @@ CONFIG_SCHEMA = cv.All(
                 min=-200, max=200
             ),
             cv.Optional(
+                CONF_POWER_DEMAND_DIVIDER, default=DEFAULT_POWER_DEMAND_DIVIDER
+            ): cv.int_range(min=1, max=6),
+            cv.Optional(
                 CONF_MIN_POWER_DEMAND, default=DEFAULT_MIN_POWER_DEMAND
             ): cv.int_range(min=0, max=2000),
             cv.Optional(
@@ -83,6 +88,7 @@ async def to_code(config):
     cg.add(var.set_buffer(config[CONF_BUFFER]))
     cg.add(var.set_min_power_demand(config[CONF_MIN_POWER_DEMAND]))
     cg.add(var.set_max_power_demand(config[CONF_MAX_POWER_DEMAND]))
+    cg.add(var.set_power_demand_divider(config[CONF_POWER_DEMAND_DIVIDER]))
     cg.add(
         var.set_power_sensor_inactivity_timeout(
             config[CONF_POWER_SENSOR_INACTIVITY_TIMEOUT]
