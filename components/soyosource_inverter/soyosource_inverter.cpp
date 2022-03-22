@@ -90,9 +90,33 @@ void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &d
   } else {
     this->publish_state_(this->operation_mode_text_sensor_, "Unknown");
   }
+
+  this->no_response_count_ = 0;
 }
 
-void SoyosourceInverter::update() { this->query_status(); }
+void SoyosourceInverter::publish_device_offline_() {
+  this->publish_state_(this->operation_mode_id_sensor_, -1);
+  this->publish_state_(this->battery_voltage_sensor_, NAN);
+  this->publish_state_(this->battery_current_sensor_, NAN);
+  this->publish_state_(this->battery_power_sensor_, NAN);
+  this->publish_state_(this->ac_voltage_sensor_, NAN);
+  this->publish_state_(this->ac_frequency_sensor_, NAN);
+  this->publish_state_(this->temperature_sensor_, NAN);
+  this->publish_state_(this->fan_running_binary_sensor_, NAN);
+
+  this->publish_state_(this->operation_mode_text_sensor_, "Offline");
+}
+
+void SoyosourceInverter::update() {
+  if (this->no_response_count_ >= NO_RESPONSE_THRESHOLD) {
+    this->publish_device_offline_();
+    ESP_LOGW(TAG, "The inverter didn't respond to the last %d status requests.", this->no_response_count_);
+    this->no_response_count_ = 0;
+  }
+
+  no_response_count_++;
+  this->query_status();
+}
 
 void SoyosourceInverter::publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state) {
   if (binary_sensor == nullptr)

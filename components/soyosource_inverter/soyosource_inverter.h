@@ -9,6 +9,8 @@
 namespace esphome {
 namespace soyosource_inverter {
 
+static const uint8_t NO_RESPONSE_THRESHOLD = 15;
+
 class SoyosourceInverter : public PollingComponent, public soyosource_modbus::SoyosourceModbusDevice {
  public:
   void set_fan_running_binary_sensor(binary_sensor::BinarySensor *fan_running_binary_sensor) {
@@ -51,6 +53,8 @@ class SoyosourceInverter : public PollingComponent, public soyosource_modbus::So
   sensor::Sensor *temperature_sensor_;
 
   text_sensor::TextSensor *operation_mode_text_sensor_;
+
+  uint8_t no_response_count_ = 0;
 
   void publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state);
   void publish_state_(sensor::Sensor *sensor, float value);
