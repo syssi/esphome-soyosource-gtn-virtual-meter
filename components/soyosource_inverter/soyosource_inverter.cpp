@@ -110,7 +110,7 @@ void SoyosourceInverter::publish_device_offline_() {
 void SoyosourceInverter::update() {
   if (this->no_response_count_ >= NO_RESPONSE_THRESHOLD) {
     this->publish_device_offline_();
-    ESP_LOGW(TAG, "The inverter didn't respond to the last %d status requests.", this->no_response_count_);
+    ESP_LOGW(TAG, "The inverter didn't respond to the last %d status requests", this->no_response_count_);
     this->no_response_count_ = 0;
   }
 
