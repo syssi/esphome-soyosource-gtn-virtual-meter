@@ -72,7 +72,7 @@ void SoyosourceVirtualMeter::update() {
     operation_mode = "Off";
   }
 
-  power_demand_per_device = ceilf(power_demand / this->power_demand_divider_);
+  power_demand_per_device = ceilf(power_demand / float(this->power_demand_divider_));
 
   ESP_LOGD(TAG, "Setting the limiter to %d watts per inverter (%d in total)", power_demand_per_device, power_demand);
   this->send(power_demand_per_device);
