@@ -59,6 +59,7 @@ class SoyosourceInverter : public PollingComponent, public soyosource_modbus::So
   void publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state);
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
+  void publish_device_offline_();
 };
 
 }  // namespace soyosource_inverter
