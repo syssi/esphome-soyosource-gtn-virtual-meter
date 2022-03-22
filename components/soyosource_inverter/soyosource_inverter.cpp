@@ -102,7 +102,7 @@ void SoyosourceInverter::publish_device_offline_() {
   this->publish_state_(this->ac_voltage_sensor_, NAN);
   this->publish_state_(this->ac_frequency_sensor_, NAN);
   this->publish_state_(this->temperature_sensor_, NAN);
-  this->publish_state_(this->fan_running_binary_sensor_, NAN);
+  // this->publish_state_(this->fan_running_binary_sensor_, NAN);
 
   this->publish_state_(this->operation_mode_text_sensor_, "Offline");
 }
