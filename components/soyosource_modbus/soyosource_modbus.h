@@ -27,7 +27,7 @@ class SoyosourceModbus : public uart::UARTDevice, public Component {
 
   void set_flow_control_pin(GPIOPin *flow_control_pin) { this->flow_control_pin_ = flow_control_pin; }
   void set_name(const std::string &name) { this->name_ = name; }
-  std::string get_name() { return this->name_; };
+  const char *get_name() { return this->name_.c_str(); };
 
  protected:
   GPIOPin *flow_control_pin_{nullptr};
@@ -50,7 +50,7 @@ class SoyosourceModbusDevice {
 
   void query_status() { this->parent_->query_status(); }
   void send(uint16_t measurement) { this->parent_->send(this->address_, measurement); }
-  std::string get_modbus_name() { return this->parent_->get_name(); };
+  const char *get_modbus_name() { return this->parent_->get_name(); };
 
  protected:
   friend SoyosourceModbus;
