@@ -46,8 +46,10 @@ uart:
 soyosource_modbus:
   - id: modbus0
     uart_id: uart0
+    name: firstfloor
   - id: modbus1
     uart_id: uart1
+    name: groundfloor
 
 soyosource_inverter:
   - id: inverter0
