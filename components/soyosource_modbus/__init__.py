@@ -54,5 +54,6 @@ def soyosource_modbus_device_schema(default_address):
 async def register_soyosource_modbus_device(var, config):
     parent = await cg.get_variable(config[CONF_SOYOSOURCE_MODBUS_ID])
     cg.add(var.set_parent(parent))
+    cg.add(var.set_parent_id(config[CONF_SOYOSOURCE_MODBUS_ID]))
     cg.add(var.set_address(config[CONF_ADDRESS]))
     cg.add(parent.register_device(var))

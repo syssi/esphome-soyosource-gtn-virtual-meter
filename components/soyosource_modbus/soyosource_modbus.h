@@ -42,6 +42,7 @@ uint16_t crc16(const uint8_t *data, uint8_t len);
 class SoyosourceModbusDevice {
  public:
   void set_parent(SoyosourceModbus *parent) { parent_ = parent; }
+  void set_parent_id(const std::string &parent_id) { this->parent_id_ = parent_id; }
   void set_address(uint8_t address) { address_ = address; }
   virtual void on_soyosource_modbus_data(const std::vector<uint8_t> &data) = 0;
 
@@ -52,6 +53,7 @@ class SoyosourceModbusDevice {
   friend SoyosourceModbus;
 
   SoyosourceModbus *parent_;
+  std::string parent_id_;
   uint8_t address_;
 };
 
