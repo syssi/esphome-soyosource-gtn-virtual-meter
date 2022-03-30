@@ -7,7 +7,7 @@ namespace soyosource_virtual_meter {
 static const char *const TAG = "soyosource_virtual_meter";
 
 void SoyosourceVirtualMeter::on_soyosource_modbus_data(const std::vector<uint8_t> &data) {
-  ESP_LOGW(TAG, "Unknown message received!");
+  ESP_LOGW(TAG, "'%s': Unknown message received!", this->get_modbus_name());
 }
 
 void SoyosourceVirtualMeter::setup() {
@@ -16,7 +16,8 @@ void SoyosourceVirtualMeter::setup() {
       return;
 
     this->power_demand_ = this->calculate_power_demand_((int16_t) ceilf(state), this->last_power_demand_);
-    ESP_LOGD(TAG, "New calculated demand: %d / last demand: %d", this->power_demand_, this->last_power_demand_);
+    ESP_LOGD(TAG, "'%s': New calculated demand: %d / last demand: %d", this->get_modbus_name(), this->power_demand_,
+             this->last_power_demand_);
 
     this->last_power_demand_received_ = millis();
   });
@@ -61,8 +62,8 @@ void SoyosourceVirtualMeter::update() {
     } else {
       power_demand = 0;
       operation_mode = "Inactivity timeout";
-      ESP_LOGW(TAG, "No power sensor update received since %d seconds. Shutting down for safety reasons.",
-               this->power_sensor_inactivity_timeout_s_);
+      ESP_LOGW(TAG, "'%s': No power sensor update received since %d seconds. Shutting down for safety reasons.",
+               this->get_modbus_name(), this->power_sensor_inactivity_timeout_s_);
     }
   }
 
@@ -74,10 +75,11 @@ void SoyosourceVirtualMeter::update() {
 
   power_demand_per_device = ceilf(power_demand / float(this->power_demand_divider_));
 
-  ESP_LOGD(TAG, "Setting the limiter to %d watts per inverter (%d in total)", power_demand_per_device, power_demand);
+  ESP_LOGD(TAG, "'%s': Setting the limiter to %d watts per inverter (%d in total)", this->get_modbus_name(),
+           power_demand_per_device, power_demand);
   this->send(power_demand_per_device);
   this->last_power_demand_ = power_demand;
-  ESP_LOGVV(TAG, "Updating last demand to: %d", this->last_power_demand_);
+  ESP_LOGVV(TAG, "'%s': Updating last demand to: %d", this->get_modbus_name(), this->last_power_demand_);
 
   this->publish_state_(power_demand_sensor_, power_demand);
   this->publish_state_(this->operation_mode_text_sensor_, operation_mode);
@@ -93,7 +95,8 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_(int16_t consumption, uin
 
 int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(int16_t consumption,
                                                                               uint16_t last_power_demand) {
-  ESP_LOGD(TAG, "Using the new method to calculate the power demand: %d %d", consumption, last_power_demand);
+  ESP_LOGD(TAG, "'%s': Using the new method to calculate the power demand: %d %d", this->get_modbus_name(), consumption,
+           last_power_demand);
 
   // importing_now   consumption   buffer   last_power_demand   power_demand   return
   //     1000           1010         10          500               1500         900
@@ -119,7 +122,8 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(in
 }
 
 int16_t SoyosourceVirtualMeter::calculate_power_demand_oem_(int16_t consumption) {
-  ESP_LOGD(TAG, "Using the dumb OEM method to calculate the power demand: %d", consumption);
+  ESP_LOGD(TAG, "'%s': Using the dumb OEM method to calculate the power demand: %d", this->get_modbus_name(),
+           consumption);
 
   // 5000 > 2000 + 10: 2000
   // 2011 > 2000 + 10: 2000

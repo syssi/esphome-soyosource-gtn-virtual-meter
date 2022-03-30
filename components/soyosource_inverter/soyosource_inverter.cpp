@@ -25,7 +25,7 @@ static const char *const OPERATION_MODES[OPERATION_MODES_SIZE] = {
 
 void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &data) {
   if (data.size() != 10) {
-    ESP_LOGW(TAG, "Invalid size for soyosource status packet!");
+    ESP_LOGW(TAG, "'%s': Invalid size for soyosource status packet!", this->get_modbus_name());
     return;
   }
 
@@ -55,7 +55,7 @@ void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &d
   ESP_LOGVV(TAG, "Temperature (uint16): %d", soyosource_get_16bit(8));
 
   if (battery_power > 2500 || ac_voltage > 300 || ac_frequency > 100 || temperature > 200) {
-    ESP_LOGW(TAG, "Frame dropped because of unlikely measurements!");
+    ESP_LOGW(TAG, "'%s': Frame dropped because of unlikely measurements!", this->get_modbus_name());
     return;
   }
 
@@ -110,7 +110,8 @@ void SoyosourceInverter::publish_device_offline_() {
 void SoyosourceInverter::update() {
   if (this->no_response_count_ >= NO_RESPONSE_THRESHOLD) {
     this->publish_device_offline_();
-    ESP_LOGW(TAG, "The inverter didn't respond to the last %d status requests", this->no_response_count_);
+    ESP_LOGW(TAG, "'%s': The inverter didn't respond to the last %d status requests", this->get_modbus_name(),
+             this->no_response_count_);
     this->no_response_count_ = 0;
   }
 

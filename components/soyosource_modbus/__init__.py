@@ -2,7 +2,7 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import pins
 from esphome.components import uart
-from esphome.const import CONF_ADDRESS, CONF_FLOW_CONTROL_PIN, CONF_ID
+from esphome.const import CONF_ADDRESS, CONF_FLOW_CONTROL_PIN, CONF_ID, CONF_NAME
 from esphome.cpp_helpers import gpio_pin_expression
 
 DEPENDENCIES = ["uart"]
@@ -21,6 +21,7 @@ CONFIG_SCHEMA = (
         {
             cv.GenerateID(): cv.declare_id(SoyosourceModbus),
             cv.Optional(CONF_FLOW_CONTROL_PIN): pins.gpio_output_pin_schema,
+            cv.Required(CONF_NAME): cv.string,
         }
     )
     .extend(cv.COMPONENT_SCHEMA)
@@ -35,6 +36,7 @@ async def to_code(config):
 
     await uart.register_uart_device(var, config)
 
+    cg.add(var.set_name(config[CONF_NAME]))
     if CONF_FLOW_CONTROL_PIN in config:
         pin = await gpio_pin_expression(config[CONF_FLOW_CONTROL_PIN])
         cg.add(var.set_flow_control_pin(pin))

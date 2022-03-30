@@ -33,6 +33,7 @@ uart:
   rx_pin: GPIO3
 
 soyosource_modbus:
+  name: firstfloor_inverter
 
 soyosource_inverter:
 
