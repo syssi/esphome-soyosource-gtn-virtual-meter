@@ -20,6 +20,11 @@ void SoyosourceNumber::setup() {
       }
     }
   }
+
+  if (this->address_ == 0x01) {
+    this->parent_->set_max_power_demand((int16_t) value);
+  }
+
   this->publish_state(value);
 }
 
