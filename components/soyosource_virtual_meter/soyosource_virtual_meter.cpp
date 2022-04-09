@@ -76,6 +76,12 @@ void SoyosourceVirtualMeter::update() {
     }
   }
 
+  // Override power demand and operation mode if the operation mode of the inverter isn't "normal" (optional!)
+  if (this->operation_mode_sensor_ != nullptr && this->operation_mode_sensor_->state != 0x0) {
+    power_demand = 0;
+    operation_mode = "Standby";
+  }
+
   // Override power demand on emergency power off
   if (this->emergency_power_off_switch_ != nullptr && this->emergency_power_off_switch_->state) {
     power_demand = 0;
