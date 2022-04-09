@@ -21,15 +21,6 @@ void SoyosourceVirtualMeter::setup() {
 
     this->last_power_demand_received_ = millis();
   });
-
-  if (this->operation_mode_sensor_ != nullptr) {
-    this->operation_mode_sensor_->add_on_state_callback((float state) {
-      if (std::isnan(state))
-        return;
-
-      ESP_LOGD(TAG, "Operation mode update received: %d", (int8_t) state);
-    });
-  }
 }
 
 void SoyosourceVirtualMeter::publish_state_(sensor::Sensor *sensor, float value) {
