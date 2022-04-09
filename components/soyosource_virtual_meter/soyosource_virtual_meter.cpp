@@ -80,6 +80,8 @@ void SoyosourceVirtualMeter::update() {
   if (this->operation_mode_sensor_ != nullptr && this->operation_mode_sensor_->state != 0x0) {
     power_demand = 0;
     operation_mode = "Standby";
+    ESP_LOGW(TAG, "'%s': The operation mode of the inverter isn't 0x0. Suspending the limiter",
+             this->get_modbus_name());
   }
 
   // Override power demand on emergency power off
