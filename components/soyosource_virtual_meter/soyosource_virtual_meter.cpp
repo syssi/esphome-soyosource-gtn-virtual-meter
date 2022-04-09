@@ -23,7 +23,7 @@ void SoyosourceVirtualMeter::setup() {
   });
 
   if (this->operation_mode_sensor_ != nullptr) {
-    this->operation_mode_sensor_->add_on_state_callback([this](float state) {
+    this->operation_mode_sensor_->add_on_state_callback((float state) {
       if (std::isnan(state))
         return;
 
