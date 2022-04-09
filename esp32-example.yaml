@@ -40,6 +40,7 @@ soyosource_inverter:
 soyosource_virtual_meter:
   # the state of this sensor (instantaneous power in watt) is used as source
   power_id: powermeter
+  operation_mode_id: operation_mode_id
   power_sensor_inactivity_timeout: 20s
   power_demand_calculation: NEGATIVE_MEASUREMENTS_REQUIRED
   min_power_demand: 0
@@ -64,6 +65,7 @@ sensor:
   - platform: soyosource_inverter
     operation_mode_id:
       name: "${name} operation mode id"
+      id: operation_mode_id
     battery_voltage:
       name: "${name} battery voltage"
     battery_current:
