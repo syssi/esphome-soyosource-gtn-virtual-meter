@@ -22,7 +22,7 @@ void SoyosourceVirtualMeter::setup() {
     this->last_power_demand_received_ = millis();
   });
 
-  if (this->operation_mode_sensor_ != = nullptr) {
+  if (this->operation_mode_sensor_ != nullptr) {
     this->operation_mode_sensor_->add_on_state_callback([this](float state) {
       if (std::isnan(state))
         return;
