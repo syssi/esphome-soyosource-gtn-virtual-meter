@@ -33,6 +33,8 @@ uart:
   rx_pin: GPIO3
 
 soyosource_modbus:
+  # The name is used as prefix for some log messages and should
+  # help to distinguish between different instances/devices
   name: firstfloor_inverter
 
 soyosource_inverter:
