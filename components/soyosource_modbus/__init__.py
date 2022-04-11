@@ -21,7 +21,7 @@ CONFIG_SCHEMA = (
         {
             cv.GenerateID(): cv.declare_id(SoyosourceModbus),
             cv.Optional(CONF_FLOW_CONTROL_PIN): pins.gpio_output_pin_schema,
-            cv.Required(CONF_NAME): cv.string,
+            cv.Optional(CONF_NAME, default="unnamed"): cv.string,
         }
     )
     .extend(cv.COMPONENT_SCHEMA)
