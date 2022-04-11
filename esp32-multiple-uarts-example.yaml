@@ -46,6 +46,8 @@ uart:
 soyosource_modbus:
   - id: modbus0
     uart_id: uart0
+    # The name is used as prefix for some log messages and should
+    # help to distinguish between different instances/devices
     name: firstfloor
   - id: modbus1
     uart_id: uart1
