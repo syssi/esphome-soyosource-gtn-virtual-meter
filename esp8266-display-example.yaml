@@ -1,0 +1,62 @@
+substitutions:
+  name: soyosource-gtn-display
+  external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
+
+esphome:
+  name: ${name}
+  platform: ESP8266
+  board: d1_mini
+
+external_components:
+  - source: ${external_components_source}
+    refresh: 0s
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+ota:
+api:
+
+logger:
+  baud_rate: 0
+
+uart:
+  baud_rate: 9600
+  tx_pin: GPIO1
+  rx_pin: GPIO3
+  debug:
+    direction: BOTH
+
+soyosource_display:
+
+binary_sensor:
+  - platform: soyosource_display
+    fan_running:
+      name: "${name} fan running"
+
+sensor:
+  - platform: soyosource_display
+    operation_mode_id:
+      name: "${name} operation mode id"
+    operation_status_id:
+      name: "${name} operation status id"
+    battery_voltage:
+      name: "${name} battery voltage"
+    battery_current:
+      name: "${name} battery current"
+    battery_power:
+      name: "${name} battery power"
+    ac_voltage:
+      name: "${name} ac voltage"
+    ac_frequency:
+      name: "${name} ac frequency"
+    temperature:
+      name: "${name} temperature"
+
+text_sensor:
+  - platform: soyosource_display
+    operation_mode:
+      name: "${name} operation mode"
+    operation_status:
+      name: "${name} operation status"

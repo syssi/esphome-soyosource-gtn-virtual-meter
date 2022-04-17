@@ -1,0 +1,43 @@
+substitutions:
+  name: fake-display
+  tx_pin: GPIO1
+  rx_pin: GPIO3
+
+esphome:
+  name: ${name}
+  platform: ESP8266
+  board: d1_mini
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+api:
+ota:
+logger:
+  baud_rate: 0
+  level: DEBUG
+
+uart:
+  baud_rate: 9600
+  tx_pin: ${tx_pin}
+  rx_pin: ${rx_pin}
+  debug:
+    direction: BOTH
+    dummy_receiver: true
+
+interval:
+  - interval: 2s
+    then:
+#      # status response (bad checksum?)
+#      - uart.write: [0xA6, 0x03, 0x84, 0x91, 0x40, 0x01, 0xC5, 0x00, 0xDB, 0x00, 0xF7, 0x63, 0x02, 0xBC, 0xFE]
+#
+#      - delay: 1s
+
+      # status response (fixed checksum)
+      - uart.write: [0xA6, 0x03, 0x84, 0x91, 0x40, 0x01, 0xC5, 0x00, 0xDB, 0x00, 0xF7, 0x63, 0x02, 0xBC, 0xEE]
+
+      - delay: 1s
+
+      # settings response
+      - uart.write: [0xA6, 0x01, 0x72, 0x93, 0x40, 0xD4, 0x30, 0x2C, 0x2B, 0x00, 0xFA, 0x64, 0x5A, 0x03, 0xA3]

@@ -29,7 +29,7 @@ void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &d
     return;
   }
 
-  ESP_LOGVV(TAG, "Status frame: %s", hexencode(&data.front(), data.size()).c_str());
+  ESP_LOGVV(TAG, "Status frame: %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
   auto soyosource_get_16bit = [&](size_t i) -> uint16_t {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
