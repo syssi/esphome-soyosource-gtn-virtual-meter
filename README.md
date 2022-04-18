@@ -30,6 +30,10 @@ It looks like there is no GTW (waterproof) version of the device with limiter / 
 
 ## Schematics
 
+<a href="https://raw.githubusercontent.com/syssi/esphome-soyosource-gtn-virtual-meter/main/images/circuit.jpg" target="_blank">
+<img src="https://raw.githubusercontent.com/syssi/esphome-soyosource-gtn-virtual-meter/main/images/circuit_thumbnail.jpg" width="60%">
+</a>
+
 ```
                RS485                      UART
 ┌─────────┐              ┌──────────┐                ┌─────────┐
