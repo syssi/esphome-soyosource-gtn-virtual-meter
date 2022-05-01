@@ -21,6 +21,7 @@ api:
 logger:
   baud_rate: 0
 
+# Please be careful: The display port has a logic level of 5V.
 uart:
   baud_rate: 9600
   tx_pin: GPIO1
