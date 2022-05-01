@@ -245,7 +245,7 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
   ESP_LOGI(TAG, "  Start delay: %d s", data[11]);
 }
 
-void SoyosourceDisplay::dump_config() { ESP_LOGCONFIG(TAG, "SoyosouceDisplay:"); }
+void SoyosourceDisplay::dump_config() { ESP_LOGCONFIG(TAG, "SoyosourceDisplay:"); }
 float SoyosourceDisplay::get_setup_priority() const {
   // After UART bus
   return setup_priority::BUS - 1.0f;
