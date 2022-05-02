@@ -8,7 +8,7 @@ namespace soyosource_display {
 static const char *const TAG = "soyosource_display";
 
 static const uint8_t QUERY_STATUS_REQUEST = 0x01;
-static const uint8_t QUERY_STATUS_RESPONSE = 0x03;
+static const uint8_t QUERY_STATUS_RESPONSE = 0x00;
 static const uint8_t QUERY_SETTINGS_REQUEST = 0x03;
 static const uint8_t QUERY_SETTINGS_RESPONSE = 0x01;
 
@@ -44,8 +44,8 @@ static const char *const OPERATION_MODES[OPERATION_MODES_SIZE] = {
     "Unknown",                 // 0x0A
     "Unknown",                 // 0x0B
     "Unknown",                 // 0x0C
-    "Unknown",                 // 0x0D
-    "PV Limit",                // 0x0E
+    "PV Limit",                // 0x0D
+    "Unknown",                 // 0x0E
 };
 
 void SoyosourceDisplay::loop() {
@@ -143,10 +143,11 @@ void SoyosourceDisplay::on_status_data_(const std::vector<uint8_t> &data) {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
 
-  // 0x84: Unknown
+  // Byte Len  Payload                Content              Coeff.      Unit        Example value
+  // 0     1   0x84                   Unknown
   ESP_LOGD(TAG, "Unknown byte from status response: %02X", data[0]);
 
-  // 0x91: 1x: BattConst, 6x: PVMode, 9x: BattLimit, Ex: PVLimit
+  // 1     1   0x91                   Operation mode       1x: BattConst, 6x: PVMode, 9x: BattLimit, Dx: PVLimit
   ESP_LOGD(TAG, "Operation mode (raw): %02X", data[1]);
   uint8_t raw_operation_mode = data[1] >> 4;
   this->publish_state_(this->operation_mode_id_sensor_, raw_operation_mode);
@@ -157,7 +158,7 @@ void SoyosourceDisplay::on_status_data_(const std::vector<uint8_t> &data) {
     this->publish_state_(this->operation_mode_text_sensor_, "Unknown");
   }
 
-  // 0x40: Operation status
+  // 2     1   0x40                   Operation status
   ESP_LOGD(TAG, "Operation status (raw): %02X", data[2]);
   uint8_t raw_operation_status = data[2] & 15;
   this->publish_state_(this->operation_status_id_sensor_, raw_operation_status);
@@ -167,29 +168,29 @@ void SoyosourceDisplay::on_status_data_(const std::vector<uint8_t> &data) {
     this->publish_state_(this->operation_status_text_sensor_, "Unknown");
   }
 
-  // 0x01 0xC5: Battery voltage
+  // 3     2   0x01 0xC5              Battery voltage
   uint16_t raw_battery_voltage = soyosource_get_16bit(3);
   float battery_voltage = raw_battery_voltage * 0.1f;
   this->publish_state_(this->battery_voltage_sensor_, battery_voltage);
 
-  // 0x00 0xDB: Battery current
+  // 5     2   0x00 0xDB              Battery current
   uint16_t raw_battery_current = soyosource_get_16bit(5);
   float battery_current = raw_battery_current * 0.1f;
   float battery_power = battery_voltage * battery_current;
   this->publish_state_(this->battery_current_sensor_, battery_current);
   this->publish_state_(this->battery_power_sensor_, battery_power);
 
-  // 0x00 0xF7: Grid voltage
+  // 7     2   0x00 0xF7              Grid voltage
   uint16_t raw_ac_voltage = soyosource_get_16bit(7);
   float ac_voltage = raw_ac_voltage * 1.0f;
   this->publish_state_(this->ac_voltage_sensor_, ac_voltage);
 
-  // 0x63: Grid frequency
+  // 9     1   0x63                   Grid frequency
   float ac_frequency = data[9] * 0.5f;
   this->publish_state_(this->ac_frequency_sensor_, ac_frequency);
 
-  // 0x02 0xBC
-  float temperature = (soyosource_get_16bit(10) - 200) * 0.1f;  // may be - 300?
+  // 10    2   0x02 0xBC              Temperature
+  float temperature = (soyosource_get_16bit(10) - 300) * 0.1f;
   this->publish_state_(this->temperature_sensor_, temperature);
   this->publish_state_(this->fan_running_binary_sensor_, (bool) (temperature >= 45.0));
 }
@@ -201,10 +202,11 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
 
   ESP_LOGI(TAG, "Settings:");
 
-  // 0x72
+  // Byte Len  Payload                Content              Coeff.      Unit        Example value
+  // 0     1   0x72
   ESP_LOGI(TAG, "  Unknown (byte 0): %02X", data[0]);
 
-  // 0x93: 1x: BattConst, 6x: PVMode, 9x: BattLimit, Ex: PVLimit
+  // 1     1   0x93                   Operation mode       1x: BattConst, 6x: PVMode, 9x: BattLimit, Dx: PVLimit
   ESP_LOGD(TAG, "  Operation mode (raw): %02X", data[1]);
   uint8_t raw_operation_mode = data[1] >> 4;
   if (raw_operation_mode < OPERATION_MODES_SIZE) {
@@ -213,7 +215,7 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
     ESP_LOGI(TAG, "  Operation mode: Unknown (%d)", raw_operation_mode);
   }
 
-  // 0x40
+  // 2     1   0x40                   Operation status
   ESP_LOGD(TAG, "  Operation status (raw): %02X", data[2]);
   uint8_t raw_operation_status = data[2] & 15;
   if (raw_operation_status < OPERATION_STATUS_SIZE) {
@@ -223,25 +225,25 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
     ESP_LOGI(TAG, "  Operation status: Unknown (%d)", raw_operation_status);
   }
 
-  // 0xD4 0x30
+  // 3     2   0xD4 0x30              Unknown
   ESP_LOGI(TAG, "  Unknown (byte 3 and byte 4): %02X %02X", data[3], data[4]);
 
-  // 0x2C: Starting voltage (44 V)
+  // 5     1   0x2C                   Starting voltage                 V           44
   ESP_LOGI(TAG, "  Starting voltage: %d V", data[5]);
 
-  // 0x2B: Shutdown voltage (43 V)
+  // 6     1   0x2B                   Shutdown voltage                 V           43
   ESP_LOGI(TAG, "  Stutdown voltage: %d V", data[6]);
 
-  // 0x00 0xFA: Grid voltage
+  // 7     2   0x00 0xFA              Grid voltage                     V
   ESP_LOGI(TAG, "  Grid voltage: %.0f V", (float) soyosource_get_16bit(7));
 
-  // 0x64: Grid frequency
+  // 9     1   0x64                   Grid frequency       0.5         Hz
   ESP_LOGI(TAG, "  Grid frequency: %.1f Hz", (float) data[9] * 0.5f);
 
-  // 0x5A: Battery output power
+  // 10    1   0x5A                   Battery output power   10        W
   ESP_LOGI(TAG, "  Constant power mode power: %d W", data[10] * 10);
 
-  // 0x03: Delay in seconds
+  // 11    1   0x03                   Delay in seconds                 s
   ESP_LOGI(TAG, "  Start delay: %d s", data[11]);
 }
 
