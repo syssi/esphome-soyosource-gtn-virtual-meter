@@ -38,7 +38,7 @@ static const char *const OPERATION_MODES[OPERATION_MODES_SIZE] = {
     "PV",                      // 0x06
     "Unknown",                 // 0x07
     "Unknown",                 // 0x08
-    "Battery Limit",           // 0x09
+    "Unknown",                 // 0x09
     "Unknown",                 // 0x0A
     "Unknown",                 // 0x0B
     "Unknown",                 // 0x0C
@@ -150,7 +150,7 @@ void SoyosourceDisplay::on_status_data_(const std::vector<uint8_t> &data) {
   // 1     2   0x00 0x84              Requested power via RS485
   ESP_LOGI(TAG, "Requested power: %d W", soyosource_get_16bit(1));
 
-  // 3     1   0x91                   Operation mode       1x: BattConst, 6x: PVMode, 9x: BattLimit, Dx: PVLimit
+  // 3     1   0x91                   Operation mode
   ESP_LOGV(TAG, "Operation mode (raw): %02X", data[3]);
   uint8_t raw_operation_mode = data[3] >> 4;
   this->publish_state_(this->operation_mode_id_sensor_, raw_operation_mode);
@@ -214,7 +214,7 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
   // 2     1   0x72
   ESP_LOGI(TAG, "  Unknown (byte 2): %02X", data[2]);
 
-  // 3     1   0x93                   Operation mode       1x: BattConst, 6x: PVMode, 9x: BattLimit, Dx: PVLimit
+  // 3     1   0x93                   Operation mode
   ESP_LOGV(TAG, "  Operation mode (raw): %02X", data[3]);
   uint8_t raw_operation_mode = data[3] >> 4;
   if (raw_operation_mode < OPERATION_MODES_SIZE) {
