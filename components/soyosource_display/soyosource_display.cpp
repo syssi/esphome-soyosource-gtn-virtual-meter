@@ -7,10 +7,8 @@ namespace soyosource_display {
 
 static const char *const TAG = "soyosource_display";
 
-static const uint8_t QUERY_STATUS_REQUEST = 0x01;
-static const uint8_t QUERY_STATUS_RESPONSE = 0x00;
-static const uint8_t QUERY_SETTINGS_REQUEST = 0x03;
-static const uint8_t QUERY_SETTINGS_RESPONSE = 0x01;
+static const uint8_t STATUS_REQUEST = 0x01;
+static const uint8_t SETTINGS_REQUEST = 0x03;
 
 static const uint8_t OPERATION_STATUS_SIZE = 13;
 static const char *const OPERATION_STATUS[OPERATION_STATUS_SIZE] = {
@@ -107,7 +105,7 @@ bool SoyosourceDisplay::parse_soyosource_display_byte_(uint8_t byte) {
   if (at < frame_len - 1)
     return true;
 
-  uint8_t function = raw[1];
+  uint8_t function = raw[3] & 15;
 
   uint8_t computed_crc = chksum(raw, frame_len - 1);
   uint8_t remote_crc = raw[frame_len - 1];
@@ -116,9 +114,7 @@ bool SoyosourceDisplay::parse_soyosource_display_byte_(uint8_t byte) {
     return false;
   }
 
-  ESP_LOGVV(TAG, "RX <- %s", format_hex_pretty(raw, at + 1).c_str());
-
-  std::vector<uint8_t> data(this->rx_buffer_.begin() + 2, this->rx_buffer_.begin() + frame_len - 1);
+  std::vector<uint8_t> data(this->rx_buffer_.begin(), this->rx_buffer_.begin() + frame_len - 1);
 
   this->on_soyosource_display_data_(function, data);
 
@@ -127,16 +123,16 @@ bool SoyosourceDisplay::parse_soyosource_display_byte_(uint8_t byte) {
 }
 
 void SoyosourceDisplay::on_soyosource_display_data_(const uint8_t &function, const std::vector<uint8_t> &data) {
-  if (data.size() != 12) {
+  if (data.size() != 14) {
     ESP_LOGW(TAG, "Invalid size for soyosource display status packet!");
     return;
   }
 
   switch (function) {
-    case QUERY_STATUS_RESPONSE:
+    case STATUS_REQUEST:
       this->on_status_data_(data);
       break;
-    case QUERY_SETTINGS_RESPONSE:
+    case SETTINGS_REQUEST:
       this->on_settings_data_(data);
       break;
     default:
@@ -150,12 +146,16 @@ void SoyosourceDisplay::on_status_data_(const std::vector<uint8_t> &data) {
   };
 
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
-  // 0     1   0x84                   Unknown
-  ESP_LOGD(TAG, "Unknown byte from status response: %02X", data[0]);
+  // 0     1   0xA6                   Header
+  // 1     1   0x00                   Unknown
+  ESP_LOGD(TAG, "Unknown (byte 1): %02X", data[1]);
 
-  // 1     1   0x91                   Operation mode       1x: BattConst, 6x: PVMode, 9x: BattLimit, Dx: PVLimit
-  ESP_LOGD(TAG, "Operation mode (raw): %02X", data[1]);
-  uint8_t raw_operation_mode = data[1] >> 4;
+  // 2     1   0x84                   Unknown
+  ESP_LOGD(TAG, "Unknown (byte 2): %02X", data[2]);
+
+  // 3     1   0x91                   Operation mode       1x: BattConst, 6x: PVMode, 9x: BattLimit, Dx: PVLimit
+  ESP_LOGV(TAG, "Operation mode (raw): %02X", data[3]);
+  uint8_t raw_operation_mode = data[3] >> 4;
   this->publish_state_(this->operation_mode_id_sensor_, raw_operation_mode);
 
   if (raw_operation_mode < OPERATION_MODES_SIZE) {
@@ -164,9 +164,9 @@ void SoyosourceDisplay::on_status_data_(const std::vector<uint8_t> &data) {
     this->publish_state_(this->operation_mode_text_sensor_, "Unknown");
   }
 
-  // 2     1   0x40                   Operation status
-  ESP_LOGD(TAG, "Operation status (raw): %02X", data[2]);
-  uint8_t raw_operation_status = data[2] & 15;
+  // 4     1   0x40                   Operation status
+  ESP_LOGV(TAG, "Operation status (raw): %02X", data[4]);
+  uint8_t raw_operation_status = data[4] & 15;
   this->publish_state_(this->operation_status_id_sensor_, raw_operation_status);
   if (raw_operation_status < OPERATION_STATUS_SIZE) {
     this->publish_state_(this->operation_status_text_sensor_, OPERATION_STATUS[raw_operation_status]);
@@ -174,29 +174,29 @@ void SoyosourceDisplay::on_status_data_(const std::vector<uint8_t> &data) {
     this->publish_state_(this->operation_status_text_sensor_, "Unknown");
   }
 
-  // 3     2   0x01 0xC5              Battery voltage
-  uint16_t raw_battery_voltage = soyosource_get_16bit(3);
+  // 5     2   0x01 0xC5              Battery voltage
+  uint16_t raw_battery_voltage = soyosource_get_16bit(5);
   float battery_voltage = raw_battery_voltage * 0.1f;
   this->publish_state_(this->battery_voltage_sensor_, battery_voltage);
 
-  // 5     2   0x00 0xDB              Battery current
-  uint16_t raw_battery_current = soyosource_get_16bit(5);
+  // 7     2   0x00 0xDB              Battery current
+  uint16_t raw_battery_current = soyosource_get_16bit(7);
   float battery_current = raw_battery_current * 0.1f;
   float battery_power = battery_voltage * battery_current;
   this->publish_state_(this->battery_current_sensor_, battery_current);
   this->publish_state_(this->battery_power_sensor_, battery_power);
 
-  // 7     2   0x00 0xF7              Grid voltage
-  uint16_t raw_ac_voltage = soyosource_get_16bit(7);
+  // 9     2   0x00 0xF7              Grid voltage
+  uint16_t raw_ac_voltage = soyosource_get_16bit(9);
   float ac_voltage = raw_ac_voltage * 1.0f;
   this->publish_state_(this->ac_voltage_sensor_, ac_voltage);
 
-  // 9     1   0x63                   Grid frequency
-  float ac_frequency = data[9] * 0.5f;
+  // 11     1   0x63                   Grid frequency
+  float ac_frequency = data[11] * 0.5f;
   this->publish_state_(this->ac_frequency_sensor_, ac_frequency);
 
-  // 10    2   0x02 0xBC              Temperature
-  float temperature = (soyosource_get_16bit(10) - 300) * 0.1f;
+  // 12    2   0x02 0xBC              Temperature
+  float temperature = (soyosource_get_16bit(12) - 300) * 0.1f;
   this->publish_state_(this->temperature_sensor_, temperature);
   this->publish_state_(this->fan_running_binary_sensor_, (bool) (temperature >= 45.0));
 }
@@ -209,21 +209,25 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
   ESP_LOGI(TAG, "Settings:");
 
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
-  // 0     1   0x72
-  ESP_LOGI(TAG, "  Unknown (byte 0): %02X", data[0]);
+  // 0     1   0xA6                   Header
+  // 1     1   0x00                   Unknown
+  ESP_LOGI(TAG, "  Unknown (byte 1): %02X", data[1]);
 
-  // 1     1   0x93                   Operation mode       1x: BattConst, 6x: PVMode, 9x: BattLimit, Dx: PVLimit
-  ESP_LOGD(TAG, "  Operation mode (raw): %02X", data[1]);
-  uint8_t raw_operation_mode = data[1] >> 4;
+  // 2     1   0x72
+  ESP_LOGI(TAG, "  Unknown (byte 2): %02X", data[2]);
+
+  // 3     1   0x93                   Operation mode       1x: BattConst, 6x: PVMode, 9x: BattLimit, Dx: PVLimit
+  ESP_LOGV(TAG, "  Operation mode (raw): %02X", data[3]);
+  uint8_t raw_operation_mode = data[3] >> 4;
   if (raw_operation_mode < OPERATION_MODES_SIZE) {
     ESP_LOGI(TAG, "  Operation mode: %s (%d)", OPERATION_MODES[raw_operation_mode], raw_operation_mode);
   } else {
     ESP_LOGI(TAG, "  Operation mode: Unknown (%d)", raw_operation_mode);
   }
 
-  // 2     1   0x40                   Operation status
-  ESP_LOGD(TAG, "  Operation status (raw): %02X", data[2]);
-  uint8_t raw_operation_status = data[2] & 15;
+  // 4     1   0x40                   Operation status
+  ESP_LOGV(TAG, "  Operation status (raw): %02X", data[4]);
+  uint8_t raw_operation_status = data[4] & 15;
   if (raw_operation_status < OPERATION_STATUS_SIZE) {
     ESP_LOGI(TAG, "  Operation status: %s (%d)", OPERATION_STATUS[raw_operation_status], raw_operation_status);
     this->publish_state_(this->operation_status_text_sensor_, OPERATION_STATUS[raw_operation_status]);
@@ -231,26 +235,26 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
     ESP_LOGI(TAG, "  Operation status: Unknown (%d)", raw_operation_status);
   }
 
-  // 3     2   0xD4 0x30              Unknown
-  ESP_LOGI(TAG, "  Unknown (byte 3 and byte 4): %02X %02X", data[3], data[4]);
+  // 5     2   0xD4 0x30              Unknown
+  ESP_LOGI(TAG, "  Unknown (byte 5 and byte 6): %02X %02X", data[5], data[6]);
 
-  // 5     1   0x2C                   Starting voltage                 V           44
-  ESP_LOGI(TAG, "  Starting voltage: %d V", data[5]);
+  // 7     1   0x2C                   Starting voltage                 V           44
+  ESP_LOGI(TAG, "  Starting voltage: %d V", data[7]);
 
-  // 6     1   0x2B                   Shutdown voltage                 V           43
-  ESP_LOGI(TAG, "  Shutdown voltage: %d V", data[6]);
+  // 8     1   0x2B                   Shutdown voltage                 V           43
+  ESP_LOGI(TAG, "  Shutdown voltage: %d V", data[8]);
 
-  // 7     2   0x00 0xFA              Grid voltage                     V
-  ESP_LOGI(TAG, "  Grid voltage: %.0f V", (float) soyosource_get_16bit(7));
+  // 9     2   0x00 0xFA              Grid voltage                     V
+  ESP_LOGI(TAG, "  Grid voltage: %.0f V", (float) soyosource_get_16bit(9));
 
-  // 9     1   0x64                   Grid frequency       0.5         Hz
-  ESP_LOGI(TAG, "  Grid frequency: %.1f Hz", (float) data[9] * 0.5f);
+  // 11     1   0x64                   Grid frequency       0.5         Hz
+  ESP_LOGI(TAG, "  Grid frequency: %.1f Hz", (float) data[11] * 0.5f);
 
-  // 10    1   0x5A                   Battery output power   10        W
-  ESP_LOGI(TAG, "  Constant power mode power: %d W", data[10] * 10);
+  // 12    1   0x5A                   Battery output power   10        W
+  ESP_LOGI(TAG, "  Constant power mode power: %d W", data[12] * 10);
 
-  // 11    1   0x03                   Delay in seconds                 s
-  ESP_LOGI(TAG, "  Start delay: %d s", data[11]);
+  // 13    1   0x03                   Delay in seconds                 s
+  ESP_LOGI(TAG, "  Start delay: %d s", data[13]);
 }
 
 void SoyosourceDisplay::dump_config() { ESP_LOGCONFIG(TAG, "SoyosourceDisplay:"); }
@@ -259,7 +263,7 @@ float SoyosourceDisplay::get_setup_priority() const {
   return setup_priority::BUS - 1.0f;
 }
 
-void SoyosourceDisplay::update() { this->query_data_(QUERY_STATUS_REQUEST); }
+void SoyosourceDisplay::update() { this->query_data_(STATUS_REQUEST); }
 
 void SoyosourceDisplay::publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state) {
   if (binary_sensor == nullptr)
