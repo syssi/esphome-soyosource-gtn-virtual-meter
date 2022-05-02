@@ -30,11 +30,11 @@ static const char *const OPERATION_STATUS[OPERATION_STATUS_SIZE] = {
 static const uint8_t OPERATION_MODES_SIZE = 15;
 static const char *const OPERATION_MODES[OPERATION_MODES_SIZE] = {
     "Unknown",                 // 0x00
-    "Battery Constant Power",  // 0x01
+    "Unknown",                 // 0x01
     "Unknown",                 // 0x02
     "Unknown",                 // 0x03
     "Unknown",                 // 0x04
-    "Unknown",                 // 0x05
+    "Battery Constant Power",  // 0x05
     "PV",                      // 0x06
     "Unknown",                 // 0x07
     "Unknown",                 // 0x08
@@ -42,8 +42,8 @@ static const char *const OPERATION_MODES[OPERATION_MODES_SIZE] = {
     "Unknown",                 // 0x0A
     "Unknown",                 // 0x0B
     "Unknown",                 // 0x0C
-    "PV Limit",                // 0x0D
-    "Unknown",                 // 0x0E
+    "Battery Limit",           // 0x0D
+    "PV Limit",                // 0x0E
 };
 
 void SoyosourceDisplay::loop() {
@@ -147,11 +147,8 @@ void SoyosourceDisplay::on_status_data_(const std::vector<uint8_t> &data) {
 
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
   // 0     1   0xA6                   Header
-  // 1     1   0x00                   Unknown
-  ESP_LOGD(TAG, "Unknown (byte 1): %02X", data[1]);
-
-  // 2     1   0x84                   Unknown
-  ESP_LOGD(TAG, "Unknown (byte 2): %02X", data[2]);
+  // 1     2   0x00 0x84              Requested power via RS485
+  ESP_LOGI(TAG, "Requested power: %d W", soyosource_get_16bit(1));
 
   // 3     1   0x91                   Operation mode       1x: BattConst, 6x: PVMode, 9x: BattLimit, Dx: PVLimit
   ESP_LOGV(TAG, "Operation mode (raw): %02X", data[3]);
@@ -165,7 +162,8 @@ void SoyosourceDisplay::on_status_data_(const std::vector<uint8_t> &data) {
   }
 
   // 4     1   0x40                   Operation status
-  ESP_LOGV(TAG, "Operation status (raw): %02X", data[4]);
+  ESP_LOGI(TAG, "Limiter connected: %s", ((data[4] >> 4) == 0x04) ? "yes" : "no");
+  ESP_LOGV(TAG, "Operation status: %d", data[4] & 15);
   uint8_t raw_operation_status = data[4] & 15;
   this->publish_state_(this->operation_status_id_sensor_, raw_operation_status);
   if (raw_operation_status < OPERATION_STATUS_SIZE) {
