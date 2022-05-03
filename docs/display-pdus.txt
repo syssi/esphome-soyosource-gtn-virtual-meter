@@ -1,0 +1,22 @@
+55 0B 30 2D 5A 64 00 00 00 06 01 D2 # Set PV Mode
+55 0B 30 2D 5A 64 00 00 00 06 11 C2 # Set PV Limit Mode
+55 0B 30 2D 5A 64 00 00 00 06 02 D1 # Set Bat Const Mode
+55 0B 30 2D 5A 64 00 00 00 06 12 C1 # Set Bat Limit Mode
+
+A6 00 00 61 02 00 00 00 00 00 F9 64 02 11 2C # Status frame (PV)
+A6 00 00 E1 02 00 00 00 00 00 FA 64 02 11 AB # Status frame (PV Limit)
+A6 00 00 51 02 00 00 00 00 00 F9 64 02 11 3C # Status frame (Bat Const)
+A6 00 00 D1 02 00 00 00 00 00 F9 64 02 12 BB # Status frame (Bat Limit)
+
+A6 03 84 D1 42 00 00 00 00 00 FB 64 02 15 EF # Status frame (RS485 connected)
+A6 03 84 D1 42 00 00 00 00 00 FB 64 02 16 EE # Requested power demand 900W
+A6 00 64 D1 42 00 00 00 00 00 FB 64 02 16 11 # Requested power demand 100W
+A6 01 2C D1 42 00 00 00 00 00 FB 64 02 16 48 # Requested power demand 300W
+A6 01 2C D1 02 00 00 00 00 00 FB 64 02 16 88 # Status frame (RS485 offline)
+
+A6 00 00 63 02 D4 30 30 2D 00 FA 64 5A 06 7B # Settings frame (PV Mode)
+A6 00 00 E3 02 D4 30 30 2D 00 FA 64 5A 06 FB # Settings frame (PV Limit)
+A6 00 00 53 02 D4 30 30 2D 00 FA 64 5A 06 8B # Settings frame (Bat Const)
+A6 00 00 D3 02 D4 30 30 2D 00 FA 64 5A 06 0B # Settings frame (Bat Limit)
+
+55 11 30 2D 5A 64 00 00 00 06 00 CD # Reboot command  (Respone: A6 00 00 61 02 00 00 00 00 00 F9 64 02 13 2A)
