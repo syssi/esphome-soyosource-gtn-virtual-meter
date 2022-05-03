@@ -257,7 +257,24 @@ void SoyosourceDisplay::send_command_(uint8_t function) {
 }
 
 std::string SoyosourceDisplay::operation_mode_to_string_(const uint8_t &operation_mode) {
-  // @FIXME: Bitmask?
+  // @FIXME: Handle bitmask
+  //
+  // 0x01: 0001   Battery
+  // 0x05: 0101   Battery + Low DC voltage
+  // 0x02: 0010   PV
+  // 0x06: 0110   PV + Low DC voltage
+  // 0x09: 1001   Battery + Limiter
+  // 0x0D: 1101   Battery + Low DC voltage + Limiter
+  // 0x0E: 1110   PV + Low DC voltage + Limiter
+  //       ||||
+  //       |||Battery mode bit
+  //       |||
+  //       ||PV mode bit
+  //       ||
+  //       |Low voltage bit
+  //       |
+  //       Limiter bit
+  //
   switch (operation_mode) {
     case 0x01:
     case 0x05:  // Low DC voltage
