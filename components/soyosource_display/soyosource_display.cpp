@@ -7,8 +7,10 @@ namespace soyosource_display {
 
 static const char *const TAG = "soyosource_display";
 
-static const uint8_t STATUS_REQUEST = 0x01;
-static const uint8_t SETTINGS_REQUEST = 0x03;
+static const uint8_t STATUS_COMMAND = 0x01;
+static const uint8_t SETTINGS_COMMAND = 0x03;
+// static const uint8_t REBOOT_COMMAND = 0x11;
+// static const uint8_t WRITE_SETTINGS_COMMAND = 0x0B;
 
 static const uint8_t OPERATION_STATUS_SIZE = 13;
 static const char *const OPERATION_STATUS[OPERATION_STATUS_SIZE] = {
@@ -129,10 +131,10 @@ void SoyosourceDisplay::on_soyosource_display_data_(const uint8_t &function, con
   }
 
   switch (function) {
-    case STATUS_REQUEST:
+    case STATUS_COMMAND:
       this->on_status_data_(data);
       break;
-    case SETTINGS_REQUEST:
+    case SETTINGS_COMMAND:
       this->on_settings_data_(data);
       break;
     default:
@@ -261,7 +263,7 @@ float SoyosourceDisplay::get_setup_priority() const {
   return setup_priority::BUS - 1.0f;
 }
 
-void SoyosourceDisplay::update() { this->query_data_(STATUS_REQUEST); }
+void SoyosourceDisplay::update() { this->query_data_(STATUS_COMMAND); }
 
 void SoyosourceDisplay::publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state) {
   if (binary_sensor == nullptr)
