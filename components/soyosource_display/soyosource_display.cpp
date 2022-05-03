@@ -263,7 +263,7 @@ float SoyosourceDisplay::get_setup_priority() const {
   return setup_priority::BUS - 1.0f;
 }
 
-void SoyosourceDisplay::update() { this->query_data_(STATUS_COMMAND); }
+void SoyosourceDisplay::update() { this->send_command_(STATUS_COMMAND); }
 
 void SoyosourceDisplay::publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state) {
   if (binary_sensor == nullptr)
@@ -286,20 +286,20 @@ void SoyosourceDisplay::publish_state_(text_sensor::TextSensor *text_sensor, con
   text_sensor->publish_state(state);
 }
 
-void SoyosourceDisplay::query_data_(uint8_t function) {
+void SoyosourceDisplay::send_command_(uint8_t function) {
   uint8_t frame[12];
 
   frame[0] = 0x55;      // header
-  frame[1] = function;  // function (0x01: status, 0x03: settings)
-  frame[2] = 0x00;
-  frame[3] = 0x00;
-  frame[4] = 0x00;
-  frame[5] = 0x00;
+  frame[1] = function;  // function         (0x01: status, 0x03: settings, 0x11: reboot, 0x0B: write settings)
+  frame[2] = 0x00;      // Start voltage    (0x30: 48 V)
+  frame[3] = 0x00;      // Stop voltage     (0x2D: 45 V)
+  frame[4] = 0x00;      // Power limit * 10 (0x5A: 90 * 100 = 900W)
+  frame[5] = 0x00;      // Unknown (0x64: 100)
   frame[6] = 0x00;
   frame[7] = 0x00;
   frame[8] = 0x00;
-  frame[9] = 0x00;
-  frame[10] = 0x00;
+  frame[9] = 0x00;   // Start delay in seconds (0x06: 6 seconds)
+  frame[10] = 0x00;  // Operation mode (0x01: PV, 0x11: PV Limit, 0x02: Bat Const, 0x12: Bat Limit)
   frame[11] = chksum(frame, 11);
 
   this->write_array(frame, 12);

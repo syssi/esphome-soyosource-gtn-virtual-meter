@@ -70,7 +70,7 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
   void publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state);
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
-  void query_data_(uint8_t function);
+  void send_command_(uint8_t function);
 };
 
 }  // namespace soyosource_display
