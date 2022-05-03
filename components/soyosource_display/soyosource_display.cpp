@@ -182,7 +182,7 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
   // 4     1   0x40                   RS485 traffic (High nibble), Operation status (Low nibble)
   ESP_LOGV(TAG, "  RS485 traffic indicator & Operation status (raw): %02X", data[4]);
   uint8_t raw_operation_status = data[4] & 15;
-  ESP_LOGI(TAG, "  Operation status: %s (%d)", this->operation_status_to_string(raw_operation_status).c_str(),
+  ESP_LOGI(TAG, "  Operation status: %s (%d)", this->operation_status_to_string_(raw_operation_status).c_str(),
            raw_operation_status);
 
   // 5     2   0xD4 0x30              Unknown
