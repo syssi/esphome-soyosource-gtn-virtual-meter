@@ -7,46 +7,10 @@ namespace soyosource_display {
 
 static const char *const TAG = "soyosource_display";
 
-static const uint8_t QUERY_STATUS_REQUEST = 0x01;
-static const uint8_t QUERY_STATUS_RESPONSE = 0x03;
-static const uint8_t QUERY_SETTINGS_REQUEST = 0x03;
-static const uint8_t QUERY_SETTINGS_RESPONSE = 0x01;
-
-static const uint8_t OPERATION_STATUS_SIZE = 13;
-static const char *const OPERATION_STATUS[OPERATION_STATUS_SIZE] = {
-    "Normal",                  // 0x00
-    "Startup",                 // 0x01
-    "Standby",                 // 0x02
-    "Startup aborted",         // 0x03
-    "Error or battery mode?",  // 0x04
-    "Unknown",                 // 0x05
-    "Unknown",                 // 0x06
-    "Unknown",                 // 0x07
-    "Unknown",                 // 0x08
-    "Unknown",                 // 0x09
-    "AC input low",            // 0x10 or 0x0A?!
-    "Unknown",                 // 0x11
-    "Unknown",                 // 0x12
-};
-
-static const uint8_t OPERATION_MODES_SIZE = 15;
-static const char *const OPERATION_MODES[OPERATION_MODES_SIZE] = {
-    "Unknown",                 // 0x00
-    "Battery Constant Power",  // 0x01
-    "Unknown",                 // 0x02
-    "Unknown",                 // 0x03
-    "Unknown",                 // 0x04
-    "Unknown",                 // 0x05
-    "PV",                      // 0x06
-    "Unknown",                 // 0x07
-    "Unknown",                 // 0x08
-    "Battery Limit",           // 0x09
-    "Unknown",                 // 0x0A
-    "Unknown",                 // 0x0B
-    "Unknown",                 // 0x0C
-    "Unknown",                 // 0x0D
-    "PV Limit",                // 0x0E
-};
+static const uint8_t STATUS_COMMAND = 0x01;
+static const uint8_t SETTINGS_COMMAND = 0x03;
+// static const uint8_t REBOOT_COMMAND = 0x11;
+// static const uint8_t WRITE_SETTINGS_COMMAND = 0x0B;
 
 void SoyosourceDisplay::loop() {
   const uint32_t now = millis();
@@ -83,6 +47,12 @@ bool SoyosourceDisplay::parse_soyosource_display_byte_(uint8_t byte) {
 
   // Supported responses
   //
+  // Status request    >>> 0x55 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xFE
+  // Status response   <<< 0xA6 0x00 0x00 0xD1 0x02 0x00 0x00 0x00 0x00 0x00 0xFB 0x64 0x02 0x0D 0xBE
+  //
+  // Settings request  >>> 0x55 0x03 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xFC
+  // Settings response <<< 0xA6 0x00 0x00 0xD3 0x02 0xD4 0x30 0x30 0x2D 0x00 0xFB 0x64 0x4B 0x06 0x19
+  //
   // Status response:    0xA6 0x03 0x84 0x91 0x40 0x01 0xC5 0x00 0xDB 0x00 0xF7 0x63 0x02 0xBC 0xFE
   // Settings response:  0xA6 0x01 0x72 0x93 0x40 0xD4 0x30 0x2C 0x2B 0x00 0xFA 0x64 0x5A 0x03 0xA3
   //                     addr func ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  crc
@@ -101,7 +71,7 @@ bool SoyosourceDisplay::parse_soyosource_display_byte_(uint8_t byte) {
   if (at < frame_len - 1)
     return true;
 
-  uint8_t function = raw[1];
+  uint8_t function = raw[3] & 15;
 
   uint8_t computed_crc = chksum(raw, frame_len - 1);
   uint8_t remote_crc = raw[frame_len - 1];
@@ -110,9 +80,7 @@ bool SoyosourceDisplay::parse_soyosource_display_byte_(uint8_t byte) {
     return false;
   }
 
-  ESP_LOGVV(TAG, "RX <- %s", format_hex_pretty(raw, at + 1).c_str());
-
-  std::vector<uint8_t> data(this->rx_buffer_.begin() + 2, this->rx_buffer_.begin() + frame_len - 1);
+  std::vector<uint8_t> data(this->rx_buffer_.begin(), this->rx_buffer_.begin() + frame_len - 1);
 
   this->on_soyosource_display_data_(function, data);
 
@@ -121,16 +89,16 @@ bool SoyosourceDisplay::parse_soyosource_display_byte_(uint8_t byte) {
 }
 
 void SoyosourceDisplay::on_soyosource_display_data_(const uint8_t &function, const std::vector<uint8_t> &data) {
-  if (data.size() != 12) {
+  if (data.size() != 14) {
     ESP_LOGW(TAG, "Invalid size for soyosource display status packet!");
     return;
   }
 
   switch (function) {
-    case QUERY_STATUS_RESPONSE:
+    case STATUS_COMMAND:
       this->on_status_data_(data);
       break;
-    case QUERY_SETTINGS_RESPONSE:
+    case SETTINGS_COMMAND:
       this->on_settings_data_(data);
       break;
     default:
@@ -143,53 +111,48 @@ void SoyosourceDisplay::on_status_data_(const std::vector<uint8_t> &data) {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
 
-  // 0x84: Unknown
-  ESP_LOGD(TAG, "Unknown byte from status response: %02X", data[0]);
+  // Byte Len  Payload                Content              Coeff.      Unit        Example value
+  // 0     1   0xA6                   Header
+  // 1     2   0x00 0x84              Requested power via RS485
+  ESP_LOGI(TAG, "Requested power: %d W", soyosource_get_16bit(1));
 
-  // 0x91: 1x: BattConst, 6x: PVMode, 9x: BattLimit, Ex: PVLimit
-  ESP_LOGD(TAG, "Operation mode (raw): %02X", data[1]);
-  uint8_t raw_operation_mode = data[1] >> 4;
+  // 3     1   0x91                   Operation mode (High nibble), Frame function (Low nibble)
+  //                                                                0x01: Status frame
+  ESP_LOGV(TAG, "Operation mode (raw): %02X", data[3]);
+  uint8_t raw_operation_mode = data[3] >> 4;
   this->publish_state_(this->operation_mode_id_sensor_, raw_operation_mode);
+  this->publish_state_(this->operation_mode_text_sensor_, this->operation_mode_to_string_(raw_operation_mode));
 
-  if (raw_operation_mode < OPERATION_MODES_SIZE) {
-    this->publish_state_(this->operation_mode_text_sensor_, OPERATION_MODES[raw_operation_mode]);
-  } else {
-    this->publish_state_(this->operation_mode_text_sensor_, "Unknown");
-  }
-
-  // 0x40: Operation status
-  ESP_LOGD(TAG, "Operation status (raw): %02X", data[2]);
-  uint8_t raw_operation_status = data[2] & 15;
+  // 4     1   0x40                   RS485 traffic (High nibble), Operation status (Low nibble)
+  ESP_LOGI(TAG, "Limiter connected: %s", ((data[4] >> 4) == 0x04) ? "yes" : "no");
+  ESP_LOGV(TAG, "Operation status: %d", data[4] & 15);
+  uint8_t raw_operation_status = data[4] & 15;
   this->publish_state_(this->operation_status_id_sensor_, raw_operation_status);
-  if (raw_operation_status < OPERATION_STATUS_SIZE) {
-    this->publish_state_(this->operation_status_text_sensor_, OPERATION_STATUS[raw_operation_status]);
-  } else {
-    this->publish_state_(this->operation_status_text_sensor_, "Unknown");
-  }
+  this->publish_state_(this->operation_status_text_sensor_, this->operation_status_to_string_(raw_operation_status));
 
-  // 0x01 0xC5: Battery voltage
-  uint16_t raw_battery_voltage = soyosource_get_16bit(3);
+  // 5     2   0x01 0xC5              Battery voltage
+  uint16_t raw_battery_voltage = soyosource_get_16bit(5);
   float battery_voltage = raw_battery_voltage * 0.1f;
   this->publish_state_(this->battery_voltage_sensor_, battery_voltage);
 
-  // 0x00 0xDB: Battery current
-  uint16_t raw_battery_current = soyosource_get_16bit(5);
+  // 7     2   0x00 0xDB              Battery current
+  uint16_t raw_battery_current = soyosource_get_16bit(7);
   float battery_current = raw_battery_current * 0.1f;
   float battery_power = battery_voltage * battery_current;
   this->publish_state_(this->battery_current_sensor_, battery_current);
   this->publish_state_(this->battery_power_sensor_, battery_power);
 
-  // 0x00 0xF7: Grid voltage
-  uint16_t raw_ac_voltage = soyosource_get_16bit(7);
+  // 9     2   0x00 0xF7              Grid voltage
+  uint16_t raw_ac_voltage = soyosource_get_16bit(9);
   float ac_voltage = raw_ac_voltage * 1.0f;
   this->publish_state_(this->ac_voltage_sensor_, ac_voltage);
 
-  // 0x63: Grid frequency
-  float ac_frequency = data[9] * 0.5f;
+  // 11     1   0x63                   Grid frequency
+  float ac_frequency = data[11] * 0.5f;
   this->publish_state_(this->ac_frequency_sensor_, ac_frequency);
 
-  // 0x02 0xBC
-  float temperature = (soyosource_get_16bit(10) - 200) * 0.1f;  // may be - 300?
+  // 12    2   0x02 0xBC              Temperature
+  float temperature = (soyosource_get_16bit(12) - 300) * 0.1f;
   this->publish_state_(this->temperature_sensor_, temperature);
   this->publish_state_(this->fan_running_binary_sensor_, (bool) (temperature >= 45.0));
 }
@@ -201,48 +164,47 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
 
   ESP_LOGI(TAG, "Settings:");
 
-  // 0x72
-  ESP_LOGI(TAG, "  Unknown (byte 0): %02X", data[0]);
+  // Byte Len  Payload                Content              Coeff.      Unit        Example value
+  // 0     1   0xA6                   Header
+  // 1     1   0x00                   Unknown
+  ESP_LOGI(TAG, "  Unknown (byte 1): %02X", data[1]);
 
-  // 0x93: 1x: BattConst, 6x: PVMode, 9x: BattLimit, Ex: PVLimit
-  ESP_LOGD(TAG, "  Operation mode (raw): %02X", data[1]);
-  uint8_t raw_operation_mode = data[1] >> 4;
-  if (raw_operation_mode < OPERATION_MODES_SIZE) {
-    ESP_LOGI(TAG, "  Operation mode: %s (%d)", OPERATION_MODES[raw_operation_mode], raw_operation_mode);
-  } else {
-    ESP_LOGI(TAG, "  Operation mode: Unknown (%d)", raw_operation_mode);
-  }
+  // 2     1   0x72
+  ESP_LOGI(TAG, "  Unknown (byte 2): %02X", data[2]);
 
-  // 0x40
-  ESP_LOGD(TAG, "  Operation status (raw): %02X", data[2]);
-  uint8_t raw_operation_status = data[2] & 15;
-  if (raw_operation_status < OPERATION_STATUS_SIZE) {
-    ESP_LOGI(TAG, "  Operation status: %s (%d)", OPERATION_STATUS[raw_operation_status], raw_operation_status);
-    this->publish_state_(this->operation_status_text_sensor_, OPERATION_STATUS[raw_operation_status]);
-  } else {
-    ESP_LOGI(TAG, "  Operation status: Unknown (%d)", raw_operation_status);
-  }
+  // 3     1   0x93                   Operation mode (High nibble), Frame function (Low nibble)
+  //                                                                0x03: Settings frame
+  ESP_LOGV(TAG, "  Operation mode & frame function (raw): %02X", data[3]);
+  uint8_t raw_operation_mode = data[3] >> 4;
+  ESP_LOGI(TAG, "  Operation mode: %s (%d)", this->operation_mode_to_string_(raw_operation_mode).c_str(),
+           raw_operation_mode);
 
-  // 0xD4 0x30
-  ESP_LOGI(TAG, "  Unknown (byte 3 and byte 4): %02X %02X", data[3], data[4]);
+  // 4     1   0x40                   RS485 traffic (High nibble), Operation status (Low nibble)
+  ESP_LOGV(TAG, "  RS485 traffic indicator & Operation status (raw): %02X", data[4]);
+  uint8_t raw_operation_status = data[4] & 15;
+  ESP_LOGI(TAG, "  Operation status: %s (%d)", this->operation_status_to_string_(raw_operation_status).c_str(),
+           raw_operation_status);
 
-  // 0x2C: Starting voltage (44 V)
-  ESP_LOGI(TAG, "  Starting voltage: %d V", data[5]);
+  // 5     2   0xD4 0x30              Unknown
+  ESP_LOGI(TAG, "  Unknown (byte 5 and byte 6): %02X %02X", data[5], data[6]);
 
-  // 0x2B: Shutdown voltage (43 V)
-  ESP_LOGI(TAG, "  Stutdown voltage: %d V", data[6]);
+  // 7     1   0x2C                   Starting voltage                 V           44
+  ESP_LOGI(TAG, "  Starting voltage: %d V", data[7]);
 
-  // 0x00 0xFA: Grid voltage
-  ESP_LOGI(TAG, "  Grid voltage: %.0f V", (float) soyosource_get_16bit(7));
+  // 8     1   0x2B                   Shutdown voltage                 V           43
+  ESP_LOGI(TAG, "  Shutdown voltage: %d V", data[8]);
 
-  // 0x64: Grid frequency
-  ESP_LOGI(TAG, "  Grid frequency: %.1f Hz", (float) data[9] * 0.5f);
+  // 9     2   0x00 0xFA              Grid voltage                     V           250
+  ESP_LOGI(TAG, "  Grid voltage: %.0f V", (float) soyosource_get_16bit(9));
 
-  // 0x5A: Battery output power
-  ESP_LOGI(TAG, "  Constant power mode power: %d W", data[10] * 10);
+  // 11     1   0x64                   Grid frequency       0.5         Hz         100
+  ESP_LOGI(TAG, "  Grid frequency: %.1f Hz", (float) data[11] * 0.5f);
 
-  // 0x03: Delay in seconds
-  ESP_LOGI(TAG, "  Start delay: %d s", data[11]);
+  // 12    1   0x5A                   Battery output power   10        W           90
+  ESP_LOGI(TAG, "  Constant power mode power: %d W", data[12] * 10);
+
+  // 13    1   0x03                   Delay in seconds                 s           3
+  ESP_LOGI(TAG, "  Start delay: %d s", data[13]);
 }
 
 void SoyosourceDisplay::dump_config() { ESP_LOGCONFIG(TAG, "SoyosourceDisplay:"); }
@@ -251,7 +213,7 @@ float SoyosourceDisplay::get_setup_priority() const {
   return setup_priority::BUS - 1.0f;
 }
 
-void SoyosourceDisplay::update() { this->query_data_(QUERY_STATUS_REQUEST); }
+void SoyosourceDisplay::update() { this->send_command_(STATUS_COMMAND); }
 
 void SoyosourceDisplay::publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state) {
   if (binary_sensor == nullptr)
@@ -274,24 +236,61 @@ void SoyosourceDisplay::publish_state_(text_sensor::TextSensor *text_sensor, con
   text_sensor->publish_state(state);
 }
 
-void SoyosourceDisplay::query_data_(uint8_t function) {
+void SoyosourceDisplay::send_command_(uint8_t function) {
   uint8_t frame[12];
 
-  frame[0] = 0x55;      // header
-  frame[1] = function;  // function (0x01: status, 0x03: settings)
-  frame[2] = 0x00;
-  frame[3] = 0x00;
-  frame[4] = 0x00;
-  frame[5] = 0x00;
+  frame[0] = 0x55;      // Header
+  frame[1] = function;  // Function         (0x01: Status, 0x03: Settings, 0x11: Reboot, 0x0B: Write settings)
+  frame[2] = 0x00;      // Start voltage    (0x30: 48 V)
+  frame[3] = 0x00;      // Stop voltage     (0x2D: 45 V)
+  frame[4] = 0x00;      // Constant Power / Power Limit   (0x5A: 90 * 100 = 900 W)
+  frame[5] = 0x00;      // Grid frequency   (0x64: 100 * 0.5 = 50 Hz)
   frame[6] = 0x00;
   frame[7] = 0x00;
   frame[8] = 0x00;
-  frame[9] = 0x00;
-  frame[10] = 0x00;
+  frame[9] = 0x00;   // Start delay in seconds (0x06: 6 seconds)
+  frame[10] = 0x00;  // Operation mode (0x01: PV, 0x11: PV Limit, 0x02: Bat Const, 0x12: Bat Limit)
   frame[11] = chksum(frame, 11);
 
   this->write_array(frame, 12);
   this->flush();
+}
+
+std::string SoyosourceDisplay::operation_mode_to_string_(const uint8_t &operation_mode) {
+  switch (operation_mode) {
+    case 0x05:
+      return "Battery Constant Power";
+    case 0x06:
+      return "PV";
+    case 0x0D:
+      return "Battery Limit";
+    case 0x0E:
+      return "PV Limit";
+  }
+
+  ESP_LOGW(TAG, "  Operation mode: Unknown (%d)", operation_mode);
+  return "Unknown";
+}
+
+std::string SoyosourceDisplay::operation_status_to_string_(const uint8_t &operation_status) {
+  switch (operation_status) {
+    case 0x00:
+      return "Normal";
+    case 0x01:
+      return "Startup";
+    case 0x02:
+      return "Standby";
+    case 0x03:
+      return "Startup aborted";
+    case 0x04:
+      return "Error or battery mode?";
+    case 0x0A:
+    case 0x10:
+      return "AC input low";
+  }
+
+  ESP_LOGW(TAG, "  Operation status: Unknown (%d)", operation_status);
+  return "Unknown";
 }
 
 }  // namespace soyosource_display
