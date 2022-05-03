@@ -174,23 +174,15 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
 
   // 3     1   0x93                   Operation mode (High nibble), Frame function (Low nibble)
   //                                                                0x03: Settings frame
-  ESP_LOGV(TAG, "  Operation mode (raw): %02X", data[3]);
+  ESP_LOGV(TAG, "  Operation mode & frame function (raw): %02X", data[3]);
   uint8_t raw_operation_mode = data[3] >> 4;
-  if (raw_operation_mode < OPERATION_MODES_SIZE) {
-    ESP_LOGI(TAG, "  Operation mode: %s (%d)", OPERATION_MODES[raw_operation_mode], raw_operation_mode);
-  } else {
-    ESP_LOGI(TAG, "  Operation mode: Unknown (%d)", raw_operation_mode);
-  }
+  ESP_LOGI(TAG, "  Operation mode: %s (%d)", this->operation_mode_to_string_(raw_operation_mode), raw_operation_mode);
 
   // 4     1   0x40                   RS485 traffic (High nibble), Operation status (Low nibble)
-  ESP_LOGV(TAG, "  Operation status (raw): %02X", data[4]);
+  ESP_LOGV(TAG, "  RS485 traffic indicator & Operation status (raw): %02X", data[4]);
   uint8_t raw_operation_status = data[4] & 15;
-  if (raw_operation_status < OPERATION_STATUS_SIZE) {
-    ESP_LOGI(TAG, "  Operation status: %s (%d)", OPERATION_STATUS[raw_operation_status], raw_operation_status);
-    this->publish_state_(this->operation_status_text_sensor_, OPERATION_STATUS[raw_operation_status]);
-  } else {
-    ESP_LOGI(TAG, "  Operation status: Unknown (%d)", raw_operation_status);
-  }
+  ESP_LOGI(TAG, "  Operation status: %s (%d)", this->operation_status_to_string(raw_operation_status),
+           raw_operation_status);
 
   // 5     2   0xD4 0x30              Unknown
   ESP_LOGI(TAG, "  Unknown (byte 5 and byte 6): %02X %02X", data[5], data[6]);
@@ -267,12 +259,16 @@ std::string SoyosourceDisplay::operation_mode_to_string_(const uint8_t operation
   switch (operation_mode) {
     case 0x05:
       return "Battery Constant Power";
+      break;
     case 0x06:
       return "PV";
+      break;
     case 0x0D:
       return "Battery Limit";
+      break;
     case 0x0E:
       return "PV Limit";
+      break;
   }
 
   ESP_LOGW(TAG, "  Operation mode: Unknown (%d)", operation_mode);
@@ -283,18 +279,25 @@ std::string SoyosourceDisplay::operation_status_to_string_(const uint8_t operati
   switch (operation_status) {
     case 0x00:
       return "Normal";
+      break;
     case 0x01:
       return "Startup";
+      break;
     case 0x02:
       return "Standby";
+      break;
     case 0x03:
       return "Startup aborted";
+      break;
     case 0x04:
       return "Error or battery mode?";
+      break;
     case 0x0A:
       return "AC input low";
+      break;
     case 0x10:
       return "AC input low";
+      break;
   }
 
   ESP_LOGW(TAG, "  Operation status: Unknown (%d)", operation_status);
