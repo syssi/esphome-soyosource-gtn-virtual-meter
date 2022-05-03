@@ -256,7 +256,7 @@ void SoyosourceDisplay::send_command_(uint8_t function) {
   this->flush();
 }
 
-std::string SoyosourceDisplay::operation_mode_to_string_(const uint8_t operation_mode) {
+std::string SoyosourceDisplay::operation_mode_to_string_(const uint8_t &operation_mode) {
   switch (operation_mode) {
     case 0x05:
       return "Battery Constant Power";
@@ -276,7 +276,7 @@ std::string SoyosourceDisplay::operation_mode_to_string_(const uint8_t operation
   return "Unknown";
 }
 
-std::string SoyosourceDisplay::operation_status_to_string_(const uint8_t operation_status) {
+std::string SoyosourceDisplay::operation_status_to_string_(const uint8_t &operation_status) {
   switch (operation_status) {
     case 0x00:
       return "Normal";
