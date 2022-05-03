@@ -289,12 +289,12 @@ void SoyosourceDisplay::publish_state_(text_sensor::TextSensor *text_sensor, con
 void SoyosourceDisplay::send_command_(uint8_t function) {
   uint8_t frame[12];
 
-  frame[0] = 0x55;      // header
-  frame[1] = function;  // function         (0x01: status, 0x03: settings, 0x11: reboot, 0x0B: write settings)
+  frame[0] = 0x55;      // Header
+  frame[1] = function;  // Function         (0x01: Status, 0x03: Settings, 0x11: Reboot, 0x0B: Write settings)
   frame[2] = 0x00;      // Start voltage    (0x30: 48 V)
   frame[3] = 0x00;      // Stop voltage     (0x2D: 45 V)
-  frame[4] = 0x00;      // Power limit * 10 (0x5A: 90 * 100 = 900W)
-  frame[5] = 0x00;      // Unknown (0x64: 100)
+  frame[4] = 0x00;      // Constant Power / Power Limit   (0x5A: 90 * 100 = 900 W)
+  frame[5] = 0x00;      // Grid frequency   (0x64: 100 * 0.5 = 50 Hz)
   frame[6] = 0x00;
   frame[7] = 0x00;
   frame[8] = 0x00;
