@@ -276,17 +276,23 @@ std::string SoyosourceDisplay::operation_status_to_string_(const uint8_t &operat
   switch (operation_status) {
     case 0x00:
       return "Normal";
+      break;
     case 0x01:
       return "Startup";
+      break;
     case 0x02:
       return "Standby";
+      break;
     case 0x03:
       return "Startup aborted";
+      break;
     case 0x04:
       return "Error or battery mode?";
+      break;
     case 0x0A:
     case 0x10:
       return "AC input low";
+      break;
   }
 
   ESP_LOGW(TAG, "  Operation status: Unknown (%d)", operation_status);

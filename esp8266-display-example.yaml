@@ -23,39 +23,13 @@ logger:
 
 # Please be careful: The display port has a logic level of 5V.
 uart:
-  - id: uart0
-    baud_rate: 9600
-    tx_pin: GPIO1
-    rx_pin: GPIO3
-    debug:
-      direction: BOTH
-
-  - id: uart1
-    baud_rate: 4800
-    tx_pin: GPIO4
-    rx_pin: GPIO5
-
-soyosource_modbus:
-  - id: modbus0
-    uart_id: uart1
+  baud_rate: 9600
+  tx_pin: GPIO1
+  rx_pin: GPIO3
+  debug:
+    direction: BOTH
 
 soyosource_display:
-    uart_id: uart0
-
-soyosource_virtual_meter:
-  - id: virtualmeter0
-    soyosource_modbus_id: modbus0
-    update_interval: 3s
-
-    # the state of this sensor (instantaneous power in watt) is used as source
-    power_id: powermeter0
-    power_sensor_inactivity_timeout: 20s
-    power_demand_calculation: NEGATIVE_MEASUREMENTS_REQUIRED
-    min_power_demand: 0
-    max_power_demand: 900
-    # A positive buffer value (10) tries to avoid exporting power to the grid (demand - 10 watts)
-    # A negative buffer value (-10) exports power to the grid (demand + 10 watts)
-    buffer: 10
 
 binary_sensor:
   - platform: soyosource_display
@@ -63,13 +37,6 @@ binary_sensor:
       name: "${name} fan running"
 
 sensor:
-  - platform: template
-    name: "dummy powermeter"
-    id: powermeter0
-    update_interval: 2s
-    lambda: |-
-      return 80.0;
-
   - platform: soyosource_display
     operation_mode_id:
       name: "${name} operation mode id"
