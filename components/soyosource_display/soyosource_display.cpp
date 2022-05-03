@@ -176,12 +176,13 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
   //                                                                0x03: Settings frame
   ESP_LOGV(TAG, "  Operation mode & frame function (raw): %02X", data[3]);
   uint8_t raw_operation_mode = data[3] >> 4;
-  ESP_LOGI(TAG, "  Operation mode: %s (%d)", this->operation_mode_to_string_(raw_operation_mode), raw_operation_mode);
+  ESP_LOGI(TAG, "  Operation mode: %s (%d)", this->operation_mode_to_string_(raw_operation_mode).c_str(),
+           raw_operation_mode);
 
   // 4     1   0x40                   RS485 traffic (High nibble), Operation status (Low nibble)
   ESP_LOGV(TAG, "  RS485 traffic indicator & Operation status (raw): %02X", data[4]);
   uint8_t raw_operation_status = data[4] & 15;
-  ESP_LOGI(TAG, "  Operation status: %s (%d)", this->operation_status_to_string(raw_operation_status),
+  ESP_LOGI(TAG, "  Operation status: %s (%d)", this->operation_status_to_string(raw_operation_status).c_str(),
            raw_operation_status);
 
   // 5     2   0xD4 0x30              Unknown
