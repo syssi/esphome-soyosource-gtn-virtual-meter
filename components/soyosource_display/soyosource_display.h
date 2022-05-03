@@ -71,6 +71,9 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
   void send_command_(uint8_t function);
+
+  std::string SoyosourceDisplay::operation_mode_to_string_(const uint8_t operation_mode);
+  std::string SoyosourceDisplay::operation_status_to_string_(const uint8_t operation_status);
 };
 
 }  // namespace soyosource_display
