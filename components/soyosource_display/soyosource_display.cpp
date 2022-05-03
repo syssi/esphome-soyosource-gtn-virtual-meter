@@ -152,7 +152,8 @@ void SoyosourceDisplay::on_status_data_(const std::vector<uint8_t> &data) {
   // 1     2   0x00 0x84              Requested power via RS485
   ESP_LOGI(TAG, "Requested power: %d W", soyosource_get_16bit(1));
 
-  // 3     1   0x91                   Operation mode
+  // 3     1   0x91                   Operation mode (High nibble), Frame function (Low nibble)
+  //                                                                0x01: Status frame
   ESP_LOGV(TAG, "Operation mode (raw): %02X", data[3]);
   uint8_t raw_operation_mode = data[3] >> 4;
   this->publish_state_(this->operation_mode_id_sensor_, raw_operation_mode);
@@ -163,7 +164,7 @@ void SoyosourceDisplay::on_status_data_(const std::vector<uint8_t> &data) {
     this->publish_state_(this->operation_mode_text_sensor_, "Unknown");
   }
 
-  // 4     1   0x40                   Operation status
+  // 4     1   0x40                   RS485 traffic (High nibble), Operation status (Low nibble)
   ESP_LOGI(TAG, "Limiter connected: %s", ((data[4] >> 4) == 0x04) ? "yes" : "no");
   ESP_LOGV(TAG, "Operation status: %d", data[4] & 15);
   uint8_t raw_operation_status = data[4] & 15;
@@ -216,7 +217,8 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
   // 2     1   0x72
   ESP_LOGI(TAG, "  Unknown (byte 2): %02X", data[2]);
 
-  // 3     1   0x93                   Operation mode
+  // 3     1   0x93                   Operation mode (High nibble), Frame function (Low nibble)
+  //                                                                0x03: Settings frame
   ESP_LOGV(TAG, "  Operation mode (raw): %02X", data[3]);
   uint8_t raw_operation_mode = data[3] >> 4;
   if (raw_operation_mode < OPERATION_MODES_SIZE) {
@@ -225,7 +227,7 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
     ESP_LOGI(TAG, "  Operation mode: Unknown (%d)", raw_operation_mode);
   }
 
-  // 4     1   0x40                   Operation status
+  // 4     1   0x40                   RS485 traffic (High nibble), Operation status (Low nibble)
   ESP_LOGV(TAG, "  Operation status (raw): %02X", data[4]);
   uint8_t raw_operation_status = data[4] & 15;
   if (raw_operation_status < OPERATION_STATUS_SIZE) {
@@ -244,16 +246,16 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
   // 8     1   0x2B                   Shutdown voltage                 V           43
   ESP_LOGI(TAG, "  Shutdown voltage: %d V", data[8]);
 
-  // 9     2   0x00 0xFA              Grid voltage                     V
+  // 9     2   0x00 0xFA              Grid voltage                     V           250
   ESP_LOGI(TAG, "  Grid voltage: %.0f V", (float) soyosource_get_16bit(9));
 
-  // 11     1   0x64                   Grid frequency       0.5         Hz
+  // 11     1   0x64                   Grid frequency       0.5         Hz         100
   ESP_LOGI(TAG, "  Grid frequency: %.1f Hz", (float) data[11] * 0.5f);
 
-  // 12    1   0x5A                   Battery output power   10        W
+  // 12    1   0x5A                   Battery output power   10        W           90
   ESP_LOGI(TAG, "  Constant power mode power: %d W", data[12] * 10);
 
-  // 13    1   0x03                   Delay in seconds                 s
+  // 13    1   0x03                   Delay in seconds                 s           3
   ESP_LOGI(TAG, "  Start delay: %d s", data[13]);
 }
 
