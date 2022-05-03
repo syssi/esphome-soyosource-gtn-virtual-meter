@@ -260,16 +260,12 @@ std::string SoyosourceDisplay::operation_mode_to_string_(const uint8_t &operatio
   switch (operation_mode) {
     case 0x05:
       return "Battery Constant Power";
-      break;
     case 0x06:
       return "PV";
-      break;
     case 0x0D:
       return "Battery Limit";
-      break;
     case 0x0E:
       return "PV Limit";
-      break;
   }
 
   ESP_LOGW(TAG, "  Operation mode: Unknown (%d)", operation_mode);
