@@ -257,12 +257,15 @@ void SoyosourceDisplay::send_command_(uint8_t function) {
 }
 
 std::string SoyosourceDisplay::operation_mode_to_string_(const uint8_t &operation_mode) {
+  // @FIXME: Bitmask?
   switch (operation_mode) {
-    case 0x05:
+    case 0x01:
+    case 0x05:  // Low DC voltage
       return "Battery Constant Power";
     case 0x06:
       return "PV";
-    case 0x0D:
+    case 0x09:
+    case 0x0D:  // Low DC voltage
       return "Battery Limit";
     case 0x0E:
       return "PV Limit";
