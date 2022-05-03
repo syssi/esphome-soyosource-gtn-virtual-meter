@@ -294,8 +294,6 @@ std::string SoyosourceDisplay::operation_status_to_string_(const uint8_t operati
       return "Error or battery mode?";
       break;
     case 0x0A:
-      return "AC input low";
-      break;
     case 0x10:
       return "AC input low";
       break;
