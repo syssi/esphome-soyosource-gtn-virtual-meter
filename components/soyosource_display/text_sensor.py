@@ -1,7 +1,12 @@
 import esphome.codegen as cg
 from esphome.components import text_sensor
 import esphome.config_validation as cv
-from esphome.const import CONF_ICON, CONF_ID
+from esphome.const import (
+    CONF_ENTITY_CATEGORY,
+    CONF_ICON,
+    CONF_ID,
+    ENTITY_CATEGORY_DIAGNOSTIC,
+)
 
 from . import CONF_SOYOSOURCE_DISPLAY_ID, SoyosourceDisplay
 
@@ -9,13 +14,16 @@ DEPENDENCIES = ["soyosource_display"]
 
 CODEOWNERS = ["@syssi"]
 
+CONF_ERRORS = "errors"
 CONF_OPERATION_MODE = "operation_mode"
 CONF_OPERATION_STATUS = "operation_status"
 
+ICON_ERRORS = "mdi:alert-circle-outline"
 ICON_OPERATION_MODE = "mdi:heart-pulse"
 ICON_OPERATION_STATUS = "mdi:heart-pulse"
 
 TEXT_SENSORS = [
+    CONF_ERRORS,
     CONF_OPERATION_MODE,
     CONF_OPERATION_STATUS,
 ]
@@ -23,6 +31,15 @@ TEXT_SENSORS = [
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_SOYOSOURCE_DISPLAY_ID): cv.use_id(SoyosourceDisplay),
+        cv.Optional(CONF_ERRORS): text_sensor.TEXT_SENSOR_SCHEMA.extend(
+            {
+                cv.GenerateID(): cv.declare_id(text_sensor.TextSensor),
+                cv.Optional(CONF_ICON, default=ICON_ERRORS): cv.icon,
+                cv.Optional(
+                    CONF_ENTITY_CATEGORY, default=ENTITY_CATEGORY_DIAGNOSTIC
+                ): cv.entity_category,
+            }
+        ),
         cv.Optional(CONF_OPERATION_MODE): text_sensor.TEXT_SENSOR_SCHEMA.extend(
             {
                 cv.GenerateID(): cv.declare_id(text_sensor.TextSensor),

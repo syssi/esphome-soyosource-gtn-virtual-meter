@@ -1,0 +1,34 @@
+substitutions:
+  name: soyosource-gtn-inverter-emu
+  external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
+  tx_pin: GPIO1
+  rx_pin: GPIO3
+
+esphome:
+  name: ${name}
+  platform: ESP8266
+  board: d1_mini
+
+external_components:
+  - source: ${external_components_source}
+    refresh: 0s
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+ota:
+api:
+
+logger:
+  baud_rate: 0
+
+# Please be careful: The display port has a logic level of 5V.
+uart:
+  baud_rate: 9600
+  tx_pin: ${tx_pin}
+  rx_pin: ${rx_pin}
+  debug:
+    direction: BOTH
+
+soyosource_inverter_emulator:

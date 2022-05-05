@@ -35,9 +35,13 @@ binary_sensor:
   - platform: soyosource_display
     fan_running:
       name: "${name} fan running"
+    limiter_connected:
+      name: "${name} limiter connected"
 
 sensor:
   - platform: soyosource_display
+    error_bitmask:
+      name: "${name} error bitmask"
     operation_mode_id:
       name: "${name} operation mode id"
     operation_status_id:
@@ -57,6 +61,8 @@ sensor:
 
 text_sensor:
   - platform: soyosource_display
+    errors:
+      name: "${name} errors"
     operation_mode:
       name: "${name} operation mode"
     operation_status:

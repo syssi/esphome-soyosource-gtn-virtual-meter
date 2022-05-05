@@ -10,11 +10,14 @@ DEPENDENCIES = ["soyosource_display"]
 CODEOWNERS = ["@syssi"]
 
 CONF_FAN_RUNNING = "fan_running"
+CONF_LIMITER_CONNECTED = "limiter_connected"
 
 ICON_FAN_RUNNING = "mdi:fan"
+ICON_LIMITER_CONNECTED = "mdi:connection"
 
 BINARY_SENSORS = [
     CONF_FAN_RUNNING,
+    CONF_LIMITER_CONNECTED,
 ]
 
 CONFIG_SCHEMA = cv.Schema(
@@ -24,6 +27,12 @@ CONFIG_SCHEMA = cv.Schema(
             {
                 cv.GenerateID(): cv.declare_id(binary_sensor.BinarySensor),
                 cv.Optional(CONF_ICON, default=ICON_FAN_RUNNING): cv.icon,
+            }
+        ),
+        cv.Optional(CONF_LIMITER_CONNECTED): binary_sensor.BINARY_SENSOR_SCHEMA.extend(
+            {
+                cv.GenerateID(): cv.declare_id(binary_sensor.BinarySensor),
+                cv.Optional(CONF_ICON, default=ICON_LIMITER_CONNECTED): cv.icon,
             }
         ),
     }
