@@ -14,7 +14,11 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
   void set_fan_running_binary_sensor(binary_sensor::BinarySensor *fan_running_binary_sensor) {
     fan_running_binary_sensor_ = fan_running_binary_sensor;
   }
+  void set_limiter_connected_binary_sensor(binary_sensor::BinarySensor *limiter_connected_binary_sensor) {
+    limiter_connected_binary_sensor_ = limiter_connected_binary_sensor;
+  }
 
+  void set_error_bitmask_sensor(sensor::Sensor *error_bitmask_sensor) { error_bitmask_sensor_ = error_bitmask_sensor; }
   void set_operation_mode_id_sensor(sensor::Sensor *operation_mode_id_sensor) {
     operation_mode_id_sensor_ = operation_mode_id_sensor;
   }
@@ -32,6 +36,7 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
   void set_ac_frequency_sensor(sensor::Sensor *ac_frequency_sensor) { ac_frequency_sensor_ = ac_frequency_sensor; }
   void set_temperature_sensor(sensor::Sensor *temperature_sensor) { temperature_sensor_ = temperature_sensor; }
 
+  void set_errors_text_sensor(text_sensor::TextSensor *errors_text_sensor) { errors_text_sensor_ = errors_text_sensor; }
   void set_operation_mode_text_sensor(text_sensor::TextSensor *operation_mode_text_sensor) {
     operation_mode_text_sensor_ = operation_mode_text_sensor;
   }
@@ -46,7 +51,9 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
 
  protected:
   binary_sensor::BinarySensor *fan_running_binary_sensor_;
+  binary_sensor::BinarySensor *limiter_connected_binary_sensor_;
 
+  sensor::Sensor *error_bitmask_sensor_;
   sensor::Sensor *operation_mode_id_sensor_;
   sensor::Sensor *operation_status_id_sensor_;
   sensor::Sensor *battery_voltage_sensor_;
@@ -58,6 +65,7 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
 
   text_sensor::TextSensor *operation_mode_text_sensor_;
   text_sensor::TextSensor *operation_status_text_sensor_;
+  text_sensor::TextSensor *errors_text_sensor_;
 
   std::vector<uint8_t> rx_buffer_;
   uint32_t last_byte_{0};
@@ -74,6 +82,8 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
 
   std::string operation_mode_to_string_(const uint8_t &operation_mode);
   std::string operation_status_to_string_(const uint8_t &operation_status);
+  std::string device_type_to_string_(const uint8_t &device_type);
+  std::string error_bits_to_string_(const uint8_t &error_bits);
 };
 
 }  // namespace soyosource_display

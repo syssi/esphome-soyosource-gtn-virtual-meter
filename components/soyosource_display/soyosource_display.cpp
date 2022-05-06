@@ -12,6 +12,18 @@ static const uint8_t SETTINGS_COMMAND = 0x03;
 // static const uint8_t REBOOT_COMMAND = 0x11;
 // static const uint8_t WRITE_SETTINGS_COMMAND = 0x0B;
 
+static const uint8_t ERRORS_SIZE = 8;
+static const char *const ERRORS[ERRORS_SIZE] = {
+    "Unknown (Bit 1)",      // 0000 0001
+    "DC voltage too low",   // 0000 0010
+    "DC voltage too high",  // 0000 0100
+    "AC voltage too high",  // 0000 1000
+    "AC voltage too low",   // 0001 0000
+    "Unknown (Bit 6)",      // 0010 0000
+    "Limiter connected",    // 0100 0000
+    "Unknown (Bit 8)",      // 1000 0000
+};
+
 void SoyosourceDisplay::loop() {
   const uint32_t now = millis();
 
@@ -123,12 +135,14 @@ void SoyosourceDisplay::on_status_data_(const std::vector<uint8_t> &data) {
   this->publish_state_(this->operation_mode_id_sensor_, raw_operation_mode);
   this->publish_state_(this->operation_mode_text_sensor_, this->operation_mode_to_string_(raw_operation_mode));
 
-  // 4     1   0x40                   RS485 traffic (High nibble), Operation status (Low nibble)
-  ESP_LOGI(TAG, "Limiter connected: %s", ((data[4] >> 4) == 0x04) ? "yes" : "no");
-  ESP_LOGV(TAG, "Operation status: %d", data[4] & 15);
-  uint8_t raw_operation_status = data[4] & 15;
-  this->publish_state_(this->operation_status_id_sensor_, raw_operation_status);
-  this->publish_state_(this->operation_status_text_sensor_, this->operation_status_to_string_(raw_operation_status));
+  // 4     1   0x40                   Error and status bitmask
+  ESP_LOGV(TAG, "Error and status bitmask (raw): %02X", data[4]);
+  uint8_t raw_status_bitmask = data[4] & ~(1 << 7);
+  this->publish_state_(this->limiter_connected_binary_sensor_, (bool) (data[4] & (1 << 7)));
+  this->publish_state_(this->operation_status_id_sensor_, (raw_status_bitmask & (1 << 3) ? 2 : 0));
+  this->publish_state_(this->operation_status_text_sensor_, (raw_status_bitmask & (1 << 3) ? "Standby" : "Normal"));
+  this->publish_state_(this->error_bitmask_sensor_, (float) raw_status_bitmask);
+  this->publish_state_(this->errors_text_sensor_, this->error_bits_to_string_(raw_status_bitmask));
 
   // 5     2   0x01 0xC5              Battery voltage
   uint16_t raw_battery_voltage = soyosource_get_16bit(5);
@@ -173,20 +187,13 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
   ESP_LOGI(TAG, "  Unknown (byte 2): %02X", data[2]);
 
   // 3     1   0x93                   Operation mode (High nibble), Frame function (Low nibble)
-  //                                                                0x03: Settings frame
-  ESP_LOGV(TAG, "  Operation mode & frame function (raw): %02X", data[3]);
-  uint8_t raw_operation_mode = data[3] >> 4;
-  ESP_LOGI(TAG, "  Operation mode: %s (%d)", this->operation_mode_to_string_(raw_operation_mode).c_str(),
-           raw_operation_mode);
+  // 4     1   0x40                   Operation status bitmask
 
-  // 4     1   0x40                   RS485 traffic (High nibble), Operation status (Low nibble)
-  ESP_LOGV(TAG, "  RS485 traffic indicator & Operation status (raw): %02X", data[4]);
-  uint8_t raw_operation_status = data[4] & 15;
-  ESP_LOGI(TAG, "  Operation status: %s (%d)", this->operation_status_to_string_(raw_operation_status).c_str(),
-           raw_operation_status);
+  // 5     1   0xD4                   Device model
+  ESP_LOGI(TAG, "  Device model: %d W (%d)", (data[5] % 100) * 100, data[5]);
 
-  // 5     2   0xD4 0x30              Unknown
-  ESP_LOGI(TAG, "  Unknown (byte 5 and byte 6): %02X %02X", data[5], data[6]);
+  // 6     1   0x30                   Device type
+  ESP_LOGI(TAG, "  Device type: %s (%d)", this->device_type_to_string_(data[6]).c_str(), data[6]);
 
   // 7     1   0x2C                   Starting voltage                 V           44
   ESP_LOGI(TAG, "  Starting voltage: %d V", data[7]);
@@ -195,10 +202,10 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
   ESP_LOGI(TAG, "  Shutdown voltage: %d V", data[8]);
 
   // 9     2   0x00 0xFA              Grid voltage                     V           250
-  ESP_LOGI(TAG, "  Grid voltage: %.0f V", (float) soyosource_get_16bit(9));
+  ESP_LOGV(TAG, "  Grid voltage: %.0f V", (float) soyosource_get_16bit(9));
 
   // 11     1   0x64                   Grid frequency       0.5         Hz         100
-  ESP_LOGI(TAG, "  Grid frequency: %.1f Hz", (float) data[11] * 0.5f);
+  ESP_LOGV(TAG, "  Grid frequency: %.1f Hz", (float) data[11] * 0.5f);
 
   // 12    1   0x5A                   Battery output power   10        W           90
   ESP_LOGI(TAG, "  Constant power mode power: %d W", data[12] * 10);
@@ -207,7 +214,23 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
   ESP_LOGI(TAG, "  Start delay: %d s", data[13]);
 }
 
-void SoyosourceDisplay::dump_config() { ESP_LOGCONFIG(TAG, "SoyosourceDisplay:"); }
+void SoyosourceDisplay::dump_config() {
+  ESP_LOGCONFIG(TAG, "SoyosourceDisplay:");
+  LOG_SENSOR("", "Error bitmask", this->error_bitmask_sensor_);
+  LOG_TEXT_SENSOR("", "Errors", this->errors_text_sensor_);
+  LOG_SENSOR("", "Operation Mode ID", this->operation_mode_id_sensor_);
+  LOG_TEXT_SENSOR("", "Operation Mode", this->operation_mode_text_sensor_);
+  LOG_TEXT_SENSOR("", "Operation Status ID", this->operation_status_id_sensor_);
+  LOG_TEXT_SENSOR("", "Operation Status", this->operation_status_text_sensor_);
+  LOG_SENSOR("", "Battery Voltage", this->battery_voltage_sensor_);
+  LOG_SENSOR("", "Battery Current", this->battery_current_sensor_);
+  LOG_SENSOR("", "Battery Power", this->battery_power_sensor_);
+  LOG_SENSOR("", "AC Voltage", this->ac_voltage_sensor_);
+  LOG_SENSOR("", "AC Frequency", this->ac_frequency_sensor_);
+  LOG_SENSOR("", "Temperature", this->temperature_sensor_);
+  LOG_BINARY_SENSOR("", "Fan Running", this->fan_running_binary_sensor_);
+  LOG_BINARY_SENSOR("", "Limiter Connected", this->limiter_connected_binary_sensor_);
+}
 float SoyosourceDisplay::get_setup_priority() const {
   // After UART bus
   return setup_priority::BUS - 1.0f;
@@ -257,33 +280,37 @@ void SoyosourceDisplay::send_command_(uint8_t function) {
 }
 
 std::string SoyosourceDisplay::operation_mode_to_string_(const uint8_t &operation_mode) {
-  // @FIXME: Handle bitmask
-  //
   // 0x01: 0001   Battery
-  // 0x05: 0101   Battery + Low DC voltage
+  // 0x05: 0101   Battery + Standby
+  //
   // 0x02: 0010   PV
-  // 0x06: 0110   PV + Low DC voltage
+  // 0x06: 0110   PV + Standby
+  //
   // 0x09: 1001   Battery + Limiter
-  // 0x0D: 1101   Battery + Low DC voltage + Limiter
-  // 0x0E: 1110   PV + Low DC voltage + Limiter
+  // 0x0D: 1101   Battery + Limiter + Standby
+  //
+  // 0x0A: 1010   PV + Limiter
+  // 0x0E: 1110   PV + Limiter + Standby
   //       ||||
   //       |||Battery mode bit
   //       |||
   //       ||PV mode bit
   //       ||
-  //       |Low voltage bit
+  //       |Standby bit
   //       |
   //       Limiter bit
   //
   switch (operation_mode) {
     case 0x01:
-    case 0x05:  // Low DC voltage
+    case 0x05:
       return "Battery Constant Power";
+    case 0x02:
     case 0x06:
       return "PV";
     case 0x09:
-    case 0x0D:  // Low DC voltage
+    case 0x0D:
       return "Battery Limit";
+    case 0x0A:
     case 0x0E:
       return "PV Limit";
   }
@@ -292,25 +319,42 @@ std::string SoyosourceDisplay::operation_mode_to_string_(const uint8_t &operatio
   return "Unknown";
 }
 
-std::string SoyosourceDisplay::operation_status_to_string_(const uint8_t &operation_status) {
-  switch (operation_status) {
-    case 0x00:
-      return "Normal";
-    case 0x01:
-      return "Startup";
-    case 0x02:
-      return "Standby";
-    case 0x03:
-      return "Startup aborted";
-    case 0x04:
-      return "Error or battery mode?";
-    case 0x0A:
-    case 0x10:
-      return "AC input low";
+std::string SoyosourceDisplay::device_type_to_string_(const uint8_t &device_type) {
+  switch (device_type) {
+    case 0x18:
+      return "PV 26-56V / BAT 24V";
+    case 0x24:
+      return "PV 39-62V / BAT 36V";
+    case 0x30:
+      return "PV 55-90V / BAT 48V";
+    case 0x48:
+      return "PV 85-130V / BAT 72V";
+    case 0x60:
+      return "PV 120-180V / BAT 96V";
   }
 
-  ESP_LOGW(TAG, "  Operation status: Unknown (%d)", operation_status);
+  ESP_LOGW(TAG, "  Device type: Unknown (%d)", device_type);
   return "Unknown";
+}
+
+std::string SoyosourceDisplay::error_bits_to_string_(const uint8_t &error_bits) {
+  bool first = true;
+  std::string errors_list = "";
+
+  if (error_bits) {
+    for (int i = 0; i < ERRORS_SIZE; i++) {
+      if (error_bits & (1 << i)) {
+        if (first) {
+          first = false;
+        } else {
+          errors_list.append(";");
+        }
+        errors_list.append(ERRORS[i]);
+      }
+    }
+  }
+
+  return errors_list;
 }
 
 }  // namespace soyosource_display

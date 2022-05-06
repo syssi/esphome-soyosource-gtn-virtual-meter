@@ -9,6 +9,7 @@ from esphome.const import (
     DEVICE_CLASS_POWER,
     DEVICE_CLASS_TEMPERATURE,
     DEVICE_CLASS_VOLTAGE,
+    ENTITY_CATEGORY_DIAGNOSTIC,
     ICON_CURRENT_AC,
     ICON_EMPTY,
     STATE_CLASS_MEASUREMENT,
@@ -30,9 +31,11 @@ CONF_BATTERY_CURRENT = "battery_current"
 CONF_BATTERY_POWER = "battery_power"
 CONF_AC_VOLTAGE = "ac_voltage"
 CONF_AC_FREQUENCY = "ac_frequency"
+CONF_ERROR_BITMASK = "error_bitmask"
 CONF_OPERATION_MODE_ID = "operation_mode_id"
 CONF_OPERATION_STATUS_ID = "operation_status_id"
 
+ICON_ERROR_BITMASK = "mdi:alert-circle-outline"
 ICON_OPERATION_MODE = "mdi:heart-pulse"
 ICON_OPERATION_STATUS = "mdi:heart-pulse"
 
@@ -43,6 +46,7 @@ SENSORS = [
     CONF_AC_VOLTAGE,
     CONF_AC_FREQUENCY,
     CONF_TEMPERATURE,
+    CONF_ERROR_BITMASK,
     CONF_OPERATION_MODE_ID,
     CONF_OPERATION_STATUS_ID,
 ]
@@ -51,6 +55,14 @@ SENSORS = [
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_SOYOSOURCE_DISPLAY_ID): cv.use_id(SoyosourceDisplay),
+        cv.Optional(CONF_ERROR_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon=ICON_ERROR_BITMASK,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        ),
         cv.Optional(CONF_OPERATION_MODE_ID): sensor.sensor_schema(
             unit_of_measurement=UNIT_EMPTY,
             icon=ICON_OPERATION_MODE,
