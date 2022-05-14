@@ -115,14 +115,14 @@ CONFIG_SCHEMA = cv.Schema(
 )
 
 
-def to_code(config):
-    hub = yield cg.get_variable(config[CONF_SOYOSOURCE_VIRTUAL_METER_ID])
+async def to_code(config):
+    hub = await cg.get_variable(config[CONF_SOYOSOURCE_VIRTUAL_METER_ID])
     for key, address in NUMBERS.items():
         if key in config:
             conf = config[key]
             var = cg.new_Pvariable(conf[CONF_ID])
-            yield cg.register_component(var, conf)
-            yield number.register_number(
+            await cg.register_component(var, conf)
+            await number.register_number(
                 var,
                 conf,
                 min_value=conf[CONF_MIN_VALUE],

@@ -25,8 +25,8 @@ CONFIG_SCHEMA = cv.Schema(
 )
 
 
-def to_code(config):
-    hub = yield cg.get_variable(config[CONF_SOYOSOURCE_VIRTUAL_METER_ID])
+async def to_code(config):
+    hub = await cg.get_variable(config[CONF_SOYOSOURCE_VIRTUAL_METER_ID])
     if CONF_POWER_DEMAND in config:
-        sens = yield sensor.new_sensor(config[CONF_POWER_DEMAND])
+        sens = await sensor.new_sensor(config[CONF_POWER_DEMAND])
         cg.add(hub.set_power_demand_sensor(sens))
