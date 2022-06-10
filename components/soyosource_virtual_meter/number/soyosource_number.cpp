@@ -38,7 +38,7 @@ void SoyosourceNumber::control(float value) {
   if (this->restore_value_)
     this->pref_.save(&value);
 }
-void SoyosourceNumber::dump_config() { LOG_NUMBER(TAG, "SoyosourceVirtualMeter Number", this); }
+void SoyosourceNumber::dump_config() { LOG_NUMBER("", "SoyosourceVirtualMeter Number", this); }
 
 }  // namespace soyosource_virtual_meter
 }  // namespace esphome
