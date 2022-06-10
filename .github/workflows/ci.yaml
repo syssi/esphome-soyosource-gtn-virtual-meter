@@ -162,13 +162,10 @@ jobs:
         run: 'echo -e "wifi_ssid: ssid\nwifi_password: password\nmqtt_host: host\nmqtt_username: username\nmqtt_password: password" > secrets.yaml'
       - run: |
           esphome -s external_components_source components config esp32-example.yaml
-      - run: |
           esphome -s external_components_source components config esp32-multiple-uarts-example.yaml
       - run: |
           esphome -s external_components_source components config esp8266-example.yaml
-      - run: |
           esphome -s external_components_source components config esp8266-display-example.yaml
-      - run: |
           esphome -s external_components_source components config esp8266-inverter-emulator.yaml
 
   esphome-compile:
@@ -208,11 +205,8 @@ jobs:
         run: 'echo -e "wifi_ssid: ssid\nwifi_password: password\nmqtt_host: host\nmqtt_username: username\nmqtt_password: password" > secrets.yaml'
       - run: |
           esphome -s external_components_source components compile esp32-example.yaml
-      - run: |
           esphome -s external_components_source components compile esp32-multiple-uarts-example.yaml
       - run: |
           esphome -s external_components_source components compile esp8266-example.yaml
-      - run: |
           esphome -s external_components_source components compile esp8266-display-example.yaml
-      - run: |
           esphome -s external_components_source components compile esp8266-inverter-emulator.yaml
