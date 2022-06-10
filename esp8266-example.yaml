@@ -110,7 +110,6 @@ sensor:
 #    entity_id: sensor.firstfloor_smartmeter_instantaneous_power
 #    filters:
 #      - throttle_average: 15s
-#      - filter_out: nan
 
 
 text_sensor:
