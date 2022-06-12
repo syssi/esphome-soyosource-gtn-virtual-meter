@@ -23,20 +23,6 @@ void SoyosourceVirtualMeter::setup() {
   });
 }
 
-void SoyosourceVirtualMeter::publish_state_(sensor::Sensor *sensor, float value) {
-  if (sensor == nullptr)
-    return;
-
-  sensor->publish_state(value);
-}
-
-void SoyosourceVirtualMeter::publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state) {
-  if (text_sensor == nullptr)
-    return;
-
-  text_sensor->publish_state(state);
-}
-
 void SoyosourceVirtualMeter::dump_config() {
   ESP_LOGCONFIG(TAG, "SoyosourceVirtualMeter:");
   ESP_LOGCONFIG(TAG, "  Address: 0x%02X", this->address_);
@@ -56,14 +42,14 @@ void SoyosourceVirtualMeter::update() {
     }  // else default = 0
   } else {
     // Automatic mode
-    if (millis() - this->last_power_demand_received_ < (this->power_sensor_inactivity_timeout_s_ * 1000)) {
-      power_demand = (uint16_t) this->power_demand_;
-      operation_mode = "Auto";
-    } else {
+    if (this->inactivity_timeout_()) {
       power_demand = 0;
       operation_mode = "Inactivity timeout";
       ESP_LOGW(TAG, "'%s': No power sensor update received since %d seconds. Shutting down for safety reasons.",
                this->get_modbus_name(), this->power_sensor_inactivity_timeout_s_);
+    } else {
+      power_demand = (uint16_t) this->power_demand_;
+      operation_mode = "Auto";
     }
   }
 
@@ -159,6 +145,28 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_oem_(int16_t consumption)
 
   // 90: 0
   return 0;
+}
+
+bool SoyosourceVirtualMeter::inactivity_timeout_() {
+  if (this->power_sensor_inactivity_timeout_s_ == 0) {
+    return false;
+  }
+
+  return millis() - this->last_power_demand_received_ > (this->power_sensor_inactivity_timeout_s_ * 1000);
+}
+
+void SoyosourceVirtualMeter::publish_state_(sensor::Sensor *sensor, float value) {
+  if (sensor == nullptr)
+    return;
+
+  sensor->publish_state(value);
+}
+
+void SoyosourceVirtualMeter::publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state) {
+  if (text_sensor == nullptr)
+    return;
+
+  text_sensor->publish_state(state);
 }
 
 }  // namespace soyosource_virtual_meter

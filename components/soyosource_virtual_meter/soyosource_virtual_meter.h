@@ -85,6 +85,7 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
 
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
+  bool inactivity_timeout_();
 
   int16_t calculate_power_demand_(int16_t consumption, uint16_t last_power_demand);
   int16_t calculate_power_demand_negative_measurements_(int16_t consumption, uint16_t last_power_demand);
