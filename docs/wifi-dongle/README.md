@@ -100,8 +100,8 @@ o 5V  ──── AMS1117
 6. Plug the USB-to-TTL adapter into your computer
 7. Use esptool to read the flash
 
-If LED `D2`, `D3` or `D4` turns on permanently `nRESET` isn't connected properly to `GND`. It's important
-to stop the MS51 be pulling down `nRESET`. If you communicate with the ESP8266 the blue LED next
+If LED `D2`, `D3` or `D4` turns on permanently `nRESET` isn't connected properly to `GND`. It's important to
+prevent the MS51 from booting by pulling down `nRESET`. If you communicate with the ESP8266 the blue LED next
 to the antenna will indicate the traffic.
 
 ```
