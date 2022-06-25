@@ -137,3 +137,32 @@ Stub running...
 Read 4194304 bytes at 0x0 in 378.7 seconds (88.6 kbit/s)...
 Hard resetting via RTS pin...
 ```
+
+## WiFi mode of the stock firmware
+
+To change the WiFi mode of the stock firmware press the `SET` button 3 times. The `NET` (blue) and `AP` (red) LED should blink simultaneously now.
+If you press the button again you will select one of the modes (indicated by the blinking LED). To switch to the other mode press the button again.
+Waiting a few seconds will persist the selection and the dongle reboots into the new configuration.
+
+The NET mode is indicated by the blue LED. The Nuvoton microcontroller sends the follow commands to the ESP to switch to the NET mode:
+
+```
+AT+MODULE=0
+AT+RST
+```
+
+The AP mode is indicated by the red LED. The Nuvoton microcontroller sends the follow commands to the ESP to switch to the NET mode:
+
+```
+AT+MODULE=7
+AT+RST
+```
+
+If you press the button 10 seconds the blue LED will blink and the red LED is off or solid. The Nuvoton microcontroller sends:
+
+```
+AT+SMARTCONFIG
+AT+RST
+```
+
+I dont' know the meaning of this mode.
