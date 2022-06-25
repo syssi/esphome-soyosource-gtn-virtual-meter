@@ -119,7 +119,7 @@ Device: 4016
 Detected flash size: 4MB
 Hard resetting via RTS pin...
 
-$ esptool.py --port /dev/ttyUSB0 --baud 115200 read_flash 0x00000 0x400000 backup.img
+$ esptool.py --port /dev/ttyUSB0 --baud 115200 read_flash 0x00000 0x400000 esp8266-stock-firmware-SY22MAR8331.bin
 esptool.py v3.3
 Serial port /dev/ttyUSB0
 Connecting....
