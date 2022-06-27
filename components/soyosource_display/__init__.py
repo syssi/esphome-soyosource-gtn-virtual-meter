@@ -5,6 +5,8 @@ from esphome.const import CONF_ID
 
 DEPENDENCIES = ["uart"]
 
+AUTO_LOAD = ["button", "number", "sensor", "text_sensor"]
+
 soyosource_display_ns = cg.esphome_ns.namespace("soyosource_display")
 SoyosourceDisplay = soyosource_display_ns.class_(
     "SoyosourceDisplay", cg.PollingComponent, uart.UARTDevice
@@ -13,6 +15,12 @@ SoyosourceDisplay = soyosource_display_ns.class_(
 MULTI_CONF = True
 
 CONF_SOYOSOURCE_DISPLAY_ID = "soyosource_display_id"
+
+CONF_SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(CONF_SOYOSOURCE_DISPLAY_ID): cv.use_id(SoyosourceDisplay),
+    }
+)
 
 CONFIG_SCHEMA = (
     cv.Schema(

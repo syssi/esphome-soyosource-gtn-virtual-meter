@@ -2,12 +2,26 @@
 
 #include "esphome/core/component.h"
 #include "esphome/components/binary_sensor/binary_sensor.h"
+#include "esphome/components/number/number.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/uart/uart.h"
 
 namespace esphome {
 namespace soyosource_display {
+
+struct SoyosourceSettingsFrameT {
+  uint8_t Header;
+  uint8_t Function;
+  uint8_t StartVoltage;
+  uint8_t ShutdownVoltage;
+  uint8_t OutputPowerLimit;
+  uint8_t GridFrequency;
+  uint8_t Unused[3];
+  uint8_t StartDelay;
+  uint8_t OperationMode;
+  uint8_t Checksum;
+};
 
 class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
  public:
@@ -17,6 +31,15 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
   void set_limiter_connected_binary_sensor(binary_sensor::BinarySensor *limiter_connected_binary_sensor) {
     limiter_connected_binary_sensor_ = limiter_connected_binary_sensor;
   }
+
+  void set_start_voltage_number(number::Number *start_voltage_number) { start_voltage_number_ = start_voltage_number; }
+  void set_shutdown_voltage_number(number::Number *shutdown_voltage_number) {
+    shutdown_voltage_number_ = shutdown_voltage_number;
+  }
+  void set_output_power_limit_number(number::Number *output_power_limit_number) {
+    output_power_limit_number_ = output_power_limit_number;
+  }
+  void set_start_delay_number(number::Number *start_delay_number) { start_delay_number_ = start_delay_number; }
 
   void set_error_bitmask_sensor(sensor::Sensor *error_bitmask_sensor) { error_bitmask_sensor_ = error_bitmask_sensor; }
   void set_operation_mode_id_sensor(sensor::Sensor *operation_mode_id_sensor) {
@@ -44,6 +67,11 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
     operation_status_text_sensor_ = operation_status_text_sensor;
   }
 
+  SoyosourceSettingsFrameT get_current_settings() { return current_settings_; }
+  void send_command(uint8_t function, uint8_t start_voltage = 0, uint8_t shutdown_voltage = 0,
+                    uint8_t output_power_limit = 0, uint8_t grid_frequency = 0, uint8_t start_delay = 0,
+                    uint8_t operation_mode = 0);
+  void update_setting(uint8_t holding_register, float value);
   void loop() override;
   void dump_config() override;
   void update() override;
@@ -52,6 +80,11 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
  protected:
   binary_sensor::BinarySensor *fan_running_binary_sensor_;
   binary_sensor::BinarySensor *limiter_connected_binary_sensor_;
+
+  number::Number *start_voltage_number_;
+  number::Number *shutdown_voltage_number_;
+  number::Number *output_power_limit_number_;
+  number::Number *start_delay_number_;
 
   sensor::Sensor *error_bitmask_sensor_;
   sensor::Sensor *operation_mode_id_sensor_;
@@ -70,15 +103,19 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
   std::vector<uint8_t> rx_buffer_;
   uint32_t last_byte_{0};
   uint32_t last_send_{0};
+  SoyosourceSettingsFrameT current_settings_;
 
   void on_soyosource_display_data_(const uint8_t &function, const std::vector<uint8_t> &data);
   void on_status_data_(const std::vector<uint8_t> &data);
   void on_settings_data_(const std::vector<uint8_t> &data);
   bool parse_soyosource_display_byte_(uint8_t byte);
   void publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state);
+  void publish_state_(number::Number *number, float value);
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
-  void send_command_(uint8_t function);
+  void write_settings_(SoyosourceSettingsFrameT *frame);
+
+  uint8_t operation_mode_to_operation_mode_setting_(const uint8_t &operation_mode);
 
   std::string operation_mode_to_string_(const uint8_t &operation_mode);
   std::string operation_status_to_string_(const uint8_t &operation_status);
