@@ -7,10 +7,13 @@ namespace soyosource_display {
 
 static const char *const TAG = "soyosource_display";
 
+static const uint8_t SOF_REQUEST = 0x55;
+static const uint8_t SOF_RESPONSE = 0xA6;
+
 static const uint8_t STATUS_COMMAND = 0x01;
 static const uint8_t SETTINGS_COMMAND = 0x03;
-// static const uint8_t REBOOT_COMMAND = 0x11;
-// static const uint8_t WRITE_SETTINGS_COMMAND = 0x0B;
+static const uint8_t REBOOT_COMMAND = 0x11;
+static const uint8_t WRITE_SETTINGS_COMMAND = 0x0B;
 
 static const uint8_t ERRORS_SIZE = 8;
 static const char *const ERRORS[ERRORS_SIZE] = {
@@ -65,14 +68,10 @@ bool SoyosourceDisplay::parse_soyosource_display_byte_(uint8_t byte) {
   // Settings request  >>> 0x55 0x03 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xFC
   // Settings response <<< 0xA6 0x00 0x00 0xD3 0x02 0xD4 0x30 0x30 0x2D 0x00 0xFB 0x64 0x4B 0x06 0x19
   //
-  // Status response:    0xA6 0x03 0x84 0x91 0x40 0x01 0xC5 0x00 0xDB 0x00 0xF7 0x63 0x02 0xBC 0xFE
-  // Settings response:  0xA6 0x01 0x72 0x93 0x40 0xD4 0x30 0x2C 0x2B 0x00 0xFA 0x64 0x5A 0x03 0xA3
-  //                     addr func ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  crc
-  //                                                         data
   if (at == 0)
     return true;
 
-  if (raw[0] != 0xA6) {
+  if (raw[0] != SOF_RESPONSE) {
     ESP_LOGW(TAG, "Invalid header.");
 
     // return false to reset buffer
@@ -109,6 +108,7 @@ void SoyosourceDisplay::on_soyosource_display_data_(const uint8_t &function, con
   switch (function) {
     case STATUS_COMMAND:
       this->on_status_data_(data);
+      this->send_command(SETTINGS_COMMAND);
       break;
     case SETTINGS_COMMAND:
       this->on_settings_data_(data);
@@ -187,6 +187,10 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
   ESP_LOGI(TAG, "  Unknown (byte 2): %02X", data[2]);
 
   // 3     1   0x93                   Operation mode (High nibble), Frame function (Low nibble)
+  uint8_t operation_mode_setting = this->operation_mode_to_operation_mode_setting_(data[3] >> 4);
+  ESP_LOGI(TAG, "  Operation mode setting: %02X", operation_mode_setting);
+  this->current_settings_.OperationMode = operation_mode_setting;
+
   // 4     1   0x40                   Operation status bitmask
 
   // 5     1   0xD4                   Device model
@@ -196,22 +200,36 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
   ESP_LOGI(TAG, "  Device type: %s (%d)", this->device_type_to_string_(data[6]).c_str(), data[6]);
 
   // 7     1   0x2C                   Starting voltage                 V           44
-  ESP_LOGI(TAG, "  Starting voltage: %d V", data[7]);
+  uint8_t start_voltage = data[7];
+  ESP_LOGI(TAG, "  Start voltage: %d V", start_voltage);
+  this->current_settings_.StartVoltage = start_voltage;
+  this->publish_state_(this->start_voltage_number_, start_voltage);
 
   // 8     1   0x2B                   Shutdown voltage                 V           43
-  ESP_LOGI(TAG, "  Shutdown voltage: %d V", data[8]);
+  uint8_t shutdown_voltage = data[8];
+  ESP_LOGI(TAG, "  Shutdown voltage: %d V", shutdown_voltage);
+  this->current_settings_.ShutdownVoltage = shutdown_voltage;
+  this->publish_state_(this->shutdown_voltage_number_, shutdown_voltage);
 
   // 9     2   0x00 0xFA              Grid voltage                     V           250
   ESP_LOGV(TAG, "  Grid voltage: %.0f V", (float) soyosource_get_16bit(9));
 
-  // 11     1   0x64                   Grid frequency       0.5         Hz         100
-  ESP_LOGV(TAG, "  Grid frequency: %.1f Hz", (float) data[11] * 0.5f);
+  // 11     1   0x64                   Grid frequency        0.5       Hz          100
+  uint8_t grid_frequency = data[11];
+  ESP_LOGV(TAG, "  Grid frequency: %.1f Hz", (float) grid_frequency * 0.5f);
+  this->current_settings_.GridFrequency = grid_frequency;
 
   // 12    1   0x5A                   Battery output power   10        W           90
-  ESP_LOGI(TAG, "  Constant power mode power: %d W", data[12] * 10);
+  uint8_t output_power_limit = data[12];
+  ESP_LOGI(TAG, "  Output power limit: %d W", output_power_limit * 10);
+  this->current_settings_.OutputPowerLimit = output_power_limit;
+  this->publish_state_(this->output_power_limit_number_, output_power_limit * 10);
 
   // 13    1   0x03                   Delay in seconds                 s           3
-  ESP_LOGI(TAG, "  Start delay: %d s", data[13]);
+  uint8_t start_delay = data[13];
+  ESP_LOGI(TAG, "  Start delay: %d s", start_delay);
+  this->current_settings_.StartDelay = start_delay;
+  this->publish_state_(this->start_delay_number_, start_delay);
 }
 
 void SoyosourceDisplay::dump_config() {
@@ -236,46 +254,65 @@ float SoyosourceDisplay::get_setup_priority() const {
   return setup_priority::BUS - 1.0f;
 }
 
-void SoyosourceDisplay::update() { this->send_command_(STATUS_COMMAND); }
+void SoyosourceDisplay::update() { this->send_command(STATUS_COMMAND); }
 
-void SoyosourceDisplay::publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state) {
-  if (binary_sensor == nullptr)
-    return;
-
-  binary_sensor->publish_state(state);
-}
-
-void SoyosourceDisplay::publish_state_(sensor::Sensor *sensor, float value) {
-  if (sensor == nullptr)
-    return;
-
-  sensor->publish_state(value);
-}
-
-void SoyosourceDisplay::publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state) {
-  if (text_sensor == nullptr)
-    return;
-
-  text_sensor->publish_state(state);
-}
-
-void SoyosourceDisplay::send_command_(uint8_t function) {
+void SoyosourceDisplay::send_command(uint8_t function, uint8_t start_voltage, uint8_t shutdown_voltage,
+                                     uint8_t output_power_limit, uint8_t grid_frequency, uint8_t start_delay,
+                                     uint8_t operation_mode) {
   uint8_t frame[12];
 
-  frame[0] = 0x55;      // Header
-  frame[1] = function;  // Function         (0x01: Status, 0x03: Settings, 0x11: Reboot, 0x0B: Write settings)
-  frame[2] = 0x00;      // Start voltage    (0x30: 48 V)
-  frame[3] = 0x00;      // Stop voltage     (0x2D: 45 V)
-  frame[4] = 0x00;      // Constant Power / Power Limit   (0x5A: 90 * 100 = 900 W)
-  frame[5] = 0x00;      // Grid frequency   (0x64: 100 * 0.5 = 50 Hz)
+  frame[0] = SOF_REQUEST;         // Header
+  frame[1] = function;            // Function         (0x01: Status, 0x03: Settings, 0x11: Reboot, 0x0B: Write settings)
+  frame[2] = start_voltage;       // Start voltage    (0x30: 48 V)
+  frame[3] = shutdown_voltage;    // Shutdown voltage     (0x2D: 45 V)
+  frame[4] = output_power_limit;  // Constant Power / Power Limit   (0x5A: 90 * 100 = 900 W)
+  frame[5] = grid_frequency;      // Grid frequency   (0x64: 100 * 0.5 = 50 Hz)
   frame[6] = 0x00;
   frame[7] = 0x00;
   frame[8] = 0x00;
-  frame[9] = 0x00;   // Start delay in seconds (0x06: 6 seconds)
-  frame[10] = 0x00;  // Operation mode (0x01: PV, 0x11: PV Limit, 0x02: Bat Const, 0x12: Bat Limit)
+  frame[9] = start_delay;      // Start delay in seconds (0x06: 6 seconds)
+  frame[10] = operation_mode;  // Operation mode (0x01: PV, 0x11: PV Limit, 0x02: Bat Const, 0x12: Bat Limit)
   frame[11] = chksum(frame, 11);
 
   this->write_array(frame, 12);
+  this->flush();
+}
+
+void SoyosourceDisplay::update_setting(uint8_t holding_register, float value) {
+  SoyosourceSettingsFrameT new_settings = this->current_settings_;
+
+  switch (holding_register) {
+    case 0x02:
+      new_settings.StartVoltage = (uint8_t) value;
+      break;
+    case 0x03:
+      new_settings.ShutdownVoltage = (uint8_t) value;
+      break;
+    case 0x04:
+      new_settings.OutputPowerLimit = (uint8_t)(value * 0.1);
+      break;
+    case 0x09:
+      new_settings.StartDelay = (uint8_t) value;
+      break;
+    default:
+      ESP_LOGE(TAG, "Unknown settings register. Aborting write settings");
+      return;
+  }
+
+  if (new_settings.OperationMode == 0x00) {
+    ESP_LOGE(TAG, "Cannot update settings because the current settings are unknown");
+    return;
+  }
+
+  this->write_settings_(&new_settings);
+}
+
+void SoyosourceDisplay::write_settings_(SoyosourceSettingsFrameT *settings_frame) {
+  settings_frame->Header = SOF_REQUEST;
+  settings_frame->Function = WRITE_SETTINGS_COMMAND;
+  settings_frame->Checksum = chksum((const uint8_t *) settings_frame, 11);
+
+  this->write_array((const uint8_t *) settings_frame, 12);
   this->flush();
 }
 
@@ -319,6 +356,25 @@ std::string SoyosourceDisplay::operation_mode_to_string_(const uint8_t &operatio
   return "Unknown";
 }
 
+uint8_t SoyosourceDisplay::operation_mode_to_operation_mode_setting_(const uint8_t &operation_mode) {
+  switch (operation_mode) {
+    case 0x01:
+    case 0x05:
+      return 0x02;
+    case 0x02:
+    case 0x06:
+      return 0x01;
+    case 0x09:
+    case 0x0D:
+      return 0x12;
+    case 0x0A:
+    case 0x0E:
+      return 0x11;
+  }
+
+  return 0x00;
+}
+
 std::string SoyosourceDisplay::device_type_to_string_(const uint8_t &device_type) {
   switch (device_type) {
     case 0x18:
@@ -355,6 +411,34 @@ std::string SoyosourceDisplay::error_bits_to_string_(const uint8_t &error_bits) 
   }
 
   return errors_list;
+}
+
+void SoyosourceDisplay::publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state) {
+  if (binary_sensor == nullptr)
+    return;
+
+  binary_sensor->publish_state(state);
+}
+
+void SoyosourceDisplay::publish_state_(number::Number *number, float value) {
+  if (number == nullptr)
+    return;
+
+  number->publish_state(value);
+}
+
+void SoyosourceDisplay::publish_state_(sensor::Sensor *sensor, float value) {
+  if (sensor == nullptr)
+    return;
+
+  sensor->publish_state(value);
+}
+
+void SoyosourceDisplay::publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state) {
+  if (text_sensor == nullptr)
+    return;
+
+  text_sensor->publish_state(state);
 }
 
 }  // namespace soyosource_display
