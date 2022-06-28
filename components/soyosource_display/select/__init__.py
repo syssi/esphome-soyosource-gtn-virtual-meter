@@ -8,7 +8,6 @@ from .. import (
     CONF_SOYOSOURCE_DISPLAY_ID,
     soyosource_display_ns,
 )
-
 from ..const import CONF_OPERATION_MODE
 
 DEPENDENCIES = ["soyosource_display"]
