@@ -137,10 +137,10 @@ void SoyosourceDisplay::on_status_data_(const std::vector<uint8_t> &data) {
 
   // 4     1   0x40                   Error and status bitmask
   ESP_LOGV(TAG, "Error and status bitmask (raw): %02X", data[4]);
-  uint8_t raw_status_bitmask = data[4] & ~(1 << 7);
-  this->publish_state_(this->limiter_connected_binary_sensor_, (bool) (data[4] & (1 << 7)));
-  this->publish_state_(this->operation_status_id_sensor_, (raw_status_bitmask & (1 << 3) ? 2 : 0));
-  this->publish_state_(this->operation_status_text_sensor_, (raw_status_bitmask & (1 << 3) ? "Standby" : "Normal"));
+  uint8_t raw_status_bitmask = data[4] & ~(1 << 6);
+  this->publish_state_(this->limiter_connected_binary_sensor_, (bool) (data[4] & (1 << 6)));
+  this->publish_state_(this->operation_status_id_sensor_, (raw_status_bitmask == 0x00) ? 0 : 2);
+  this->publish_state_(this->operation_status_text_sensor_, (raw_status_bitmask == 0x00) ? "Normal" : "Standby");
   this->publish_state_(this->error_bitmask_sensor_, (float) raw_status_bitmask);
   this->publish_state_(this->errors_text_sensor_, this->error_bits_to_string_(raw_status_bitmask));
 
@@ -181,15 +181,22 @@ void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
   // 0     1   0xA6                   Header
   // 1     1   0x00                   Unknown
-  ESP_LOGI(TAG, "  Unknown (byte 1): %02X", data[1]);
+  ESP_LOGD(TAG, "  Unknown (byte 1): %02X", data[1]);
 
   // 2     1   0x72
-  ESP_LOGI(TAG, "  Unknown (byte 2): %02X", data[2]);
+  ESP_LOGD(TAG, "  Unknown (byte 2): %02X", data[2]);
 
   // 3     1   0x93                   Operation mode (High nibble), Frame function (Low nibble)
   uint8_t operation_mode_setting = this->operation_mode_to_operation_mode_setting_(data[3] >> 4);
   ESP_LOGI(TAG, "  Operation mode setting: %02X", operation_mode_setting);
   this->current_settings_.OperationMode = operation_mode_setting;
+  if (this->operation_mode_select_ != nullptr) {
+    for (auto &listener : this->select_listeners_) {
+      if (listener.holding_register == 0x0A) {
+        listener.on_value(operation_mode_setting);
+      }
+    }
+  }
 
   // 4     1   0x40                   Operation status bitmask
 
@@ -293,6 +300,9 @@ void SoyosourceDisplay::update_setting(uint8_t holding_register, float value) {
       break;
     case 0x09:
       new_settings.StartDelay = (uint8_t) value;
+      break;
+    case 0x0A:
+      new_settings.OperationMode = (uint8_t) value;
       break;
     default:
       ESP_LOGE(TAG, "Unknown settings register. Aborting write settings");
@@ -411,6 +421,14 @@ std::string SoyosourceDisplay::error_bits_to_string_(const uint8_t &error_bits) 
   }
 
   return errors_list;
+}
+
+void SoyosourceDisplay::register_select_listener(uint8_t holding_register, const std::function<void(uint8_t)> &func) {
+  auto select_listener = SoyosourceSelectListener{
+      .holding_register = holding_register,
+      .on_value = func,
+  };
+  this->select_listeners_.push_back(select_listener);
 }
 
 void SoyosourceDisplay::publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state) {

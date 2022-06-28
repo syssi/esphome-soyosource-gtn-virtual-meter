@@ -5,7 +5,7 @@ from esphome.const import CONF_ID
 
 DEPENDENCIES = ["uart"]
 
-AUTO_LOAD = ["button", "number", "sensor", "text_sensor"]
+AUTO_LOAD = ["button", "number", "select", "sensor", "text_sensor"]
 
 soyosource_display_ns = cg.esphome_ns.namespace("soyosource_display")
 SoyosourceDisplay = soyosource_display_ns.class_(

@@ -3,6 +3,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/number/number.h"
+#include "esphome/components/select/select.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/uart/uart.h"
@@ -23,6 +24,11 @@ struct SoyosourceSettingsFrameT {
   uint8_t Checksum;
 };
 
+struct SoyosourceSelectListener {
+  uint8_t holding_register;
+  std::function<void(uint8_t)> on_value;
+};
+
 class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
  public:
   void set_fan_running_binary_sensor(binary_sensor::BinarySensor *fan_running_binary_sensor) {
@@ -40,6 +46,10 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
     output_power_limit_number_ = output_power_limit_number;
   }
   void set_start_delay_number(number::Number *start_delay_number) { start_delay_number_ = start_delay_number; }
+
+  void set_operation_mode_select(select::Select *operation_mode_select) {
+    operation_mode_select_ = operation_mode_select;
+  }
 
   void set_error_bitmask_sensor(sensor::Sensor *error_bitmask_sensor) { error_bitmask_sensor_ = error_bitmask_sensor; }
   void set_operation_mode_id_sensor(sensor::Sensor *operation_mode_id_sensor) {
@@ -68,6 +78,7 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
   }
 
   SoyosourceSettingsFrameT get_current_settings() { return current_settings_; }
+  void register_select_listener(uint8_t holding_register, const std::function<void(uint8_t)> &func);
   void send_command(uint8_t function, uint8_t start_voltage = 0, uint8_t shutdown_voltage = 0,
                     uint8_t output_power_limit = 0, uint8_t grid_frequency = 0, uint8_t start_delay = 0,
                     uint8_t operation_mode = 0);
@@ -86,6 +97,8 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
   number::Number *output_power_limit_number_;
   number::Number *start_delay_number_;
 
+  select::Select *operation_mode_select_;
+
   sensor::Sensor *error_bitmask_sensor_;
   sensor::Sensor *operation_mode_id_sensor_;
   sensor::Sensor *operation_status_id_sensor_;
@@ -100,6 +113,7 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
   text_sensor::TextSensor *operation_status_text_sensor_;
   text_sensor::TextSensor *errors_text_sensor_;
 
+  std::vector<SoyosourceSelectListener> select_listeners_;
   std::vector<uint8_t> rx_buffer_;
   uint32_t last_byte_{0};
   uint32_t last_send_{0};
@@ -111,6 +125,7 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
   bool parse_soyosource_display_byte_(uint8_t byte);
   void publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state);
   void publish_state_(number::Number *number, float value);
+  void publish_state_(select::Select *select, const std::string &state);
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
   void write_settings_(SoyosourceSettingsFrameT *frame);
