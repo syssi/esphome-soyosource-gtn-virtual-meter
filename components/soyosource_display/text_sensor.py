@@ -9,13 +9,14 @@ from esphome.const import (
 )
 
 from . import CONF_SOYOSOURCE_DISPLAY_ID, SoyosourceDisplay
+from .const import CONF_OPERATION_MODE
 
 DEPENDENCIES = ["soyosource_display"]
 
 CODEOWNERS = ["@syssi"]
 
 CONF_ERRORS = "errors"
-CONF_OPERATION_MODE = "operation_mode"
+# CONF_OPERATION_MODE from const
 CONF_OPERATION_STATUS = "operation_status"
 
 ICON_ERRORS = "mdi:alert-circle-outline"

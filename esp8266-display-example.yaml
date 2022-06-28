@@ -85,6 +85,16 @@ number:
     start_delay:
       name: "${name} start delay"
 
+select:
+  - platform: soyosource_display
+    operation_mode:
+      name: "${name} operation mode"
+      optionsmap:
+        1: "PV"
+        2: "Battery Constant Power"
+        17: "PV Limit"
+        18: "Battery Limit"
+
 sensor:
   - platform: template
     name: "dummy powermeter"
