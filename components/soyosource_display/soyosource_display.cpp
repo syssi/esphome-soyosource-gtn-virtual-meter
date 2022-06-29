@@ -8,7 +8,11 @@ namespace soyosource_display {
 static const char *const TAG = "soyosource_display";
 
 static const uint8_t SOF_REQUEST = 0x55;
-static const uint8_t SOF_RESPONSE = 0xA6;
+static const uint8_t SOF_SOYO_RESPONSE = 0xA6;
+static const uint8_t SOF_MS51_RESPONSE = 0x5A;
+
+static const uint8_t SOF_SOYO_RESPONSE_LEN = 15;
+static const uint8_t SOF_MS51_RESPONSE_LEN = 17;
 
 static const uint8_t STATUS_COMMAND = 0x01;
 static const uint8_t SETTINGS_COMMAND = 0x03;
@@ -58,31 +62,45 @@ bool SoyosourceDisplay::parse_soyosource_display_byte_(uint8_t byte) {
   size_t at = this->rx_buffer_.size();
   this->rx_buffer_.push_back(byte);
   const uint8_t *raw = &this->rx_buffer_[0];
-  uint16_t frame_len = 15;
+  uint16_t frame_len = SOF_SOYO_RESPONSE_LEN;
+  uint8_t function_pos = 3;
 
-  // Supported responses
+  // Supported Soyosource responses
   //
-  // Status request    >>> 0x55 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xFE
-  // Status response   <<< 0xA6 0x00 0x00 0xD1 0x02 0x00 0x00 0x00 0x00 0x00 0xFB 0x64 0x02 0x0D 0xBE
+  // Status request        >>> 0x55 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xFE
+  // Status response       <<< 0xA6 0x00 0x00 0xD1 0x02 0x00 0x00 0x00 0x00 0x00 0xFB 0x64 0x02 0x0D 0xBE
   //
-  // Settings request  >>> 0x55 0x03 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xFC
-  // Settings response <<< 0xA6 0x00 0x00 0xD3 0x02 0xD4 0x30 0x30 0x2D 0x00 0xFB 0x64 0x4B 0x06 0x19
+  // Settings request      >>> 0x55 0x03 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xFC
+  // Settings response     <<< 0xA6 0x00 0x00 0xD3 0x02 0xD4 0x30 0x30 0x2D 0x00 0xFB 0x64 0x4B 0x06 0x19
   //
   if (at == 0)
     return true;
 
-  if (raw[0] != SOF_RESPONSE) {
-    ESP_LOGW(TAG, "Invalid header.");
+  if (raw[0] != SOF_SOYO_RESPONSE && raw[0] != SOF_MS51_RESPONSE) {
+    ESP_LOGVV(TAG, "Invalid header");
 
     // return false to reset buffer
     return false;
+  }
+
+  // Supported MS51 responses
+  //
+  // Status request        >>> 0x55 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xFE
+  // Status response       <<< 0x5A 0x01 0xD1 0x02 0x00 0x00 0x00 0x00 0x00 0xE7 0x32 0x00 0x00 0x00 0x00 0x19 0xF9
+  //
+  // Settings request     >>> 0x55 0x03 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xFC
+  // Settings response    <<< 0x5A 0x01 0xD3 0x02 0xD4 0x30 0x31 0x2F 0x00 0xE7 0x64 0x5A 0x00 0x06 0x37 0x5A 0x89
+  //
+  if (raw[0] == SOF_MS51_RESPONSE) {
+    frame_len = SOF_MS51_RESPONSE_LEN;
+    function_pos = 2;
   }
 
   // Byte 0...14
   if (at < frame_len - 1)
     return true;
 
-  uint8_t function = raw[3] & 15;
+  uint8_t function = raw[function_pos] & 15;
 
   uint8_t computed_crc = chksum(raw, frame_len - 1);
   uint8_t remote_crc = raw[frame_len - 1];
@@ -100,25 +118,97 @@ bool SoyosourceDisplay::parse_soyosource_display_byte_(uint8_t byte) {
 }
 
 void SoyosourceDisplay::on_soyosource_display_data_(const uint8_t &function, const std::vector<uint8_t> &data) {
-  if (data.size() != 14) {
-    ESP_LOGW(TAG, "Invalid size for soyosource display status packet!");
+  if (data.size() != SOF_SOYO_RESPONSE_LEN - 1 && data.size() != SOF_MS51_RESPONSE_LEN - 1) {
+    ESP_LOGW(TAG, "Invalid frame size!");
     return;
   }
 
-  switch (function) {
-    case STATUS_COMMAND:
-      this->on_status_data_(data);
-      this->send_command(SETTINGS_COMMAND);
-      break;
-    case SETTINGS_COMMAND:
-      this->on_settings_data_(data);
-      break;
-    default:
-      ESP_LOGW(TAG, "Unhandled response received: %s", format_hex_pretty(&data.front(), data.size()).c_str());
+  uint8_t response_source = data[0];
+  if (response_source == SOF_MS51_RESPONSE) {
+    switch (function) {
+      case STATUS_COMMAND:
+        this->on_ms51_status_data_(data);
+        this->send_command(SETTINGS_COMMAND);
+        return;
+      case SETTINGS_COMMAND:
+        this->on_ms51_settings_data_(data);
+        return;
+    }
   }
+
+  if (response_source == SOF_SOYO_RESPONSE) {
+    switch (function) {
+      case STATUS_COMMAND:
+        this->on_soyosource_status_data_(data);
+        this->send_command(SETTINGS_COMMAND);
+        return;
+      case SETTINGS_COMMAND:
+        this->on_soyosource_settings_data_(data);
+        return;
+    }
+  }
+
+  ESP_LOGW(TAG, "Unhandled response received: %s", format_hex_pretty(&data.front(), data.size()).c_str());
 }
 
-void SoyosourceDisplay::on_status_data_(const std::vector<uint8_t> &data) {
+void SoyosourceDisplay::on_ms51_status_data_(const std::vector<uint8_t> &data) {
+  auto soyosource_get_16bit = [&](size_t i) -> uint16_t {
+    return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
+  };
+
+  // Soyosource status: 0xA6 0x02 0xEA 0x91 0x40 0x01 0xC5 0x00 0x32 0x00 0xF7 0x64 0x02 0x12 0xDB
+  // MS5 status:             0x5A 0x01 0x91 0x40 0x01 0xC5 0x00 0x32 0x00 0xF7 0x32 0x00 0xCA 0x00 0x00 0x17 0x2B
+
+  // Byte Len  Payload                Content              Coeff.      Unit        Example value
+  // 0     1   0x5A                   Header
+  // 1     1   0x01
+  ESP_LOGD(TAG, "Unknown (raw): %02X", data[1]);
+
+  // 2     1   0x91                   Operation mode (High nibble), Frame function (Low nibble)
+  ESP_LOGV(TAG, "Operation mode (raw): %02X", data[2]);
+  uint8_t raw_operation_mode = data[2] >> 4;
+  this->publish_state_(this->operation_mode_id_sensor_, raw_operation_mode);
+  this->publish_state_(this->operation_mode_text_sensor_, this->operation_mode_to_string_(raw_operation_mode));
+
+  // 3     1   0x40                   Error and status bitmask
+  ESP_LOGV(TAG, "Error and status bitmask (raw): %02X", data[3]);
+  uint8_t raw_status_bitmask = data[3] & ~(1 << 6);
+  this->publish_state_(this->limiter_connected_binary_sensor_, (bool) (data[3] & (1 << 6)));
+  this->publish_state_(this->operation_status_id_sensor_, (raw_status_bitmask == 0x00) ? 0 : 2);
+  this->publish_state_(this->operation_status_text_sensor_, (raw_status_bitmask == 0x00) ? "Normal" : "Standby");
+  this->publish_state_(this->error_bitmask_sensor_, (float) raw_status_bitmask);
+  this->publish_state_(this->errors_text_sensor_, this->error_bits_to_string_(raw_status_bitmask));
+
+  // 4     2   0x01 0xC5              Battery voltage
+  uint16_t raw_battery_voltage = soyosource_get_16bit(4);
+  float battery_voltage = raw_battery_voltage * 0.1f;
+  this->publish_state_(this->battery_voltage_sensor_, battery_voltage);
+
+  // 6     2   0x00 0x32              Battery current
+  uint16_t raw_battery_current = soyosource_get_16bit(6);
+  float battery_current = raw_battery_current * 0.1f;
+  float battery_power = battery_voltage * battery_current;
+  this->publish_state_(this->battery_current_sensor_, battery_current);
+  this->publish_state_(this->battery_power_sensor_, battery_power);
+
+  // 8     2   0x00 0xF7              Grid voltage
+  uint16_t raw_ac_voltage = soyosource_get_16bit(8);
+  float ac_voltage = raw_ac_voltage * 1.0f;
+  this->publish_state_(this->ac_voltage_sensor_, ac_voltage);
+
+  // 10    1   0x32                   Grid frequency (50 Hz)
+  this->publish_state_(this->ac_frequency_sensor_, data[10]);
+
+  // 11    4   0x00 0xCA 0x00 0x00
+  ESP_LOGD(TAG, "Unknown (raw): %02X %02X %02X %02X", data[11], data[12], data[13], data[14]);
+
+  // 15    1   0x17                   Temperature (23 °C)
+  uint8_t temperature = data[15];
+  this->publish_state_(this->temperature_sensor_, temperature);
+  this->publish_state_(this->fan_running_binary_sensor_, (bool) (temperature >= 45.0));
+}
+
+void SoyosourceDisplay::on_soyosource_status_data_(const std::vector<uint8_t> &data) {
   auto soyosource_get_16bit = [&](size_t i) -> uint16_t {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
@@ -171,7 +261,82 @@ void SoyosourceDisplay::on_status_data_(const std::vector<uint8_t> &data) {
   this->publish_state_(this->fan_running_binary_sensor_, (bool) (temperature >= 45.0));
 }
 
-void SoyosourceDisplay::on_settings_data_(const std::vector<uint8_t> &data) {
+void SoyosourceDisplay::on_ms51_settings_data_(const std::vector<uint8_t> &data) {
+  auto soyosource_get_16bit = [&](size_t i) -> uint16_t {
+    return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
+  };
+
+  // Settings response example   0x5A 0x01 0xD3 0x02 0xD4 0x30 0x31 0x2F 0x00 0xE6 0x64 0x5A 0x00 0x06 0x37 0x5A 0x8A
+
+  ESP_LOGI(TAG, "Settings:");
+
+  // Byte Len  Payload                Content              Coeff.      Unit        Example value
+  // 0     1   0x5A                   Header
+  // 1     1   0x01
+  ESP_LOGD(TAG, "  Unknown (byte 1): %02X", data[1]);
+
+  // 2     1   0xD3                   Operation mode (High nibble), Frame function (Low nibble)
+  uint8_t operation_mode_setting = this->operation_mode_to_operation_mode_setting_(data[2] >> 4);
+  ESP_LOGI(TAG, "  Operation mode setting: %02X", operation_mode_setting);
+  this->current_settings_.OperationMode = operation_mode_setting;
+  if (this->operation_mode_select_ != nullptr) {
+    for (auto &listener : this->select_listeners_) {
+      if (listener.holding_register == 0x0A) {
+        listener.on_value(operation_mode_setting);
+      }
+    }
+  }
+
+  // 3     1   0x02                   Operation status bitmask
+  // 4     1   0xD4                   Device model
+  ESP_LOGI(TAG, "  Device model: %d W (%d)", (data[4] % 100) * 100, data[4]);
+
+  // 5     1   0x30                   Device type
+  ESP_LOGI(TAG, "  Device type: %s (%d)", this->device_type_to_string_(data[5]).c_str(), data[5]);
+
+  // 6     1   0x31                   Starting voltage                 V           49
+  uint8_t start_voltage = data[6];
+  ESP_LOGI(TAG, "  Start voltage: %d V", start_voltage);
+  this->current_settings_.StartVoltage = start_voltage;
+  this->publish_state_(this->start_voltage_number_, start_voltage);
+
+  // 7     1   0x2F                   Shutdown voltage                 V           47
+  uint8_t shutdown_voltage = data[7];
+  ESP_LOGI(TAG, "  Shutdown voltage: %d V", shutdown_voltage);
+  this->current_settings_.ShutdownVoltage = shutdown_voltage;
+  this->publish_state_(this->shutdown_voltage_number_, shutdown_voltage);
+
+  // 8     2   0x00 0xE6              Grid voltage                     V           230 V
+  ESP_LOGV(TAG, "  Grid voltage: %.0f V", (float) soyosource_get_16bit(8));
+
+  // 10    1   0x64                   Grid frequency         0.5       Hz          100 * 0.5 = 50 Hz
+  uint8_t grid_frequency = data[10];
+  ESP_LOGV(TAG, "  Grid frequency: %.1f Hz", (float) grid_frequency * 0.5f);
+  this->current_settings_.GridFrequency = grid_frequency;
+
+  // 11    1   0x5A                   Battery output power   10        W           90 * 10 = 900 W
+  uint8_t output_power_limit = data[11];
+  ESP_LOGI(TAG, "  Output power limit: %d W", output_power_limit * 10);
+  this->current_settings_.OutputPowerLimit = output_power_limit;
+  this->publish_state_(this->output_power_limit_number_, output_power_limit * 10);
+
+  // 12    1   0x00
+  ESP_LOGD(TAG, "  Unknown (byte 12): %02X", data[12]);
+
+  // 13    1   0x06                   Delay in seconds                 s           6
+  uint8_t start_delay = data[13];
+  ESP_LOGI(TAG, "  Start delay: %d s", start_delay);
+  this->current_settings_.StartDelay = start_delay;
+  this->publish_state_(this->start_delay_number_, start_delay);
+
+  // 14    1   0x37
+  // 15    1   0x5A
+  ESP_LOGD(TAG, "  Unknown (byte 14-15): %02X %02X", data[14], data[15]);
+
+  // 16    1   0x8A                   Checksum
+}
+
+void SoyosourceDisplay::on_soyosource_settings_data_(const std::vector<uint8_t> &data) {
   auto soyosource_get_16bit = [&](size_t i) -> uint16_t {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
