@@ -11,6 +11,9 @@ static const uint8_t SOF_REQUEST = 0x55;
 static const uint8_t SOF_SOYO_RESPONSE = 0xA6;
 static const uint8_t SOF_MS51_RESPONSE = 0x5A;
 
+static const uint8_t SOF_SOYO_RESPONSE_LEN = 15;
+static const uint8_t SOF_MS51_RESPONSE_LEN = 17;
+
 static const uint8_t STATUS_COMMAND = 0x01;
 static const uint8_t SETTINGS_COMMAND = 0x03;
 static const uint8_t REBOOT_COMMAND = 0x11;
@@ -59,7 +62,7 @@ bool SoyosourceDisplay::parse_soyosource_display_byte_(uint8_t byte) {
   size_t at = this->rx_buffer_.size();
   this->rx_buffer_.push_back(byte);
   const uint8_t *raw = &this->rx_buffer_[0];
-  uint16_t frame_len = 15;
+  uint16_t frame_len = SOF_SOYO_RESPONSE_LEN;
   uint8_t function_pos = 3;
 
   // Supported Soyosource responses
@@ -87,7 +90,7 @@ bool SoyosourceDisplay::parse_soyosource_display_byte_(uint8_t byte) {
   // MS51 settings response  <<< 0x5A 0x01 0xD3 0x02 0xD4 0x30 0x31 0x2F 0x00 0xE7 0x64 0x5A 0x00 0x06 0x37 0x5A 0x89
   //
   if (raw[0] == SOF_MS51_RESPONSE) {
-    frame_len = 17;
+    frame_len = SOF_MS51_RESPONSE_LEN;
     function_pos = 2;
   }
 
@@ -113,7 +116,12 @@ bool SoyosourceDisplay::parse_soyosource_display_byte_(uint8_t byte) {
 }
 
 void SoyosourceDisplay::on_soyosource_display_data_(const uint8_t &function, const std::vector<uint8_t> &data) {
-  if (data.size() != 14) {
+  if (data.size() == SOF_MS51_RESPONSE_LEN - 1 && data[0] == SOF_MS51_RESPONSE) {
+    ESP_LOGW(TAG, "Unhandled MS51 response received: %s", format_hex_pretty(&data.front(), data.size()).c_str());
+    return;
+  }
+
+  if (data.size() != SOF_SOYO_RESPONSE_LEN - 1) {
     ESP_LOGW(TAG, "Invalid size for soyosource display status packet!");
     return;
   }
