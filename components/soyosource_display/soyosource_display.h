@@ -120,8 +120,8 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
   SoyosourceSettingsFrameT current_settings_;
 
   void on_soyosource_display_data_(const uint8_t &function, const std::vector<uint8_t> &data);
-  void on_status_data_(const std::vector<uint8_t> &data);
-  void on_settings_data_(const std::vector<uint8_t> &data);
+  void on_soyosource_status_data_(const std::vector<uint8_t> &data);
+  void on_soyosource_settings_data_(const std::vector<uint8_t> &data);
   bool parse_soyosource_display_byte_(uint8_t byte);
   void publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state);
   void publish_state_(number::Number *number, float value);
