@@ -262,10 +262,6 @@ void SoyosourceDisplay::on_soyosource_status_data_(const std::vector<uint8_t> &d
 }
 
 void SoyosourceDisplay::on_ms51_settings_data_(const std::vector<uint8_t> &data) {
-  auto soyosource_get_16bit = [&](size_t i) -> uint16_t {
-    return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
-  };
-
   // Settings response example   0x5A 0x01 0xD3 0x02 0xD4 0x30 0x31 0x2F 0x00 0xE6 0x64 0x5A 0x00 0x06 0x37 0x5A 0x8A
 
   ESP_LOGI(TAG, "Settings:");
