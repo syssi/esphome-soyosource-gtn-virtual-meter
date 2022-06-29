@@ -262,12 +262,78 @@ void SoyosourceDisplay::on_soyosource_status_data_(const std::vector<uint8_t> &d
 }
 
 void SoyosourceDisplay::on_ms51_settings_data_(const std::vector<uint8_t> &data) {
+  auto soyosource_get_16bit = [&](size_t i) -> uint16_t {
+    return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
+  };
+
   // Settings response example   0x5A 0x01 0xD3 0x02 0xD4 0x30 0x31 0x2F 0x00 0xE6 0x64 0x5A 0x00 0x06 0x37 0x5A 0x8A
 
   ESP_LOGI(TAG, "Settings:");
 
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
   // 0     1   0x5A                   Header
+  // 1     1   0x01
+  ESP_LOGD(TAG, "  Unknown (byte 1): %02X", data[1]);
+
+  // 2     1   0xD3                   Operation mode (High nibble), Frame function (Low nibble)
+  uint8_t operation_mode_setting = this->operation_mode_to_operation_mode_setting_(data[2] >> 4);
+  ESP_LOGI(TAG, "  Operation mode setting: %02X", operation_mode_setting);
+  this->current_settings_.OperationMode = operation_mode_setting;
+  if (this->operation_mode_select_ != nullptr) {
+    for (auto &listener : this->select_listeners_) {
+      if (listener.holding_register == 0x0A) {
+        listener.on_value(operation_mode_setting);
+      }
+    }
+  }
+
+  // 3     1   0x02                   Operation status bitmask
+  // 4     1   0xD4                   Device model
+  ESP_LOGI(TAG, "  Device model: %d W (%d)", (data[4] % 100) * 100, data[4]);
+
+  // 5     1   0x30                   Device type
+  ESP_LOGI(TAG, "  Device type: %s (%d)", this->device_type_to_string_(data[5]).c_str(), data[5]);
+
+  // 6     1   0x31                   Starting voltage                 V           49
+  uint8_t start_voltage = data[6];
+  ESP_LOGI(TAG, "  Start voltage: %d V", start_voltage);
+  this->current_settings_.StartVoltage = start_voltage;
+  this->publish_state_(this->start_voltage_number_, start_voltage);
+
+  // 7     1   0x2F                   Shutdown voltage                 V           47
+  uint8_t shutdown_voltage = data[7];
+  ESP_LOGI(TAG, "  Shutdown voltage: %d V", shutdown_voltage);
+  this->current_settings_.ShutdownVoltage = shutdown_voltage;
+  this->publish_state_(this->shutdown_voltage_number_, shutdown_voltage);
+
+  // 8     2   0x00 0xE6              Grid voltage                     V           230 V
+  ESP_LOGV(TAG, "  Grid voltage: %.0f V", (float) soyosource_get_16bit(8));
+
+  // 10    1   0x64                   Grid frequency         0.5       Hz          100 * 0.5 = 50 Hz
+  uint8_t grid_frequency = data[10];
+  ESP_LOGV(TAG, "  Grid frequency: %.1f Hz", (float) grid_frequency * 0.5f);
+  this->current_settings_.GridFrequency = grid_frequency;
+
+  // 11    1   0x5A                   Battery output power   10        W           90 * 10 = 900 W
+  uint8_t output_power_limit = data[11];
+  ESP_LOGI(TAG, "  Output power limit: %d W", output_power_limit * 10);
+  this->current_settings_.OutputPowerLimit = output_power_limit;
+  this->publish_state_(this->output_power_limit_number_, output_power_limit * 10);
+
+  // 12    1   0x00
+  ESP_LOGD(TAG, "  Unknown (byte 12): %02X", data[12]);
+
+  // 13    1   0x06                   Delay in seconds                 s           6
+  uint8_t start_delay = data[13];
+  ESP_LOGI(TAG, "  Start delay: %d s", start_delay);
+  this->current_settings_.StartDelay = start_delay;
+  this->publish_state_(this->start_delay_number_, start_delay);
+
+  // 14    1   0x37
+  // 15    1   0x5A
+  ESP_LOGD(TAG, "  Unknown (byte 14-15): %02X %02X", data[14], data[15]);
+
+  // 16    1   0x8A                   Checksum
 }
 
 void SoyosourceDisplay::on_soyosource_settings_data_(const std::vector<uint8_t> &data) {
