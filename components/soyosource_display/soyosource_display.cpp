@@ -118,28 +118,37 @@ bool SoyosourceDisplay::parse_soyosource_display_byte_(uint8_t byte) {
 }
 
 void SoyosourceDisplay::on_soyosource_display_data_(const uint8_t &function, const std::vector<uint8_t> &data) {
-  if (data.size() == SOF_MS51_RESPONSE_LEN - 1 && data[0] == SOF_MS51_RESPONSE) {
-    this->on_ms51_status_data_(data);
-    // ESP_LOGW(TAG, "Unhandled MS51 response received: %s", format_hex_pretty(&data.front(), data.size()).c_str());
+  if (data.size() != SOF_SOYO_RESPONSE_LEN - 1 && data.size() != SOF_MS51_RESPONSE_LEN - 1) {
+    ESP_LOGW(TAG, "Invalid frame size!");
     return;
   }
 
-  if (data.size() != SOF_SOYO_RESPONSE_LEN - 1) {
-    ESP_LOGW(TAG, "Invalid size for soyosource display status packet!");
-    return;
+  uint8_t response_source = data[0];
+  if (response_source == SOF_MS51_RESPONSE) {
+    switch (function) {
+      case STATUS_COMMAND:
+        this->on_ms51_status_data_(data);
+        this->send_command(SETTINGS_COMMAND);
+        return;
+      case SETTINGS_COMMAND:
+        this->on_ms51_settings_data_(data);
+        return;
+    }
   }
 
-  switch (function) {
-    case STATUS_COMMAND:
-      this->on_soyosource_status_data_(data);
-      this->send_command(SETTINGS_COMMAND);
-      break;
-    case SETTINGS_COMMAND:
-      this->on_soyosource_settings_data_(data);
-      break;
-    default:
-      ESP_LOGW(TAG, "Unhandled response received: %s", format_hex_pretty(&data.front(), data.size()).c_str());
+  if (response_source == SOF_SOYO_RESPONSE) {
+    switch (function) {
+      case STATUS_COMMAND:
+        this->on_soyosource_status_data_(data);
+        this->send_command(SETTINGS_COMMAND);
+        return;
+      case SETTINGS_COMMAND:
+        this->on_soyosource_settings_data_(data);
+        return;
+    }
   }
+
+  ESP_LOGW(TAG, "Unhandled response received: %s", format_hex_pretty(&data.front(), data.size()).c_str());
 }
 
 void SoyosourceDisplay::on_ms51_status_data_(const std::vector<uint8_t> &data) {
@@ -250,6 +259,17 @@ void SoyosourceDisplay::on_soyosource_status_data_(const std::vector<uint8_t> &d
   float temperature = (soyosource_get_16bit(12) - 300) * 0.1f;
   this->publish_state_(this->temperature_sensor_, temperature);
   this->publish_state_(this->fan_running_binary_sensor_, (bool) (temperature >= 45.0));
+}
+
+void SoyosourceDisplay::on_ms51_settings_data_(const std::vector<uint8_t> &data) {
+  auto soyosource_get_16bit = [&](size_t i) -> uint16_t {
+    return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
+  };
+
+  ESP_LOGI(TAG, "Settings:");
+
+  // Byte Len  Payload                Content              Coeff.      Unit        Example value
+  // 0     1   0xA6                   Header
 }
 
 void SoyosourceDisplay::on_soyosource_settings_data_(const std::vector<uint8_t> &data) {
