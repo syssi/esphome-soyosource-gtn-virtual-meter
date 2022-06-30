@@ -102,16 +102,18 @@ wifi:
   password: !secret wifi_password
 
 ota:
-# api:
 
-logger:
-  baud_rate: 0
-
+# If you use Home Assistant please remove this `mqtt` section and uncomment the `api` component!
 mqtt:
   broker: !secret mqtt_host
   username: !secret mqtt_username
   password: !secret mqtt_password
   id: mqtt_client
+
+# api:
+
+logger:
+  baud_rate: 0
 
 uart:
   baud_rate: 4800
