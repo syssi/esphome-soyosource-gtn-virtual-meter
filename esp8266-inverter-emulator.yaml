@@ -1,9 +1,9 @@
 substitutions:
   name: soyosource-gtn-inverter-emu
-  device_description: "Emulate the USB-TTL port traffic of the Soyosource GTN (WiFi version)"
+  device_description: "Emulate the TTL-WIFI port traffic of the Soyosource GTN (WiFi version)"
   external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
-  tx_pin: GPIO1
-  rx_pin: GPIO3
+  tx_pin: GPIO4
+  rx_pin: GPIO5
 
 esphome:
   name: ${name}
@@ -25,9 +25,7 @@ wifi:
 
 ota:
 api:
-
 logger:
-  baud_rate: 0
 
 # Please be careful: The display port has a logic level of 5V.
 uart:

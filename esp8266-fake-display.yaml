@@ -1,8 +1,8 @@
 substitutions:
   name: fake-display
-  device_description: "Emulate the USB-TTL port traffic of the Soyosource GTN (WiFi version)"
-  tx_pin: GPIO5
-  rx_pin: GPIO4
+  device_description: "Emulate the TTL-WIFI port traffic of the Soyosource GTN (WiFi version)"
+  tx_pin: GPIO4
+  rx_pin: GPIO5
 
 esphome:
   name: ${name}
@@ -18,8 +18,8 @@ wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
 
-api:
 ota:
+api:
 logger:
 
 uart:
