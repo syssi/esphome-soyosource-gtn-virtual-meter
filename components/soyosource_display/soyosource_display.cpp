@@ -220,17 +220,17 @@ void SoyosourceDisplay::on_soyosource_status_data_(const std::vector<uint8_t> &d
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
   // 0     1   0xA6                   Header
   // 1     2   0x00 0x84              Requested power via RS485
-  ESP_LOGI(TAG, "Requested power: %d W", soyosource_get_16bit(1));
+  ESP_LOGI(TAG, "  Requested power: %d W", soyosource_get_16bit(1));
 
   // 3     1   0x91                   Operation mode (High nibble), Frame function (Low nibble)
   //                                                                0x01: Status frame
-  ESP_LOGV(TAG, "Operation mode (raw): %02X", data[3]);
+  ESP_LOGV(TAG, "  Operation mode (raw): %02X", data[3]);
   uint8_t raw_operation_mode = data[3] >> 4;
   this->publish_state_(this->operation_mode_id_sensor_, raw_operation_mode);
   this->publish_state_(this->operation_mode_text_sensor_, this->operation_mode_to_string_(raw_operation_mode));
 
   // 4     1   0x40                   Error and status bitmask
-  ESP_LOGV(TAG, "Error and status bitmask (raw): %02X", data[4]);
+  ESP_LOGV(TAG, "  Error and status bitmask (raw): %02X", data[4]);
   uint8_t raw_status_bitmask = data[4] & ~(1 << 6);
   this->publish_state_(this->limiter_connected_binary_sensor_, (bool) (data[4] & (1 << 6)));
   this->publish_state_(this->operation_status_id_sensor_, (raw_status_bitmask == 0x00) ? 0 : 2);
