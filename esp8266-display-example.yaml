@@ -1,7 +1,11 @@
 substitutions:
   name: soyosource-gtn-display
-  device_description: "Monitor and control the WiFi version of the Soyosource GTN via the USB-TTL port and control the power output on demand via RS485"
+  device_description: "Monitor and control the WiFi version of the Soyosource GTN via the TTL-WIFI port and control the power output on demand via RS485"
   external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
+  tx_pin_ttl_wifi: GPIO14
+  rx_pin_ttl_wifi: GPIO12
+  tx_pin_rs485: GPIO4
+  rx_pin_rs485: GPIO5
 
 esphome:
   name: ${name}
@@ -22,7 +26,16 @@ wifi:
   password: !secret wifi_password
 
 ota:
-api:
+
+# If you use Home Assistant please remove this `mqtt` section and uncomment the `api` component!
+mqtt:
+  broker: !secret mqtt_host
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+  id: mqtt_client
+
+# api:
+
 logger:
   level: INFO
 
@@ -30,15 +43,13 @@ logger:
 uart:
   - id: uart0
     baud_rate: 9600
-    tx_pin: GPIO14
-    rx_pin: GPIO12
-    debug:
-      direction: BOTH
+    tx_pin: ${tx_pin_ttl_wifi}
+    rx_pin: ${rx_pin_ttl_wifi}
 
   - id: uart1
     baud_rate: 4800
-    tx_pin: GPIO4
-    rx_pin: GPIO5
+    tx_pin: ${tx_pin_rs485}
+    rx_pin: ${rx_pin_rs485}
 
 soyosource_modbus:
   - id: modbus0

@@ -4,6 +4,10 @@ substitutions:
   device0: firstfloor_soyosource_gtn_virtual_meter
   device1: groundfloor_soyosource_gtn_virtual_meter
   external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
+  tx_pin_uart0: GPIO1
+  rx_pin_uart0: GPIO3
+  tx_pin_uart1: GPIO14
+  rx_pin_uart1: GPIO4
 
 esphome:
   name: ${name}
@@ -26,28 +30,30 @@ ethernet:
   clk_mode: GPIO17_OUT
   phy_addr: 0
 
-# api:
 ota:
 
-logger:
-  baud_rate: 0
-  level: INFO
-
+# If you use Home Assistant please remove this `mqtt` section and uncomment the `api` component!
 mqtt:
   broker: !secret mqtt_host
   username: !secret mqtt_username
   password: !secret mqtt_password
   id: mqtt_client
 
+# api:
+
+logger:
+  baud_rate: 0
+  level: INFO
+
 uart:
   - id: uart0
     baud_rate: 4800
-    tx_pin: GPIO1
-    rx_pin: GPIO3
+    tx_pin: ${tx_pin_uart0}
+    rx_pin: ${rx_pin_uart0}
   - id: uart1
     baud_rate: 4800
-    tx_pin: GPIO14
-    rx_pin: GPIO4
+    tx_pin: ${tx_pin_uart1}
+    rx_pin: ${rx_pin_uart1}
 
 soyosource_modbus:
   - id: modbus0
