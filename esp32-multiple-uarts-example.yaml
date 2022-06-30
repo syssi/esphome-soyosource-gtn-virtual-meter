@@ -1,12 +1,18 @@
 substitutions:
   name: soyosource_gtn_virtual_meter
+  device_description: "Monitor multiple Soyosource GTNs and control the power output on demand both via RS485"
   device0: firstfloor_soyosource_gtn_virtual_meter
   device1: groundfloor_soyosource_gtn_virtual_meter
   external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
 
 esphome:
   name: ${name}
-  platform: ESP32
+  comment: ${device_description}
+  project:
+    name: "syssi.esphome-soyosource-gtn-virtual-meter"
+    version: 1.1.0
+
+esp32:
   board: esp-wrover-kit
 
 external_components:

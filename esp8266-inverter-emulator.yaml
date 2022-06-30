@@ -1,12 +1,18 @@
 substitutions:
   name: soyosource-gtn-inverter-emu
+  device_description: "Emulate the USB-TTL port traffic of the Soyosource GTN (WiFi version)"
   external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
   tx_pin: GPIO1
   rx_pin: GPIO3
 
 esphome:
   name: ${name}
-  platform: ESP8266
+  comment: ${device_description}
+  project:
+    name: "syssi.esphome-soyosource-gtn-virtual-meter"
+    version: 1.1.0
+
+esp8266:
   board: d1_mini
 
 external_components:
