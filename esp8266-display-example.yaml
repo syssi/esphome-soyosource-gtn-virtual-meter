@@ -1,10 +1,16 @@
 substitutions:
   name: soyosource-gtn-display
+  device_description: "Monitor and control the WiFi version of the Soyosource GTN via the USB-TTL port and control the power output on demand via RS485"
   external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
 
 esphome:
   name: ${name}
-  platform: ESP8266
+  comment: ${device_description}
+  project:
+    name: "syssi.esphome-soyosource-gtn-virtual-meter"
+    version: 1.1.0
+
+esp8266:
   board: d1_mini
 
 external_components:

@@ -1,11 +1,17 @@
 substitutions:
   name: fake-display
+  device_description: "Emulate the USB-TTL port traffic of the Soyosource GTN (WiFi version)"
   tx_pin: GPIO5
   rx_pin: GPIO4
 
 esphome:
   name: ${name}
-  platform: ESP8266
+  comment: ${device_description}
+  project:
+    name: "syssi.esphome-soyosource-gtn-virtual-meter"
+    version: 1.1.0
+
+esp8266:
   board: d1_mini
 
 wifi:
@@ -25,13 +31,8 @@ uart:
     dummy_receiver: true
 
 interval:
-  - interval: 12s
+  - interval: 11s
     then:
-#      # status response (bad checksum?)
-#      - uart.write: [0xA6, 0x03, 0x84, 0x91, 0x40, 0x01, 0xC5, 0x00, 0xDB, 0x00, 0xF7, 0x63, 0x02, 0xBC, 0xFE]
-#      - delay: 1s
-
-      # status response (fixed checksum)
       - uart.write: [0xA6, 0x03, 0x84, 0x91, 0x40, 0x01, 0xC5, 0x00, 0xDB, 0x00, 0xF7, 0x63, 0x02, 0xBC, 0xEE]
       - delay: 1s
 
