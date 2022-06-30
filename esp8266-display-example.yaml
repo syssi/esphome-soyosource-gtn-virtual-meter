@@ -18,11 +18,7 @@ wifi:
 ota:
 api:
 logger:
-  level: DEBUG
-  logs:
-    sensor: INFO
-    text_sensor: INFO
-    soyosource_virtual_meter: INFO
+  level: INFO
 
 # Please be careful: The display port has a logic level of 5V.
 uart:
