@@ -133,6 +133,10 @@ void SoyosourceDisplay::on_soyosource_display_data_(const uint8_t &function, con
       case SETTINGS_COMMAND:
         this->on_ms51_settings_data_(data);
         return;
+      case 0x00:
+        ESP_LOGW(TAG, "No data from the Soyosource inverter received yet. This should never happen if the dongle is "
+                      "plugged into the inverter");
+        return;
     }
   }
 
