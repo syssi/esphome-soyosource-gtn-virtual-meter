@@ -134,7 +134,7 @@ void SoyosourceDisplay::on_soyosource_display_data_(const uint8_t &function, con
         this->on_ms51_settings_data_(data);
         return;
       case 0x00:
-        ESP_LOGW(TAG, "No data from the Soyosource inverter received yet. This should never happen if the dongle is "
+        ESP_LOGE(TAG, "No data from the Soyosource inverter received yet. This should never happen if the dongle is "
                       "plugged into the inverter");
         return;
     }
@@ -168,7 +168,7 @@ void SoyosourceDisplay::on_ms51_status_data_(const std::vector<uint8_t> &data) {
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
   // 0     1   0x5A                   Header
   // 1     1   0x01
-  ESP_LOGD(TAG, "Unknown (raw): %02X", data[1]);
+  ESP_LOGD(TAG, "Unknown (raw): %02X (always 0x01?)", data[1]);
 
   // 2     1   0x91                   Operation mode (High nibble), Frame function (Low nibble)
   ESP_LOGV(TAG, "Operation mode (raw): %02X", data[2]);
