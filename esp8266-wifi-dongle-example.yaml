@@ -100,6 +100,8 @@ sensor:
       name: "${name} ac frequency"
     temperature:
       name: "${name} temperature"
+    total_energy:
+      name: "${name} total energy"
 
 text_sensor:
   - platform: soyosource_display

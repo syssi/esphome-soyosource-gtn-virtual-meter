@@ -3,7 +3,10 @@ from esphome.components import sensor
 import esphome.config_validation as cv
 from esphome.const import (
     CONF_BATTERY_VOLTAGE,
+    ICON_COUNTER,
+    DEVICE_CLASS_ENERGY,
     CONF_TEMPERATURE,
+    STATE_CLASS_TOTAL_INCREASING,
     DEVICE_CLASS_CURRENT,
     DEVICE_CLASS_EMPTY,
     DEVICE_CLASS_POWER,
@@ -34,10 +37,13 @@ CONF_AC_FREQUENCY = "ac_frequency"
 CONF_ERROR_BITMASK = "error_bitmask"
 CONF_OPERATION_MODE_ID = "operation_mode_id"
 CONF_OPERATION_STATUS_ID = "operation_status_id"
+CONF_TOTAL_ENERGY = "total_energy"
 
 ICON_ERROR_BITMASK = "mdi:alert-circle-outline"
 ICON_OPERATION_MODE = "mdi:heart-pulse"
 ICON_OPERATION_STATUS = "mdi:heart-pulse"
+
+UNIT_KILO_WATT_HOURS = "kWh"
 
 SENSORS = [
     CONF_BATTERY_VOLTAGE,
@@ -49,6 +55,7 @@ SENSORS = [
     CONF_ERROR_BITMASK,
     CONF_OPERATION_MODE_ID,
     CONF_OPERATION_STATUS_ID,
+    CONF_TOTAL_ENERGY,
 ]
 
 # pylint: disable=too-many-function-args
@@ -118,6 +125,13 @@ CONFIG_SCHEMA = cv.Schema(
             accuracy_decimals=1,
             device_class=DEVICE_CLASS_TEMPERATURE,
             state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_TOTAL_ENERGY): sensor.sensor_schema(
+            unit_of_measurement=UNIT_KILO_WATT_HOURS,
+            icon=ICON_COUNTER,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_ENERGY,
+            state_class=STATE_CLASS_TOTAL_INCREASING,
         ),
     }
 )

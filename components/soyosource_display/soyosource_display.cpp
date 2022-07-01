@@ -198,13 +198,16 @@ void SoyosourceDisplay::on_ms51_status_data_(const std::vector<uint8_t> &data) {
   float ac_voltage = raw_ac_voltage * 1.0f;
   this->publish_state_(this->ac_voltage_sensor_, ac_voltage);
 
-  // 10    1   0x32                   Grid frequency (50 Hz)
+  // 10    1   0x32                   Grid frequency       1.0         Hz          50 Hz
   this->publish_state_(this->ac_frequency_sensor_, data[10]);
 
-  // 11    4   0x00 0xCA 0x00 0x00
-  ESP_LOGD(TAG, "Unknown (raw): %02X %02X %02X %02X", data[11], data[12], data[13], data[14]);
+  // 11    2   0x00 0xCA
+  ESP_LOGD(TAG, "Unknown (raw): %02X %02X", data[11], data[12]);
 
-  // 15    1   0x17                   Temperature (23 °C)
+  // 13    2   0x00 0x00              Total energy         0.1         kWh         00.0 kWh
+  this->publish_state_(this->total_energy_sensor_, soyosource_get_16bit(13) * 0.1f);
+
+  // 15    1   0x17                   Temperature          1.0         °C          23 °C
   uint8_t temperature = data[15];
   this->publish_state_(this->temperature_sensor_, temperature);
   this->publish_state_(this->fan_running_binary_sensor_, (bool) (temperature >= 45.0));
