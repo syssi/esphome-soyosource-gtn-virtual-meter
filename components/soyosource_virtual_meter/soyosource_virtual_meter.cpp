@@ -84,6 +84,10 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_(int16_t consumption, uin
     return this->calculate_power_demand_negative_measurements_(consumption, last_power_demand);
   }
 
+  if (this->power_demand_calculation_ == POWER_DEMAND_CALCULATION_RESTART_ON_CROSSING_ZERO) {
+    return this->calculate_power_demand_restart_on_crossing_zero_(consumption, last_power_demand);
+  }
+
   return this->calculate_power_demand_oem_(consumption);
 }
 
@@ -113,6 +117,34 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(in
   }
 
   return 0;
+}
+
+int16_t SoyosourceVirtualMeter::calculate_power_demand_restart_on_crossing_zero_(int16_t consumption,
+                                                                                 uint16_t last_power_demand) {
+  ESP_LOGD(TAG, "'%s': Using the restart on crossing zero method to calculate the power demand: %d %d",
+           this->get_modbus_name(), consumption, last_power_demand);
+  if (this->buffer_ <= 0) {
+    ESP_LOGE(TAG,
+             "A non-positive buffer value (%d) doesn't make sense if you are using the restart on crossing zero method",
+             this->buffer_);
+  }
+
+  // importing_now   consumption   buffer   last_power_demand   power_demand   return
+  //     1000           1010         10          500               1500         900
+  //      400            410         10          500                900         900
+  //      300            310         10          500                800         800
+  //       10             20         10          500                510         510
+  //        5             15         10          500                505         505
+  //        0             10         10          500                500         500
+  //      -10              0         10          500                490           0
+  //     -200           -190         10          500                300           0
+  //     -500           -490         10          500                  0           0
+  //     -700           -690         10          500               -200           0
+  if (consumption <= 0) {
+    return 0;
+  }
+
+  return this->calculate_power_demand_negative_measurements_(consumption, last_power_demand);
 }
 
 int16_t SoyosourceVirtualMeter::calculate_power_demand_oem_(int16_t consumption) {

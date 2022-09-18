@@ -13,6 +13,7 @@ namespace soyosource_virtual_meter {
 enum PowerDemandCalculation {
   POWER_DEMAND_CALCULATION_DUMB_OEM_BEHAVIOR,
   POWER_DEMAND_CALCULATION_NEGATIVE_MEASUREMENTS_REQUIRED,
+  POWER_DEMAND_CALCULATION_RESTART_ON_CROSSING_ZERO,
 };
 
 class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus::SoyosourceModbusDevice {
@@ -89,6 +90,7 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
 
   int16_t calculate_power_demand_(int16_t consumption, uint16_t last_power_demand);
   int16_t calculate_power_demand_negative_measurements_(int16_t consumption, uint16_t last_power_demand);
+  int16_t calculate_power_demand_restart_on_crossing_zero_(int16_t consumption, uint16_t last_power_demand);
   int16_t calculate_power_demand_oem_(int16_t consumption);
 };
 
