@@ -1,0 +1,110 @@
+substitutions:
+  name: soyosource-wifi-dongle-web-only
+  device_description: "Monitor and control the WiFi version of the Soyosource GTN using the OEM WiFi dongle with a alternative firmware"
+  external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
+
+esphome:
+  name: ${name}
+  comment: ${device_description}
+  project:
+    name: "syssi.esphome-soyosource-gtn-virtual-meter"
+    version: 1.1.0
+
+esp8266:
+  board: esp12e
+
+external_components:
+  - source: ${external_components_source}
+    refresh: 0s
+
+wifi:
+  ap:
+    ssid: "wifi-setup"
+    password: "soyosource"
+
+captive_portal:
+
+web_server:
+  local: true
+
+ota:
+api:
+  reboot_timeout: 0s
+
+logger:
+  baud_rate: 0
+  level: INFO
+
+uart:
+  - id: uart0
+    baud_rate: 9600
+    tx_pin: GPIO1
+    rx_pin: GPIO3
+
+soyosource_display:
+  uart_id: uart0
+  update_interval: 5s
+
+binary_sensor:
+  - platform: soyosource_display
+    fan_running:
+      name: "Fan running"
+    limiter_connected:
+      name: "Limiter connected"
+
+button:
+  - platform: soyosource_display
+    restart:
+      name: "Restart"
+
+number:
+  - platform: soyosource_display
+    start_voltage:
+      name: "Start Voltage"
+    shutdown_voltage:
+      name: "Shutdown Voltage"
+    # Maximum output power in limiter mode / Output power in constant power mode
+    output_power_limit:
+      name: "Output Power Limit"
+    start_delay:
+      name: "Start Delay"
+
+select:
+  - platform: soyosource_display
+    operation_mode:
+      name: "Operation Mode"
+      optionsmap:
+        1: "PV"
+        2: "Battery Constant Power"
+        17: "PV Limit"
+        18: "Battery Limit"
+
+sensor:
+  - platform: soyosource_display
+    error_bitmask:
+      name: "Error Bitmask"
+    operation_mode_id:
+      name: "Operation Mode ID"
+    operation_status_id:
+      name: "Operation Status ID"
+    battery_voltage:
+      name: "Battery Voltage"
+    battery_current:
+      name: "Battery Current"
+    battery_power:
+      name: "Battery Power"
+    ac_voltage:
+      name: "AC Voltage"
+    ac_frequency:
+      name: "AC Frequency"
+    temperature:
+      name: "Temperature"
+
+text_sensor:
+  - platform: soyosource_display
+    errors:
+      name: "Errors"
+    operation_mode:
+      name: "Operation Mode"
+    operation_status:
+      name: "Operation Status"
