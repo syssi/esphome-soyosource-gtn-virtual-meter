@@ -69,6 +69,7 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
   void set_ac_frequency_sensor(sensor::Sensor *ac_frequency_sensor) { ac_frequency_sensor_ = ac_frequency_sensor; }
   void set_temperature_sensor(sensor::Sensor *temperature_sensor) { temperature_sensor_ = temperature_sensor; }
   void set_total_energy_sensor(sensor::Sensor *total_energy_sensor) { total_energy_sensor_ = total_energy_sensor; }
+  void set_output_power_sensor(sensor::Sensor *output_power_sensor) { output_power_sensor_ = output_power_sensor; }
 
   void set_errors_text_sensor(text_sensor::TextSensor *errors_text_sensor) { errors_text_sensor_ = errors_text_sensor; }
   void set_operation_mode_text_sensor(text_sensor::TextSensor *operation_mode_text_sensor) {
@@ -110,6 +111,7 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
   sensor::Sensor *ac_frequency_sensor_;
   sensor::Sensor *temperature_sensor_;
   sensor::Sensor *total_energy_sensor_;
+  sensor::Sensor *output_power_sensor_;
 
   text_sensor::TextSensor *operation_mode_text_sensor_;
   text_sensor::TextSensor *operation_status_text_sensor_;

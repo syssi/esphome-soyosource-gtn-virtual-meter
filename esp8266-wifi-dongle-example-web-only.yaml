@@ -99,6 +99,10 @@ sensor:
       name: "AC Frequency"
     temperature:
       name: "Temperature"
+    total_energy:
+      name: "Total Energy"
+    output_power:
+      name: "Output Power"
 
 text_sensor:
   - platform: soyosource_display

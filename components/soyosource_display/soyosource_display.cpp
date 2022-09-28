@@ -205,8 +205,8 @@ void SoyosourceDisplay::on_ms51_status_data_(const std::vector<uint8_t> &data) {
   // 10    1   0x32                   Grid frequency       1.0         Hz          50 Hz
   this->publish_state_(this->ac_frequency_sensor_, data[10]);
 
-  // 11    2   0x00 0xCA
-  ESP_LOGD(TAG, "Unknown (raw): %02X %02X", data[11], data[12]);
+  // 11    2   0x00 0xCA              Output Power         1.0         W           202 W
+  this->publish_state_(this->output_power_sensor_, soyosource_get_16bit(11) * 1.0f);
 
   // 13    2   0x00 0x00              Total energy         0.1         kWh         00.0 kWh
   this->publish_state_(this->total_energy_sensor_, soyosource_get_16bit(13) * 0.1f);
@@ -226,8 +226,8 @@ void SoyosourceDisplay::on_soyosource_status_data_(const std::vector<uint8_t> &d
 
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
   // 0     1   0xA6                   Header
-  // 1     2   0x00 0x84              Requested power via RS485
-  ESP_LOGI(TAG, "  Requested power: %d W", soyosource_get_16bit(1));
+  // 1     2   0x00 0x84              Output Power         1.0         W           132 W
+  this->publish_state_(this->output_power_sensor_, soyosource_get_16bit(1) * 1.0f);
 
   // 3     1   0x91                   Operation mode (High nibble), Frame function (Low nibble)
   //                                                                0x01: Status frame

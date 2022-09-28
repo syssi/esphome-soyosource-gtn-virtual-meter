@@ -102,6 +102,8 @@ sensor:
       name: "${name} temperature"
     total_energy:
       name: "${name} total energy"
+    output_power:
+      name: "${name} output power"
 
 text_sensor:
   - platform: soyosource_display
