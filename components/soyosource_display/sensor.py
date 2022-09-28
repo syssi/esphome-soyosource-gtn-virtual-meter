@@ -38,6 +38,7 @@ CONF_ERROR_BITMASK = "error_bitmask"
 CONF_OPERATION_MODE_ID = "operation_mode_id"
 CONF_OPERATION_STATUS_ID = "operation_status_id"
 CONF_TOTAL_ENERGY = "total_energy"
+CONF_OUTPUT_POWER = "output_power"
 
 ICON_ERROR_BITMASK = "mdi:alert-circle-outline"
 ICON_OPERATION_MODE = "mdi:heart-pulse"
@@ -132,6 +133,13 @@ CONFIG_SCHEMA = cv.Schema(
             accuracy_decimals=1,
             device_class=DEVICE_CLASS_ENERGY,
             state_class=STATE_CLASS_TOTAL_INCREASING,
+        ),
+        cv.Optional(CONF_OUTPUT_POWER): sensor.sensor_schema(
+            unit_of_measurement=UNIT_WATT,
+            icon=ICON_EMPTY,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_POWER,
+            state_class=STATE_CLASS_MEASUREMENT,
         ),
     }
 )

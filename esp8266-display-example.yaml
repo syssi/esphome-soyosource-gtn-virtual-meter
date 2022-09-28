@@ -135,6 +135,8 @@ sensor:
       name: "${name} ac frequency"
     temperature:
       name: "${name} temperature"
+    output_power:
+      name: "${name} output power"
 
 text_sensor:
   - platform: soyosource_display
