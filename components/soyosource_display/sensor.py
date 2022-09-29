@@ -57,6 +57,7 @@ SENSORS = [
     CONF_OPERATION_MODE_ID,
     CONF_OPERATION_STATUS_ID,
     CONF_TOTAL_ENERGY,
+    CONF_OUTPUT_POWER,
 ]
 
 # pylint: disable=too-many-function-args
