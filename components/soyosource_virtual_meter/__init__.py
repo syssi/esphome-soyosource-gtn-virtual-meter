@@ -67,10 +67,10 @@ CONFIG_SCHEMA = cv.All(
             ): cv.int_range(min=1, max=6),
             cv.Optional(
                 CONF_MIN_POWER_DEMAND, default=DEFAULT_MIN_POWER_DEMAND
-            ): cv.int_range(min=0, max=2000),
+            ): cv.int_range(min=0, max=5400),
             cv.Optional(
                 CONF_MAX_POWER_DEMAND, default=DEFAULT_MAX_POWER_DEMAND
-            ): cv.int_range(min=1, max=2000),
+            ): cv.int_range(min=1, max=5400),
         }
     )
     .extend(soyosource_modbus.soyosource_modbus_device_schema(0x24))
