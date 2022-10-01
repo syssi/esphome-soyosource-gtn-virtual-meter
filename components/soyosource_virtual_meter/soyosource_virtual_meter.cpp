@@ -104,7 +104,7 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(in
   int16_t importing_now = consumption - this->buffer_;
   int16_t power_demand = importing_now + last_power_demand;
 
-  if (power_demand >= this->max_power_demand_ * float(this->power_demand_divider_)) { 
+  if (power_demand >= this->max_power_demand_ * float(this->power_demand_divider_)) {
     return this->max_power_demand_ * float(this->power_demand_divider_);
   }
 
