@@ -38,7 +38,7 @@ void SoyosourceVirtualMeter::update() {
   if (this->manual_mode_switch_ != nullptr && this->manual_mode_switch_->state) {
     operation_mode = "Manual";
     if (this->manual_power_demand_number_ != nullptr && this->manual_power_demand_number_->has_state()) {
-      power_demand = (uint16_t) this->manual_power_demand_number_->state;
+      power_demand = (uint16_t) this->manual_power_demand_number_->state * float(this->power_demand_divider_);
     }  // else default = 0
   } else {
     // Automatic mode
