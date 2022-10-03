@@ -305,8 +305,8 @@ void SoyosourceDisplay::on_ms51_settings_data_(const std::vector<uint8_t> &data)
   ESP_LOGI(TAG, "  Device model: %d W, %d V (%d)", (data[4] % 100) * 100, (data[4] > 200) ? 220 : 110, data[4]);
 
   // 5     1   0x30                   Specs: Battery voltage           V           48 V
+  ESP_LOGI(TAG, "  Device type: %s", this->device_type_to_string_(data[5]).c_str());
   ESP_LOGI(TAG, "  Battery voltage: %d V", data[5]);
-  ESP_LOGI(TAG, "  Device type: %s (%d)", this->device_type_to_string_(data[5]).c_str(), data[5]);
 
   // 6     1   0x31                   Starting voltage                 V           49 V
   uint8_t start_voltage = data[6];
