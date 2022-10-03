@@ -21,14 +21,14 @@ static const uint8_t WRITE_SETTINGS_COMMAND = 0x0B;
 
 static const uint8_t ERRORS_SIZE = 8;
 static const char *const ERRORS[ERRORS_SIZE] = {
-    "Unknown (Bit 1)",      // 0000 0001
+    "Reserved (Bit 1)",     // 0000 0001
     "DC voltage too low",   // 0000 0010
     "DC voltage too high",  // 0000 0100
     "AC voltage too high",  // 0000 1000
     "AC voltage too low",   // 0001 0000
-    "Unknown (Bit 6)",      // 0010 0000
+    "Overheat",             // 0010 0000
     "Limiter connected",    // 0100 0000
-    "Unknown (Bit 8)",      // 1000 0000
+    "Reserved (Bit 8)",     // 1000 0000
 };
 
 void SoyosourceDisplay::loop() {
