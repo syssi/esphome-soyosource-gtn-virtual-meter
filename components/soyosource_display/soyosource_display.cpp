@@ -300,18 +300,21 @@ void SoyosourceDisplay::on_ms51_settings_data_(const std::vector<uint8_t> &data)
 
   // 3     1   0x02                   Operation status bitmask
   // 4     1   0xD4                   Device model
-  ESP_LOGI(TAG, "  Device model: %d W (%d)", (data[4] % 100) * 100, data[4]);
+  //                                  0xD4 = 212 -> 220V, 112 -> 110V
+  //                                  0xD4 = 212 -> 1200W, 210 -> 1000W
+  ESP_LOGI(TAG, "  Device model: %d W, %d V (%d)", (data[4] % 100) * 100, (data[4] > 200) ? 220 : 110, data[4]);
 
-  // 5     1   0x30                   Device type
+  // 5     1   0x30                   Specs: Battery voltage           V           48 V
+  ESP_LOGI(TAG, "  Battery voltage: %d V", data[5]);
   ESP_LOGI(TAG, "  Device type: %s (%d)", this->device_type_to_string_(data[5]).c_str(), data[5]);
 
-  // 6     1   0x31                   Starting voltage                 V           49
+  // 6     1   0x31                   Starting voltage                 V           49 V
   uint8_t start_voltage = data[6];
   ESP_LOGI(TAG, "  Start voltage: %d V", start_voltage);
   this->current_settings_.StartVoltage = start_voltage;
   this->publish_state_(this->start_voltage_number_, start_voltage);
 
-  // 7     1   0x2F                   Shutdown voltage                 V           47
+  // 7     1   0x2F                   Shutdown voltage                 V           47 V
   uint8_t shutdown_voltage = data[7];
   ESP_LOGI(TAG, "  Shutdown voltage: %d V", shutdown_voltage);
   this->current_settings_.ShutdownVoltage = shutdown_voltage;
@@ -340,9 +343,11 @@ void SoyosourceDisplay::on_ms51_settings_data_(const std::vector<uint8_t> &data)
   this->current_settings_.StartDelay = start_delay;
   this->publish_state_(this->start_delay_number_, start_delay);
 
-  // 14    1   0x37
-  // 15    1   0x5A
-  ESP_LOGD(TAG, "  Unknown (byte 14-15): %02X %02X", data[14], data[15]);
+  // 14    1   0x37                    Specs: Minimum PV voltage       V           55 V
+  ESP_LOGI(TAG, "  Minimum PV voltage: %d V", data[14]);
+
+  // 15    1   0x5A                    Specs: Maximum PV voltage       V           90 V
+  ESP_LOGI(TAG, "  Maximum PV voltage: %d V", data[15]);
 
   // 16    1   0x8A                   Checksum
 }
