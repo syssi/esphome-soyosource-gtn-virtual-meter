@@ -1,3 +1,16 @@
+# ==========================================================
+# This configuration is for silent Soyosource inverters which doesn't respond to status requests. 
+# Therefore no status informations like the operation mode are available and cannot be monitored. 
+# The monitoring of the operation mode is disabled.
+# ==========================================================
+# The instantaneous power is extracted from a JSON response periodically retrieved via HTTP from a ESP Pulse Counter
+# but could be also any Shelly PM etc.
+# ==========================================================
+# The maximum power output and select entities are limited to 600W in order to not violate the regulations in germany.
+# ==========================================================
+
+
+
 substitutions:
   name: soyosource-gtn-virtual-meter
   device_description: "Monitor a Soyosource GTN and control the power output on demand both via RS485"
