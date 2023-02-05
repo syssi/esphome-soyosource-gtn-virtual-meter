@@ -141,16 +141,15 @@ sensor:
 #     filters:
 #       - throttle_average: 15s
 
-text_sensor:
+switch:
   - platform: soyosource_virtual_meter
     soyosource_virtual_meter_id: virtualmeter0
-    operation_mode:
-      name: "${name} operation mode"
-
-  - platform: soyosource_inverter
-    soyosource_inverter_id: inverter0
-    operation_mode:
-      name: "${name} operation mode"
+    manual_mode:
+      name: "${name} manual mode"
+      restore_mode: RESTORE_DEFAULT_ON
+    emergency_power_off:
+      name: "${name} emergency power off"
+      restore_mode: RESTORE_DEFAULT_OFF
 
 number:
   - platform: soyosource_virtual_meter
@@ -164,12 +163,13 @@ number:
       max_value: 900
       restore_value: true
 
-switch:
+text_sensor:
   - platform: soyosource_virtual_meter
     soyosource_virtual_meter_id: virtualmeter0
-    manual_mode:
-      name: "${name} manual mode"
-      restore_mode: RESTORE_DEFAULT_ON
-    emergency_power_off:
-      name: "${name} emergency power off"
-      restore_mode: RESTORE_DEFAULT_OFF
+    operation_mode:
+      name: "${name} operation mode"
+
+  - platform: soyosource_inverter
+    soyosource_inverter_id: inverter0
+    operation_mode:
+      name: "${name} operation mode"

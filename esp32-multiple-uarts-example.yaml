@@ -115,6 +115,29 @@ binary_sensor:
     fan_running:
       name: "${device1} fan running"
 
+number:
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter0
+    manual_power_demand:
+      name: "${device0} manual power demand"
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter1
+    manual_power_demand:
+      name: "${device1} manual power demand"
+
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter0
+    max_power_demand:
+      name: "${device0} max power demand"
+      initial_value: 600
+      restore_value: true
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter1
+    max_power_demand:
+      name: "${device1} max power demand"
+      initial_value: 600
+      restore_value: true
+
 sensor:
   - platform: soyosource_virtual_meter
     soyosource_virtual_meter_id: virtualmeter0
@@ -194,6 +217,16 @@ sensor:
 #    name: "${device1} smartmeter instantaneous power"
 #    entity_id: sensor.groundfloor_smartmeter_instantaneous_power
 
+switch:
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter0
+    manual_mode:
+      name: "${device0} manual mode"
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter1
+    manual_mode:
+      name: "${device1} manual mode"
+
 text_sensor:
   - platform: soyosource_inverter
     soyosource_inverter_id: inverter0
@@ -211,36 +244,3 @@ text_sensor:
     soyosource_virtual_meter_id: virtualmeter1
     operation_mode:
       name: "${device1} operation mode"
-
-switch:
-  - platform: soyosource_virtual_meter
-    soyosource_virtual_meter_id: virtualmeter0
-    manual_mode:
-      name: "${device0} manual mode"
-  - platform: soyosource_virtual_meter
-    soyosource_virtual_meter_id: virtualmeter1
-    manual_mode:
-      name: "${device1} manual mode"
-
-number:
-  - platform: soyosource_virtual_meter
-    soyosource_virtual_meter_id: virtualmeter0
-    manual_power_demand:
-      name: "${device0} manual power demand"
-  - platform: soyosource_virtual_meter
-    soyosource_virtual_meter_id: virtualmeter1
-    manual_power_demand:
-      name: "${device1} manual power demand"
-
-  - platform: soyosource_virtual_meter
-    soyosource_virtual_meter_id: virtualmeter0
-    max_power_demand:
-      name: "${device0} max power demand"
-      initial_value: 600
-      restore_value: true
-  - platform: soyosource_virtual_meter
-    soyosource_virtual_meter_id: virtualmeter1
-    max_power_demand:
-      name: "${device1} max power demand"
-      initial_value: 600
-      restore_value: true
