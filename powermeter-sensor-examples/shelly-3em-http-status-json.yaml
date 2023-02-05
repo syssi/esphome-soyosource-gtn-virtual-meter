@@ -1,4 +1,3 @@
-
 http_request:
   useragent: esphome/device
   timeout: 5s
