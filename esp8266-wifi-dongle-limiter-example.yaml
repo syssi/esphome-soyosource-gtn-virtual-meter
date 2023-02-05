@@ -1,9 +1,9 @@
 substitutions:
-  name: soyosource-gtn-virtual-meter
-  device_description: "Monitor a Soyosource GTN and control the power output on demand both via RS485"
+  name: soyosource-wifi-dongle
+  device_description: "Monitor and control the WiFi version of the Soyosource GTN using the OEM WiFi dongle with a alternative firmware"
   external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
-  tx_pin: GPIO1
-  rx_pin: GPIO3
+  tx_pin_rs485: GPIO5
+  rx_pin_rs485: GPIO14
 
 esphome:
   name: ${name}
@@ -12,8 +12,8 @@ esphome:
     name: "syssi.esphome-soyosource-gtn-virtual-meter"
     version: 1.1.0
 
-esp32:
-  board: esp-wrover-kit
+esp8266:
+  board: esp12e
 
 external_components:
   - source: ${external_components_source}
@@ -39,13 +39,17 @@ logger:
 
 uart:
   - id: uart0
+    baud_rate: 9600
+    tx_pin: GPIO1
+    rx_pin: GPIO3
+  - id: uart1
     baud_rate: 4800
-    tx_pin: ${tx_pin}
-    rx_pin: ${rx_pin}
+    tx_pin: ${tx_pin_rs485}
+    rx_pin: ${rx_pin_rs485}
 
 soyosource_modbus:
   - id: modbus0
-    uart_id: uart0
+    uart_id: uart1
 
     # Optional settings
     #
@@ -78,15 +82,32 @@ soyosource_virtual_meter:
     # or rarely the interverter stops. TODO: Identify and validate the lower and upper update limit
     update_interval: 3s
 
-soyosource_inverter:
-  - id: inverter0
-    soyosource_modbus_id: modbus0
+soyosource_display:
+  - id: display0
+    uart_id: uart0
+    update_interval: 5s
 
 binary_sensor:
-  - platform: soyosource_inverter
-    soyosource_inverter_id: inverter0
+  - platform: soyosource_display
     fan_running:
       name: "${name} fan running"
+    limiter_connected:
+      name: "${name} limiter connected"
+
+button:
+  - platform: soyosource_display
+    restart:
+      name: "${name} restart"
+
+select:
+  - platform: soyosource_display
+    operation_mode:
+      name: "${name} operation mode"
+      optionsmap:
+        1: "PV"
+        2: "Battery Constant Power"
+        17: "PV Limit"
+        18: "Battery Limit"
 
 sensor:
   - platform: soyosource_virtual_meter
@@ -94,11 +115,13 @@ sensor:
     power_demand:
       name: "${name} power demand"
 
-  - platform: soyosource_inverter
-    soyosource_inverter_id: inverter0
+  - platform: soyosource_display
+    error_bitmask:
+      name: "${name} error bitmask"
     operation_mode_id:
       name: "${name} operation mode id"
-      id: operation_mode_id
+    operation_status_id:
+      name: "${name} operation status id"
     battery_voltage:
       name: "${name} battery voltage"
     battery_current:
@@ -111,6 +134,10 @@ sensor:
       name: "${name} ac frequency"
     temperature:
       name: "${name} temperature"
+    total_energy:
+      name: "${name} total energy"
+    output_power:
+      name: "${name} output power"
 
   # dummy powermeter
   - platform: template
@@ -142,14 +169,18 @@ sensor:
 #       - throttle_average: 15s
 
 text_sensor:
-  - platform: soyosource_inverter
-    soyosource_inverter_id: inverter0
-    operation_mode:
-      name: "${name} operation mode"
   - platform: soyosource_virtual_meter
     soyosource_virtual_meter_id: virtualmeter0
     operation_mode:
       name: "${name} operation mode"
+
+  - platform: soyosource_display
+    errors:
+      name: "${name} errors"
+    operation_mode:
+      name: "${name} operation mode"
+    operation_status:
+      name: "${name} operation status"
 
 number:
   - platform: soyosource_virtual_meter
@@ -162,6 +193,17 @@ number:
       initial_value: 600
       max_value: 900
       restore_value: true
+
+  - platform: soyosource_display
+    start_voltage:
+      name: "${name} start voltage"
+    shutdown_voltage:
+      name: "${name} shutdown voltage"
+    # Maximum output power in limiter mode / Output power in constant power mode
+    output_power_limit:
+      name: "${name} output power limit"
+    start_delay:
+      name: "${name} start delay"
 
 switch:
   - platform: soyosource_virtual_meter
