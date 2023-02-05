@@ -1,0 +1,16 @@
+mqtt:
+  broker: !secret mqtt_host
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+  id: mqtt_client
+
+sensor:
+  - id: powermeter0
+    platform: mqtt_subscribe
+    name: "${name} instantaneous power"
+    topic: "smartmeter/sensor/instantaneous_power/obis/1-0:16.7.0/255/value"
+    accuracy_decimals: 2
+    unit_of_measurement: W
+    device_class: power
+    filters:
+      - throttle_average: 15s
