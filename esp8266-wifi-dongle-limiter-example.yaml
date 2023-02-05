@@ -75,9 +75,9 @@ soyosource_virtual_meter:
     # A positive buffer value (10) tries to avoid exporting power to the grid (demand - 10 watts)
     # A negative buffer value (-10) exports power to the grid (demand + 10 watts)
     buffer: 10
-    # The operation_mode_id sensor is expected here. Passing the operation_mode won't work
-    # The state is used to suspend the limiter if the operation mode of the inverter isn't 0x0 (normal)
-    operation_mode_id: operation_status_id0
+    # The operation_status_id sensor is expected here. Passing the operation_status won't work
+    # The state is used to suspend the limiter if the operation status of the inverter isn't 0x0 (normal)
+    operation_status_id: operation_status_id0
 
     # The update interval is important and defaults to 3 seconds. If the demand is sent too frequently
     # or rarely the interverter stops. TODO: Identify and validate the lower and upper update limit

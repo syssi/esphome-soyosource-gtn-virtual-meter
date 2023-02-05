@@ -85,9 +85,9 @@ soyosource_virtual_meter:
     # A positive buffer value (10) tries to avoid exporting power to the grid (demand - 10 watts)
     # A negative buffer value (-10) exports power to the grid (demand + 10 watts)
     buffer: 10
-    # The operation_mode_id sensor is expected here. Passing the operation_mode won't work
-    # The state is used to suspend the limiter if the operation mode of the inverter isn't 0x0 (normal)
-    # operation_mode_id: operation_mode_id0
+    # The operation_status_id sensor is expected here. Passing the operation_status won't work
+    # The state is used to suspend the limiter if the operation status of the inverter isn't 0x0 (normal)
+    # operation_status_id: operation_status_id0
 
   - id: virtualmeter1
     soyosource_modbus_id: modbus1
@@ -101,9 +101,9 @@ soyosource_virtual_meter:
     # A positive buffer value (10) tries to avoid exporting power to the grid (demand - 10 watts)
     # A negative buffer value (-10) exports power to the grid (demand + 10 watts)
     buffer: 10
-    # The operation_mode_id sensor is expected here. Passing the operation_mode won't work
-    # The state is used to suspend the limiter if the operation mode of the inverter isn't 0x0 (normal)
-    # operation_mode_id: operation_mode_id1
+    # The operation_status_id sensor is expected here. Passing the operation_status won't work
+    # The state is used to suspend the limiter if the operation status of the inverter isn't 0x0 (normal)
+    # operation_status_id: operation_status_id1
 
 binary_sensor:
   - platform: soyosource_inverter
@@ -150,9 +150,9 @@ sensor:
 
   - platform: soyosource_inverter
     soyosource_inverter_id: inverter0
-    operation_mode_id:
-      name: "${device0} operation mode id"
-      id: operation_mode_id0
+    operation_status_id:
+      name: "${device0} operation status id"
+      id: operation_status_id0
     battery_voltage:
       name: "${device0} battery voltage"
     battery_current:
@@ -167,9 +167,9 @@ sensor:
       name: "${device0} temperature"
   - platform: soyosource_inverter
     soyosource_inverter_id: inverter1
-    operation_mode_id:
-      name: "${device1} operation mode id"
-      id: operation_mode_id1
+    operation_status_id:
+      name: "${device1} operation status id"
+      id: operation_status_id1
     battery_voltage:
       name: "${device1} battery voltage"
     battery_current:
@@ -231,12 +231,13 @@ switch:
 text_sensor:
   - platform: soyosource_inverter
     soyosource_inverter_id: inverter0
-    operation_mode:
-      name: "${device0} operation mode"
+    operation_status:
+      name: "${device0} operation status"
   - platform: soyosource_inverter
     soyosource_inverter_id: inverter1
-    operation_mode:
-      name: "${device1} operation mode"
+    operation_status:
+      name: "${device1} operation status"
+
   - platform: soyosource_virtual_meter
     soyosource_virtual_meter_id: virtualmeter0
     operation_mode:
