@@ -17,8 +17,8 @@ class SoyosourceInverter : public PollingComponent, public soyosource_modbus::So
     fan_running_binary_sensor_ = fan_running_binary_sensor;
   }
 
-  void set_operation_mode_id_sensor(sensor::Sensor *operation_mode_id_sensor) {
-    operation_mode_id_sensor_ = operation_mode_id_sensor;
+  void set_operation_status_id_sensor(sensor::Sensor *operation_status_id_sensor) {
+    operation_status_id_sensor_ = operation_status_id_sensor;
   }
   void set_battery_voltage_sensor(sensor::Sensor *battery_voltage_sensor) {
     battery_voltage_sensor_ = battery_voltage_sensor;
@@ -31,8 +31,8 @@ class SoyosourceInverter : public PollingComponent, public soyosource_modbus::So
   void set_ac_frequency_sensor(sensor::Sensor *ac_frequency_sensor) { ac_frequency_sensor_ = ac_frequency_sensor; }
   void set_temperature_sensor(sensor::Sensor *temperature_sensor) { temperature_sensor_ = temperature_sensor; }
 
-  void set_operation_mode_text_sensor(text_sensor::TextSensor *operation_mode_text_sensor) {
-    operation_mode_text_sensor_ = operation_mode_text_sensor;
+  void set_operation_status_text_sensor(text_sensor::TextSensor *operation_status_text_sensor) {
+    operation_status_text_sensor_ = operation_status_text_sensor;
   }
 
   void update() override;
@@ -44,7 +44,7 @@ class SoyosourceInverter : public PollingComponent, public soyosource_modbus::So
  protected:
   binary_sensor::BinarySensor *fan_running_binary_sensor_;
 
-  sensor::Sensor *operation_mode_id_sensor_;
+  sensor::Sensor *operation_status_id_sensor_;
   sensor::Sensor *battery_voltage_sensor_;
   sensor::Sensor *battery_current_sensor_;
   sensor::Sensor *battery_power_sensor_;
@@ -52,7 +52,7 @@ class SoyosourceInverter : public PollingComponent, public soyosource_modbus::So
   sensor::Sensor *ac_frequency_sensor_;
   sensor::Sensor *temperature_sensor_;
 
-  text_sensor::TextSensor *operation_mode_text_sensor_;
+  text_sensor::TextSensor *operation_status_text_sensor_;
 
   uint8_t no_response_count_ = 0;
 

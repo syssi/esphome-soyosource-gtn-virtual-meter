@@ -19,8 +19,8 @@ enum PowerDemandCalculation {
 class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus::SoyosourceModbusDevice {
  public:
   void set_power_sensor(sensor::Sensor *power_sensor) { power_sensor_ = power_sensor; }
-  void set_operation_mode_sensor(sensor::Sensor *operation_mode_sensor) {
-    operation_mode_sensor_ = operation_mode_sensor;
+  void set_operation_status_sensor(sensor::Sensor *operation_status_sensor) {
+    operation_status_sensor_ = operation_status_sensor;
   }
   void set_power_demand_sensor(sensor::Sensor *power_demand_sensor) { power_demand_sensor_ = power_demand_sensor; }
   void set_buffer(int16_t buffer) { this->buffer_ = buffer; }
@@ -66,7 +66,7 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   number::Number *max_power_demand_number_;
 
   sensor::Sensor *power_sensor_;
-  sensor::Sensor *operation_mode_sensor_;
+  sensor::Sensor *operation_status_sensor_;
   sensor::Sensor *power_demand_sensor_;
 
   switch_::Switch *manual_mode_switch_;

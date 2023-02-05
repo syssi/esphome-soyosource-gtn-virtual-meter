@@ -8,21 +8,21 @@ DEPENDENCIES = ["soyosource_inverter"]
 
 CODEOWNERS = ["@syssi"]
 
-CONF_OPERATION_MODE = "operation_mode"
+CONF_OPERATION_STATUS = "operation_status"
 
-ICON_OPERATION_MODE = "mdi:heart-pulse"
+ICON_OPERATION_STATUS = "mdi:heart-pulse"
 
 TEXT_SENSORS = [
-    CONF_OPERATION_MODE,
+    CONF_OPERATION_STATUS,
 ]
 
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_SOYOSOURCE_INVERTER_ID): cv.use_id(SoyosourceInverter),
-        cv.Optional(CONF_OPERATION_MODE): text_sensor.TEXT_SENSOR_SCHEMA.extend(
+        cv.Optional(CONF_OPERATION_STATUS): text_sensor.TEXT_SENSOR_SCHEMA.extend(
             {
                 cv.GenerateID(): cv.declare_id(text_sensor.TextSensor),
-                cv.Optional(CONF_ICON, default=ICON_OPERATION_MODE): cv.icon,
+                cv.Optional(CONF_ICON, default=ICON_OPERATION_STATUS): cv.icon,
             }
         ),
     }

@@ -6,8 +6,8 @@ namespace soyosource_inverter {
 
 static const char *const TAG = "soyosource_inverter";
 
-static const uint8_t OPERATION_MODES_SIZE = 13;
-static const char *const OPERATION_MODES[OPERATION_MODES_SIZE] = {
+static const uint8_t OPERATION_STATUS_SIZE = 13;
+static const char *const OPERATION_STATUS[OPERATION_STATUS_SIZE] = {
     "Normal",                  // 0x00
     "Startup",                 // 0x01
     "Standby",                 // 0x02
@@ -35,8 +35,8 @@ void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &d
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
 
-  uint8_t raw_operation_mode = data[0];
-  float operation_mode_id = (float) raw_operation_mode;
+  uint8_t raw_operation_status = data[0];
+  float operation_status_id = (float) raw_operation_status;
 
   uint16_t raw_battery_voltage = soyosource_get_16bit(1);
   float battery_voltage = raw_battery_voltage * 0.1f;
@@ -69,14 +69,14 @@ void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &d
   // Data bytes:                                             0    1    2    3    4    5    6    7    8    9   CRC
   //
   //
-  // Data byte 0:          0x04 (Operation mode)    0x00 (Normal), 0x01 (Startup), 0x02 (Standby),
+  // Data byte 0:          0x04 (Operation status)  0x00 (Normal), 0x01 (Startup), 0x02 (Standby),
   //                                                0x03 (Startup aborted?), 0x04 (Error or battery mode?)
   // Data byte 1...2: 0x01 0xDB (Battery voltage)
   // Data byte 3...4: 0x00 0xA1 (Battery current)
   // Data byte 5...6: 0x00 0xDD (AC voltage)
   // Data byte 7:          0x64 (AC frequency / 2)
   // Data byte 8...9: 0x02 0xCA (Temperature / 10.0 + 2 * 10)
-  this->publish_state_(this->operation_mode_id_sensor_, operation_mode_id);
+  this->publish_state_(this->operation_status_id_sensor_, operation_status_id);
   this->publish_state_(this->battery_voltage_sensor_, battery_voltage);
   this->publish_state_(this->battery_current_sensor_, battery_current);
   this->publish_state_(this->battery_power_sensor_, battery_power);
@@ -85,17 +85,17 @@ void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &d
   this->publish_state_(this->temperature_sensor_, temperature);
   this->publish_state_(this->fan_running_binary_sensor_, (bool) (temperature >= 45.0));
 
-  if (raw_operation_mode < OPERATION_MODES_SIZE) {
-    this->publish_state_(this->operation_mode_text_sensor_, OPERATION_MODES[raw_operation_mode]);
+  if (raw_operation_status < OPERATION_STATUS_SIZE) {
+    this->publish_state_(this->operation_status_text_sensor_, OPERATION_STATUS[raw_operation_status]);
   } else {
-    this->publish_state_(this->operation_mode_text_sensor_, "Unknown");
+    this->publish_state_(this->operation_status_text_sensor_, "Unknown");
   }
 
   this->no_response_count_ = 0;
 }
 
 void SoyosourceInverter::publish_device_offline_() {
-  this->publish_state_(this->operation_mode_id_sensor_, -1);
+  this->publish_state_(this->operation_status_id_sensor_, -1);
   this->publish_state_(this->battery_voltage_sensor_, NAN);
   this->publish_state_(this->battery_current_sensor_, NAN);
   this->publish_state_(this->battery_power_sensor_, NAN);
@@ -104,7 +104,7 @@ void SoyosourceInverter::publish_device_offline_() {
   this->publish_state_(this->temperature_sensor_, NAN);
   // this->publish_state_(this->fan_running_binary_sensor_, NAN);
 
-  this->publish_state_(this->operation_mode_text_sensor_, "Offline");
+  this->publish_state_(this->operation_status_text_sensor_, "Offline");
 }
 
 void SoyosourceInverter::update() {
@@ -143,8 +143,8 @@ void SoyosourceInverter::publish_state_(text_sensor::TextSensor *text_sensor, co
 void SoyosourceInverter::dump_config() {
   ESP_LOGCONFIG(TAG, "SoyosourceInverter:");
   ESP_LOGCONFIG(TAG, "  Address: 0x%02X", this->address_);
-  LOG_SENSOR("", "Operation Mode ID", this->operation_mode_id_sensor_);
-  LOG_TEXT_SENSOR("", "Operation Mode", this->operation_mode_text_sensor_);
+  LOG_SENSOR("", "Operation Status ID", this->operation_status_id_sensor_);
+  LOG_TEXT_SENSOR("", "Operation Status", this->operation_status_text_sensor_);
   LOG_SENSOR("", "Battery Voltage", this->battery_voltage_sensor_);
   LOG_SENSOR("", "Battery Current", this->battery_current_sensor_);
   LOG_SENSOR("", "Battery Power", this->battery_power_sensor_);

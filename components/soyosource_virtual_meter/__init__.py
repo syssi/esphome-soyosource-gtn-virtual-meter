@@ -15,7 +15,7 @@ CONF_MIN_POWER_DEMAND = "min_power_demand"
 CONF_MAX_POWER_DEMAND = "max_power_demand"
 CONF_BUFFER = "buffer"
 CONF_POWER_DEMAND_DIVIDER = "power_demand_divider"
-CONF_OPERATION_MODE_ID = "operation_mode_id"
+CONF_OPERATION_STATUS_ID = "operation_status_id"
 
 DEFAULT_BUFFER = 0
 DEFAULT_MIN_POWER_DEMAND = 0
@@ -56,7 +56,7 @@ CONFIG_SCHEMA = cv.All(
                 CONF_POWER_DEMAND_CALCULATION, default="DUMB_OEM_BEHAVIOR"
             ): cv.enum(POWER_DEMAND_CALCULATION_OPTIONS, upper=True),
             cv.Required(CONF_POWER_ID): cv.use_id(sensor.Sensor),
-            cv.Optional(CONF_OPERATION_MODE_ID): cv.use_id(sensor.Sensor),
+            cv.Optional(CONF_OPERATION_STATUS_ID): cv.use_id(sensor.Sensor),
             cv.Optional(
                 CONF_POWER_SENSOR_INACTIVITY_TIMEOUT, default="20s"
             ): cv.positive_time_period_seconds,
@@ -99,6 +99,8 @@ async def to_code(config):
     )
     cg.add(var.set_power_demand_calculation(config[CONF_POWER_DEMAND_CALCULATION]))
 
-    if CONF_OPERATION_MODE_ID in config:
-        operation_mode_sensor = await cg.get_variable(config[CONF_OPERATION_MODE_ID])
-        cg.add(var.set_operation_mode_sensor(operation_mode_sensor))
+    if CONF_OPERATION_STATUS_ID in config:
+        operation_status_sensor = await cg.get_variable(
+            config[CONF_OPERATION_STATUS_ID]
+        )
+        cg.add(var.set_operation_status_sensor(operation_status_sensor))
