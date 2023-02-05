@@ -30,9 +30,9 @@ CONF_BATTERY_CURRENT = "battery_current"
 CONF_BATTERY_POWER = "battery_power"
 CONF_AC_VOLTAGE = "ac_voltage"
 CONF_AC_FREQUENCY = "ac_frequency"
-CONF_OPERATION_MODE_ID = "operation_mode_id"
+CONF_OPERATION_STATUS_ID = "operation_status_id"
 
-ICON_OPERATION_MODE = "mdi:heart-pulse"
+ICON_OPERATION_STATUS = "mdi:heart-pulse"
 
 SENSORS = [
     CONF_BATTERY_VOLTAGE,
@@ -41,16 +41,16 @@ SENSORS = [
     CONF_AC_VOLTAGE,
     CONF_AC_FREQUENCY,
     CONF_TEMPERATURE,
-    CONF_OPERATION_MODE_ID,
+    CONF_OPERATION_STATUS_ID,
 ]
 
 # pylint: disable=too-many-function-args
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_SOYOSOURCE_INVERTER_ID): cv.use_id(SoyosourceInverter),
-        cv.Optional(CONF_OPERATION_MODE_ID): sensor.sensor_schema(
+        cv.Optional(CONF_OPERATION_STATUS_ID): sensor.sensor_schema(
             unit_of_measurement=UNIT_EMPTY,
-            icon=ICON_OPERATION_MODE,
+            icon=ICON_OPERATION_STATUS,
             accuracy_decimals=0,
             device_class=DEVICE_CLASS_EMPTY,
             state_class=STATE_CLASS_MEASUREMENT,
