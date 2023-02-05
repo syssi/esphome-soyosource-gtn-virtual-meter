@@ -140,25 +140,17 @@ sensor:
     output_power:
       name: "${name} output power"
 
-  # dummy powermeter
-  - platform: template
-    name: "dummy powermeter"
-    id: powermeter0
-    update_interval: 2s
-    lambda: |-
-      return 80.0;
-
-#   # mqtt subscribe example
-#   - id: powermeter0
-#     internal: true
-#     platform: mqtt_subscribe
-#     name: "${name} instantaneous power consumption"
-#     topic: "smartmeter/sensor/groundfloor/obis/1-0:16.7.0/255/value"
-#     accuracy_decimals: 2
-#     unit_of_measurement: W
-#     device_class: power
-#     filters:
-#       - throttle_average: 15s
+  # mqtt subscribe example
+  - id: powermeter0
+    internal: true
+    platform: mqtt_subscribe
+    name: "${name} instantaneous power consumption"
+    topic: "smartmeter/sensor/groundfloor/obis/1-0:16.7.0/255/value"
+    accuracy_decimals: 2
+    unit_of_measurement: W
+    device_class: power
+    filters:
+      - throttle_average: 15s
 
 #   # import smartmeter reading from homeassistant
 #   # requires the "api" component see above

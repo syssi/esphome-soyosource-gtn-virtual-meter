@@ -206,16 +206,17 @@ sensor:
     filters:
       - throttle_average: 15s
 
-#  # import smartmeter reading from homeassistant f.e.
-#  # requires the "api" component see above
-#  - platform: homeassistant
-#    id: powermeter0
-#    name: "${device0} smartmeter instantaneous power"
-#    entity_id: sensor.firstfloor_smartmeter_instantaneous_power
-#  - platform: homeassistant
-#    id: powermeter1
-#    name: "${device1} smartmeter instantaneous power"
-#    entity_id: sensor.groundfloor_smartmeter_instantaneous_power
+#   # import smartmeter reading from homeassistant f.e.
+#   # requires the "api" component see above
+#    - platform: homeassistant
+#     id: powermeter0
+#     name: "${device0} smartmeter instantaneous power"
+#     entity_id: sensor.firstfloor_smartmeter_instantaneous_power
+#
+#   - platform: homeassistant
+#     id: powermeter1
+#     name: "${device1} smartmeter instantaneous power"
+#     entity_id: sensor.groundfloor_smartmeter_instantaneous_power
 
 switch:
   - platform: soyosource_virtual_meter
