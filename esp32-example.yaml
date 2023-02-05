@@ -161,6 +161,7 @@ text_sensor:
     soyosource_inverter_id: inverter0
     operation_mode:
       name: "${name} operation mode"
+
   - platform: soyosource_virtual_meter
     soyosource_virtual_meter_id: virtualmeter0
     operation_mode:
