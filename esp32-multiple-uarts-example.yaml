@@ -87,7 +87,7 @@ soyosource_virtual_meter:
     buffer: 10
     # The operation_mode_id sensor is expected here. Passing the operation_mode won't work
     # The state is used to suspend the limiter if the operation mode of the inverter isn't 0x0 (normal)
-    operation_mode_id: operation_mode_id0
+    # operation_mode_id: operation_mode_id0
 
   - id: virtualmeter1
     soyosource_modbus_id: modbus1
@@ -103,7 +103,7 @@ soyosource_virtual_meter:
     buffer: 10
     # The operation_mode_id sensor is expected here. Passing the operation_mode won't work
     # The state is used to suspend the limiter if the operation mode of the inverter isn't 0x0 (normal)
-    operation_mode_id: operation_mode_id1
+    # operation_mode_id: operation_mode_id1
 
 binary_sensor:
   - platform: soyosource_inverter
