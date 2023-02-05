@@ -28,6 +28,7 @@ web_server:
   local: true
 
 ota:
+
 api:
   reboot_timeout: 0s
 

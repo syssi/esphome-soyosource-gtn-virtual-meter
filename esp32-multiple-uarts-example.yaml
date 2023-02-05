@@ -85,6 +85,10 @@ soyosource_virtual_meter:
     # A positive buffer value (10) tries to avoid exporting power to the grid (demand - 10 watts)
     # A negative buffer value (-10) exports power to the grid (demand + 10 watts)
     buffer: 10
+    # The operation_mode_id sensor is expected here. Passing the operation_mode won't work
+    # The state is used to suspend the limiter if the operation mode of the inverter isn't 0x0 (normal)
+    # operation_mode_id: operation_mode_id0
+
   - id: virtualmeter1
     soyosource_modbus_id: modbus1
     update_interval: 3s
@@ -97,6 +101,9 @@ soyosource_virtual_meter:
     # A positive buffer value (10) tries to avoid exporting power to the grid (demand - 10 watts)
     # A negative buffer value (-10) exports power to the grid (demand + 10 watts)
     buffer: 10
+    # The operation_mode_id sensor is expected here. Passing the operation_mode won't work
+    # The state is used to suspend the limiter if the operation mode of the inverter isn't 0x0 (normal)
+    # operation_mode_id: operation_mode_id1
 
 binary_sensor:
   - platform: soyosource_inverter
@@ -107,6 +114,29 @@ binary_sensor:
     soyosource_inverter_id: inverter1
     fan_running:
       name: "${device1} fan running"
+
+number:
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter0
+    manual_power_demand:
+      name: "${device0} manual power demand"
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter1
+    manual_power_demand:
+      name: "${device1} manual power demand"
+
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter0
+    max_power_demand:
+      name: "${device0} max power demand"
+      initial_value: 600
+      restore_value: true
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter1
+    max_power_demand:
+      name: "${device1} max power demand"
+      initial_value: 600
+      restore_value: true
 
 sensor:
   - platform: soyosource_virtual_meter
@@ -122,6 +152,7 @@ sensor:
     soyosource_inverter_id: inverter0
     operation_mode_id:
       name: "${device0} operation mode id"
+      id: operation_mode_id0
     battery_voltage:
       name: "${device0} battery voltage"
     battery_current:
@@ -138,6 +169,7 @@ sensor:
     soyosource_inverter_id: inverter1
     operation_mode_id:
       name: "${device1} operation mode id"
+      id: operation_mode_id1
     battery_voltage:
       name: "${device1} battery voltage"
     battery_current:
@@ -174,16 +206,27 @@ sensor:
     filters:
       - throttle_average: 15s
 
-#  # import smartmeter reading from homeassistant f.e.
-#  # requires the "api" component see above
-#  - platform: homeassistant
-#    id: powermeter0
-#    name: "${device0} smartmeter instantaneous power"
-#    entity_id: sensor.firstfloor_smartmeter_instantaneous_power
-#  - platform: homeassistant
-#    id: powermeter1
-#    name: "${device1} smartmeter instantaneous power"
-#    entity_id: sensor.groundfloor_smartmeter_instantaneous_power
+#   # import smartmeter reading from homeassistant f.e.
+#   # requires the "api" component see above
+#    - platform: homeassistant
+#     id: powermeter0
+#     name: "${device0} smartmeter instantaneous power"
+#     entity_id: sensor.firstfloor_smartmeter_instantaneous_power
+#
+#   - platform: homeassistant
+#     id: powermeter1
+#     name: "${device1} smartmeter instantaneous power"
+#     entity_id: sensor.groundfloor_smartmeter_instantaneous_power
+
+switch:
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter0
+    manual_mode:
+      name: "${device0} manual mode"
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter1
+    manual_mode:
+      name: "${device1} manual mode"
 
 text_sensor:
   - platform: soyosource_inverter
@@ -202,36 +245,3 @@ text_sensor:
     soyosource_virtual_meter_id: virtualmeter1
     operation_mode:
       name: "${device1} operation mode"
-
-switch:
-  - platform: soyosource_virtual_meter
-    soyosource_virtual_meter_id: virtualmeter0
-    manual_mode:
-      name: "${device0} manual mode"
-  - platform: soyosource_virtual_meter
-    soyosource_virtual_meter_id: virtualmeter1
-    manual_mode:
-      name: "${device1} manual mode"
-
-number:
-  - platform: soyosource_virtual_meter
-    soyosource_virtual_meter_id: virtualmeter0
-    manual_power_demand:
-      name: "${device0} manual power demand"
-  - platform: soyosource_virtual_meter
-    soyosource_virtual_meter_id: virtualmeter1
-    manual_power_demand:
-      name: "${device1} manual power demand"
-
-  - platform: soyosource_virtual_meter
-    soyosource_virtual_meter_id: virtualmeter0
-    max_power_demand:
-      name: "${device0} max power demand"
-      initial_value: 600
-      restore_value: true
-  - platform: soyosource_virtual_meter
-    soyosource_virtual_meter_id: virtualmeter1
-    max_power_demand:
-      name: "${device1} max power demand"
-      initial_value: 600
-      restore_value: true
