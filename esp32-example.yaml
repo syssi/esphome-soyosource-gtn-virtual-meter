@@ -10,7 +10,7 @@ esphome:
   comment: ${device_description}
   project:
     name: "syssi.esphome-soyosource-gtn-virtual-meter"
-    version: 1.1.0
+    version: 1.2.0
 
 esp32:
   board: esp-wrover-kit
@@ -161,6 +161,7 @@ text_sensor:
     soyosource_inverter_id: inverter0
     operation_status:
       name: "${name} operation status"
+
   - platform: soyosource_virtual_meter
     soyosource_virtual_meter_id: virtualmeter0
     operation_mode:
