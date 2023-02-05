@@ -72,7 +72,7 @@ soyosource_virtual_meter:
     buffer: 10
     # The operation_mode_id sensor is expected here. Passing the operation_mode won't work
     # The state is used to suspend the limiter if the operation mode of the inverter isn't 0x0 (normal)
-    operation_mode_id: operation_mode_id
+    operation_mode_id: operation_mode_id0
 
     # The update interval is important and defaults to 3 seconds. If the demand is sent too frequently
     # or rarely the interverter stops. TODO: Identify and validate the lower and upper update limit
@@ -98,7 +98,7 @@ sensor:
     soyosource_inverter_id: inverter0
     operation_mode_id:
       name: "${name} operation mode id"
-      id: operation_mode_id
+      id: operation_mode_id0
     battery_voltage:
       name: "${name} battery voltage"
     battery_current:
