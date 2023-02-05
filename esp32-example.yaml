@@ -36,6 +36,7 @@ mqtt:
 
 logger:
   baud_rate: 0
+  level: INFO
 
 uart:
   - id: uart0
