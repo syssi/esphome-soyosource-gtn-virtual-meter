@@ -241,8 +241,8 @@ text_sensor:
   - platform: soyosource_virtual_meter
     soyosource_virtual_meter_id: virtualmeter0
     operation_mode:
-      name: "${device0} operation mode"
+      name: "${device0} limiter operation mode"
   - platform: soyosource_virtual_meter
     soyosource_virtual_meter_id: virtualmeter1
     operation_mode:
-      name: "${device1} operation mode"
+      name: "${device1} limiter operation mode"

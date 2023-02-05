@@ -199,7 +199,7 @@ text_sensor:
   - platform: soyosource_virtual_meter
     soyosource_virtual_meter_id: virtualmeter0
     operation_mode:
-      name: "${name} operation mode"
+      name: "${name} limiter operation mode"
 
   - platform: soyosource_display
     errors:
