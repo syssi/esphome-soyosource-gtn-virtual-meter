@@ -172,8 +172,8 @@ jobs:
           esphome -s external_components_source components config esp8266-wifi-dongle-example.yaml
           esphome -s external_components_source components config esp8266-wifi-dongle-example-web-only.yaml
       - run: |
-          esphome -s external_components_source components config tests/esp8266-inverter-emulator.yaml
-          esphome -s external_components_source components config tests/esp8266-fake-display.yaml
+          esphome -s external_components_source ../components config tests/esp8266-inverter-emulator.yaml
+          esphome -s external_components_source ../components config tests/esp8266-fake-display.yaml
 
   esphome-compile:
     runs-on: ubuntu-latest
@@ -222,5 +222,5 @@ jobs:
           esphome -s external_components_source components compile esp8266-wifi-dongle-example.yaml
           esphome -s external_components_source components compile esp8266-wifi-dongle-example-web-only.yaml
       - run: |
-          esphome -s external_components_source components compile tests/esp8266-inverter-emulator.yaml
-          esphome -s external_components_source components compile tests/esp8266-fake-display.yaml
+          esphome -s external_components_source ../components compile tests/esp8266-inverter-emulator.yaml
+          esphome -s external_components_source ../components compile tests/esp8266-fake-display.yaml
