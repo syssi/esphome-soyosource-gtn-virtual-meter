@@ -1,6 +1,6 @@
 substitutions:
-  name: soyosource-wifi-dongle
-  device_description: "Monitor and control the WiFi version of the Soyosource GTN using the OEM WiFi dongle with a alternative firmware"
+  name: soyosource-wifi-dongle-limiter
+  device_description: "Monitor and control the WiFi version of the Soyosource GTN using the OEM WiFi dongle and control the power output on demand via RS485"
   external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
   tx_pin_rs485: GPIO5
   rx_pin_rs485: GPIO14
