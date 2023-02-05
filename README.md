@@ -146,8 +146,8 @@ sensor:
       name: "${name} power demand"
 
   - platform: soyosource_inverter
-    operation_mode_id:
-      name: "${name} operation mode id"
+    operation_status_id:
+      name: "${name} operation status id"
     battery_voltage:
       name: "${name} battery voltage"
     battery_current:
@@ -180,8 +180,8 @@ sensor:
 
 text_sensor:
   - platform: soyosource_inverter
-    operation_mode:
-      name: "${name} operation mode"
+    operation_status:
+      name: "${name} operation status"
 ```
 
 For a more advanced setup take a look at the [esp32-multiple-uarts-example.yaml](esp32-multiple-uarts-example.yaml).
