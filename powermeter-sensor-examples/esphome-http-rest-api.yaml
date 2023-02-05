@@ -1,3 +1,10 @@
+# $ curl -sS http://192.168.132.5/sensor/instantaneous_power
+# {
+#   "id": "sensor-instantaneous_power",
+#   "state": "19.8 W",
+#   "value": 19.76666
+# }
+
 substitutions:
   esphome_rest_api_sensor_url: "http://192.168.132.5/sensor/instantaneous_power"
 
