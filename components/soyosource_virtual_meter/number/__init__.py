@@ -69,9 +69,7 @@ CONFIG_SCHEMA = cv.Schema(
             number.NUMBER_SCHEMA.extend(
                 {
                     cv.GenerateID(): cv.declare_id(SoyosourceNumber),
-                    cv.Optional(
-                        CONF_ICON, default=ICON_MANUAL_POWER_DEMAND
-                    ): number.icon,
+                    cv.Optional(CONF_ICON, default=ICON_MANUAL_POWER_DEMAND): cv.icon,
                     cv.Optional(
                         CONF_MIN_VALUE, default=DEFAULT_MIN_POWER_DEMAND
                     ): cv.float_,
@@ -93,7 +91,7 @@ CONFIG_SCHEMA = cv.Schema(
             number.NUMBER_SCHEMA.extend(
                 {
                     cv.GenerateID(): cv.declare_id(SoyosourceNumber),
-                    cv.Optional(CONF_ICON, default=ICON_MAX_POWER_DEMAND): number.icon,
+                    cv.Optional(CONF_ICON, default=ICON_MAX_POWER_DEMAND): cv.icon,
                     cv.Optional(
                         CONF_MIN_VALUE, default=DEFAULT_MIN_POWER_DEMAND
                     ): cv.float_,

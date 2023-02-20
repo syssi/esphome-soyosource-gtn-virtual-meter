@@ -76,7 +76,7 @@ SoyosourceNumber = soyosource_display_ns.class_(
 SOYOSOURCE_NUMBER_SCHEMA = number.NUMBER_SCHEMA.extend(
     {
         cv.GenerateID(): cv.declare_id(SoyosourceNumber),
-        cv.Optional(CONF_ICON, default=ICON_EMPTY): number.icon,
+        cv.Optional(CONF_ICON, default=ICON_EMPTY): cv.icon,
         cv.Optional(CONF_STEP, default=0.01): cv.float_,
         cv.Optional(CONF_UNIT_OF_MEASUREMENT, default=UNIT_VOLT): cv.string_strict,
         cv.Optional(CONF_MODE, default="BOX"): cv.enum(number.NUMBER_MODES, upper=True),
