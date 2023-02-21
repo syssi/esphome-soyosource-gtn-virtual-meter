@@ -1,11 +1,11 @@
 substitutions:
   name: soyosource-gtn-display
-  device_description: "Monitor and control the WiFi version of the Soyosource GTN via the TTL-WIFI port and control the power output on demand via RS485"
+  device_description: "Monitor and control the Soyosource GTN via the display port and control the power output on demand via RS485"
   external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
-  tx_pin_ttl_wifi: GPIO14
-  rx_pin_ttl_wifi: GPIO12
-  tx_pin_rs485: GPIO4
-  rx_pin_rs485: GPIO5
+  tx_pin_ttl_wifi: GPIO4
+  rx_pin_ttl_wifi: GPIO5
+  tx_pin_rs485: GPIO14
+  rx_pin_rs485: GPIO12
 
 esphome:
   name: ${name}

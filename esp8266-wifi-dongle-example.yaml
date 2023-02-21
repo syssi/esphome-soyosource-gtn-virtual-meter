@@ -1,6 +1,6 @@
 substitutions:
   name: soyosource-wifi-dongle
-  device_description: "Monitor and control the WiFi version of the Soyosource GTN using the OEM WiFi dongle with a alternative firmware"
+  device_description: "Monitor and control the WiFi version of the Soyosource GTN using the OEM WiFi dongle with an alternative firmware"
   external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
 
 esphome:
