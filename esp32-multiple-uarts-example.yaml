@@ -1,5 +1,5 @@
 substitutions:
-  name: soyosource_gtn_virtual_meter
+  name: soyosource-gtn-virtual-meter
   device_description: "Monitor multiple Soyosource GTNs and control the power output on demand both via RS485"
   device0: firstfloor_soyosource_gtn_virtual_meter
   device1: groundfloor_soyosource_gtn_virtual_meter

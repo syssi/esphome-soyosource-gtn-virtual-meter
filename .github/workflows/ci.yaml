@@ -169,8 +169,10 @@ jobs:
       - run: |
           esphome -s external_components_source components config esp8266-example.yaml
           esphome -s external_components_source components config esp8266-display-example.yaml
+          esphome -s external_components_source components config esp8266-display-limiter-example.yaml
           esphome -s external_components_source components config esp8266-wifi-dongle-example.yaml
           esphome -s external_components_source components config esp8266-wifi-dongle-example-web-only.yaml
+          esphome -s external_components_source components config esp8266-wifi-dongle-limiter-example.yaml
       - run: |
           esphome -s external_components_source ../components config tests/esp8266-inverter-emulator.yaml
           esphome -s external_components_source ../components config tests/esp8266-fake-display.yaml
@@ -218,7 +220,8 @@ jobs:
           esphome -s external_components_source components compile esp32-multiple-uarts-example.yaml
       - run: |
           esphome -s external_components_source components compile esp8266-example.yaml
-          esphome -s external_components_source components compile esp8266-display-example.yaml
+          # esphome -s external_components_source components compile esp8266-display-example.yaml
+          esphome -s external_components_source components compile esp8266-display-limiter-example.yaml
           esphome -s external_components_source components compile esp8266-wifi-dongle-example.yaml
           esphome -s external_components_source components compile esp8266-wifi-dongle-example-web-only.yaml
       - run: |
