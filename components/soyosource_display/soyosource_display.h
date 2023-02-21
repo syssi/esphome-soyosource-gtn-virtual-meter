@@ -11,6 +11,11 @@
 namespace esphome {
 namespace soyosource_display {
 
+enum ProtocolVersion {
+  SOYOSOURCE_WIFI_VERSION,
+  SOYOSOURCE_DISPLAY_VERSION,
+};
+
 struct SoyosourceSettingsFrameT {
   uint8_t Header;
   uint8_t Function;
@@ -79,11 +84,12 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
     operation_status_text_sensor_ = operation_status_text_sensor;
   }
 
+  void set_protocol_version(ProtocolVersion protocol_version) { protocol_version_ = protocol_version; }
+
   SoyosourceSettingsFrameT get_current_settings() { return current_settings_; }
   void register_select_listener(uint8_t holding_register, const std::function<void(uint8_t)> &func);
-  void send_command(uint8_t function, uint8_t start_voltage = 0, uint8_t shutdown_voltage = 0,
-                    uint8_t output_power_limit = 0, uint8_t grid_frequency = 0, uint8_t start_delay = 0,
-                    uint8_t operation_mode = 0);
+  void send_command(uint8_t function);
+  void display_version_send_command(uint8_t function, uint8_t value1, uint8_t value2, uint8_t value3);
   void update_setting(uint8_t holding_register, float value);
   void loop() override;
   void dump_config() override;
@@ -91,6 +97,8 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
   float get_setup_priority() const override;
 
  protected:
+  ProtocolVersion protocol_version_{SOYOSOURCE_WIFI_VERSION};
+
   binary_sensor::BinarySensor *fan_running_binary_sensor_;
   binary_sensor::BinarySensor *limiter_connected_binary_sensor_;
 
@@ -120,7 +128,6 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
   std::vector<SoyosourceSelectListener> select_listeners_;
   std::vector<uint8_t> rx_buffer_;
   uint32_t last_byte_{0};
-  uint32_t last_send_{0};
   SoyosourceSettingsFrameT current_settings_;
 
   void on_soyosource_display_data_(const uint8_t &function, const std::vector<uint8_t> &data);
@@ -135,10 +142,12 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
   void write_settings_(SoyosourceSettingsFrameT *frame);
+  void display_version_write_settings_(const uint8_t &holding_register, SoyosourceSettingsFrameT *new_settings);
 
   uint8_t operation_mode_to_operation_mode_setting_(const uint8_t &operation_mode);
 
-  std::string operation_mode_to_string_(const uint8_t &operation_mode);
+  std::string wifi_version_operation_mode_to_string_(const uint8_t &operation_mode);
+  std::string display_version_operation_mode_to_string_(const uint8_t &operation_mode);
   std::string operation_status_to_string_(const uint8_t &operation_status);
   std::string device_type_to_string_(const uint8_t &device_type);
   std::string error_bits_to_string_(const uint8_t &mask);
