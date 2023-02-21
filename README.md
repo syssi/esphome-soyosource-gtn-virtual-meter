@@ -24,8 +24,8 @@ It looks like there is no GTW (waterproof) version of the device with limiter / 
 
 | Configuration example                                                                  | Description                                                                                                                           |
 |----------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------|
-| [esp32-example.yaml](esp32-example.yaml)                                               | Monitor the inverter and control the power output on demand **both** via RS485 using a ESP32                                          |
-| [esp8266-example.yaml](esp8266-example.yaml)                                           | Monitor the inverter and control the power output on demand **both** via RS485 using a ESP8266                                        |
+| [esp32-example.yaml](esp32-example.yaml)                                               | Monitor the inverter and control the power output on demand **both** via RS485 using a ESP32[#48][i48]                                |
+| [esp8266-example.yaml](esp8266-example.yaml)                                           | Monitor the inverter and control the power output on demand **both** via RS485 using a ESP8266[#48][i48]                              |
 | [esp8266-display-example.yaml](esp8266-display-example.yaml)                           | Monitor and control the inverter (WiFi & Display version) using the **display port**                                                  |
 | [esp8266-display-limiter-example.yaml](esp8266-display-limiter-example.yaml)           | Monitor and control the inverter (WiFi & Display version) using the **display port** and control the power output on demand via RS485 |
 | [esp8266-wifi-dongle-example.yaml](esp8266-wifi-dongle-example.yaml)                   | Monitor and control the inverter using the **OEM WiFi dongle** with a custom firmware                                                 |
@@ -201,7 +201,9 @@ For a more advanced setup take a look at the [esp32-multiple-uarts-example.yaml]
 
 ## Known issues
 
-None.
+* Some Soyosource inverters doesn't respond to the status request (`0x24 0x00 0x00 0x00 0x00 0x00 0x00 0x00`) via RS485. The reason is unknown. This has no effect on the limiter feature. The inverter processes the power demand requests silently. There is a new hardware version since 2022 (purple mainboard / fw version `STC8-2022-218`) which probably doesn't respond to requests anymore. The 2021 version (blue mainboard & green mainboard, fw version `2021-301`) responds for some people and for some not. ([#48][i48])
+
+[i48]: https://github.com/syssi/esphome-soyosource-gtn-virtual-meter/issues/48
 
 ## Debugging
 
