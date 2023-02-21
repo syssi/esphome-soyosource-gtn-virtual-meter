@@ -201,9 +201,7 @@ For a more advanced setup take a look at the [esp32-multiple-uarts-example.yaml]
 
 ## Known issues
 
-* [^1]: Some Soyosource inverters doesn't respond to the status request (`0x24 0x00 0x00 0x00 0x00 0x00 0x00 0x00`) via RS485. The reason is unknown. This has no effect on the limiter feature. The inverter processes the power demand requests silently. There is a new hardware version since 2022 (purple mainboard / fw version `STC8-2022-218`) which probably doesn't respond to requests anymore. The 2021 version (blue mainboard & green mainboard, fw version `2021-301`) responds for some people and for some not. ([#48][i48])
-
-[i48]: https://github.com/syssi/esphome-soyosource-gtn-virtual-meter/issues/48
+None.
 
 ## Debugging
 
@@ -231,3 +229,5 @@ uart:
 * https://www.photovoltaikforum.com/thread/148552-g%C3%BCnstiger-1200w-grid-tie-inverter-mit-limiter-sensor-von-soyo-source-%C3%A4hnlich-gti/?pageNo=4
 * https://secondlifestorage.com/index.php?threads/limiter-inverter-with-rs485-load-setting.7631/
 * https://github.com/PepeTheFroggie/Soyosource-GridTie-inverter-24V-LCD-replacement
+
+[^1]: Some Soyosource inverters doesn't respond to the status request (`0x24 0x00 0x00 0x00 0x00 0x00 0x00 0x00`) via RS485. The reason is unknown. This has no effect on the limiter feature. The inverter processes the power demand requests silently. There is a new hardware version since 2022 (purple mainboard / fw version `STC8-2022-218`) which probably doesn't respond to requests anymore. The 2021 version (blue mainboard & green mainboard, fw version `2021-301`) responds for some people and for some not. ([#48](https://github.com/syssi/esphome-soyosource-gtn-virtual-meter/issues/48))
