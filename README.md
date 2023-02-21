@@ -24,14 +24,14 @@ It looks like there is no GTW (waterproof) version of the device with limiter / 
 
 | Configuration example                                                                  | Description                                                                                                                           |
 |----------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------|
-| [esp32-example.yaml](esp32-example.yaml)                                               | Monitor the inverter and control the power output on demand **both** via RS485 using a ESP32[^1]                                      |
-| [esp8266-example.yaml](esp8266-example.yaml)                                           | Monitor the inverter and control the power output on demand **both** via RS485 using a ESP8266[^1]                                    |
+| [esp32-example.yaml](esp32-example.yaml)                                               | Monitor[^1] the inverter and control the power output on demand **both** via RS485 using a ESP32                                      |
+| [esp8266-example.yaml](esp8266-example.yaml)                                           | Monitor[^1] the inverter and control the power output on demand **both** via RS485 using a ESP8266                                    |
 | [esp8266-display-example.yaml](esp8266-display-example.yaml)                           | Monitor and control the inverter (WiFi & Display version) using the **display port**                                                  |
 | [esp8266-display-limiter-example.yaml](esp8266-display-limiter-example.yaml)           | Monitor and control the inverter (WiFi & Display version) using the **display port** and control the power output on demand via RS485 |
 | [esp8266-wifi-dongle-example.yaml](esp8266-wifi-dongle-example.yaml)                   | Monitor and control the inverter using the **OEM WiFi dongle** with a custom firmware                                                 |
 | [esp8266-wifi-dongle-example-web-only.yaml](esp8266-wifi-dongle-example-web-only.yaml) | Monitor and control the inverter using the **OEM WiFi dongle** with a custom firmware providing a nice **web interface**              |
 | [esp8266-wifi-dongle-limiter-example.yaml](esp8266-wifi-dongle-limiter-example.yaml)   | Monitor and control the inverter using the **OEM WiFi dongle** and control the power output on demand via RS485                       |
-| [esp32-multiple-uarts-example.yaml](esp32-multiple-uarts-example.yaml)                 | Monitor **multiple inverters** and control the power output on demand **both** via RS485                                              |
+| [esp32-multiple-uarts-example.yaml](esp32-multiple-uarts-example.yaml)                 | Monitor[^1] **multiple inverters** and control the power output on demand **both** via RS485                                          |
 
 ## Requirements
 
@@ -230,4 +230,4 @@ uart:
 * https://secondlifestorage.com/index.php?threads/limiter-inverter-with-rs485-load-setting.7631/
 * https://github.com/PepeTheFroggie/Soyosource-GridTie-inverter-24V-LCD-replacement
 
-[^1]: Some Soyosource inverters doesn't respond to the status request (`0x24 0x00 0x00 0x00 0x00 0x00 0x00 0x00`) via RS485. The reason is unknown. This has no effect on the limiter feature. The inverter processes the power demand requests silently. There is a new hardware version since 2022 (purple mainboard / fw version `STC8-2022-218`) which probably doesn't respond to requests anymore. The 2021 version (blue mainboard & green mainboard, fw version `2021-301`) responds for some people and for some not. ([#48](https://github.com/syssi/esphome-soyosource-gtn-virtual-meter/issues/48))
+[^1]: Some devices doesn't respond to the status request (`0x24 0x00 0x00 0x00 0x00 0x00 0x00 0x00`) via RS485. The reason is unknown. This has no effect on the limiter feature. The inverter processes the power demand requests silently. There is a new hardware version since 2022 (purple mainboard / fw version `STC8-2022-218`) which probably doesn't respond to requests anymore. The 2021 version (blue mainboard & green mainboard, fw version `2021-301`) responds for some people and for some not. ([#48](https://github.com/syssi/esphome-soyosource-gtn-virtual-meter/issues/48))
