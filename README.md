@@ -230,4 +230,4 @@ uart:
 * https://github.com/drcross/virtual-meter
 * https://www.photovoltaikforum.com/thread/148552-g%C3%BCnstiger-1200w-grid-tie-inverter-mit-limiter-sensor-von-soyo-source-%C3%A4hnlich-gti/?pageNo=4
 * https://secondlifestorage.com/index.php?threads/limiter-inverter-with-rs485-load-setting.7631/
-
+* https://github.com/PepeTheFroggie/Soyosource-GridTie-inverter-24V-LCD-replacement
