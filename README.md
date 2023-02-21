@@ -20,6 +20,17 @@ ESPHome component to simulate the current clamp to control the Soyosource GTN120
 
 It looks like there is no GTW (waterproof) version of the device with limiter / RS485 support.
 
+## Supported setups
+
+* [esp32-example.yaml](esp32-example.yaml): Monitor the inverter and control the power output on demand both via RS485 using a ESP32
+* [esp8266-example.yaml](esp8266-example.yaml): Monitor the inverter and control the power output on demand both via RS485 using a ESP8266
+* [esp8266-display-example.yaml](esp8266-display-example.yaml): Monitor and control the inverter (WiFi & Display version) using the display port
+* [esp8266-display-limiter-example.yaml](esp8266-display-limiter-example.yaml): Monitor and control the inverter using the display port and control the power output on demand via RS485
+* [esp8266-wifi-dongle-example.yaml](esp8266-wifi-dongle-example.yaml): Monitor and control the WiFi version of the Soyosource GTN using the OEM WiFi dongle with a custom firmware
+* [esp8266-wifi-dongle-example-web-only.yaml](esp8266-wifi-dongle-example-web-only.yaml): Monitor and control the WiFi version of the Soyosource GTN using the OEM WiFi dongle with a custom firmware providing a nice web interface
+* [esp8266-wifi-dongle-limiter-example.yaml](esp8266-wifi-dongle-limiter-example.yaml): Monitor and control the WiFi version of the Soyosource GTN using the OEM WiFi dongle and control the power output on demand via RS485
+* [esp32-multiple-uarts-example.yaml](esp32-multiple-uarts-example.yaml): Monitor multiple Soyosource GTNs and control the power output on demand both via RS485
+
 ## Requirements
 
 * [ESPHome 2022.5.0 or higher](https://github.com/esphome/esphome/releases).
