@@ -105,7 +105,7 @@ bool SoyosourceDisplay::parse_soyosource_display_byte_(uint8_t byte) {
   uint8_t computed_crc = chksum(raw, frame_len - 1);
   uint8_t remote_crc = raw[frame_len - 1];
   if (computed_crc != remote_crc) {
-    ESP_LOGW(TAG, "SoyosourceDisplay CRC Check failed! %02X != %02X", computed_crc, remote_crc);
+    ESP_LOGW(TAG, "CRC Check failed! %02X != %02X", computed_crc, remote_crc);
     return false;
   }
 
@@ -160,7 +160,13 @@ void SoyosourceDisplay::on_ms51_status_data_(const std::vector<uint8_t> &data) {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
 
-  ESP_LOGI(TAG, "Status frame received");
+  ESP_LOGI(TAG, "Status frame (MS51, %d bytes) received", data.size());
+  ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
+
+  if (soyosource_get_16bit(8) == 0x0000 && data[15] == 0x00) {
+    ESP_LOGD(TAG, "Empty status frame rejected");
+    return;
+  }
 
   // Soyosource status: 0xA6 0x02 0xEA 0x91 0x40 0x01 0xC5 0x00 0x32 0x00 0xF7 0x64 0x02 0x12 0xDB
   // MS5 status:             0x5A 0x01 0x91 0x40 0x01 0xC5 0x00 0x32 0x00 0xF7 0x32 0x00 0xCA 0x00 0x00 0x17 0x2B
@@ -222,7 +228,8 @@ void SoyosourceDisplay::on_soyosource_status_data_(const std::vector<uint8_t> &d
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
 
-  ESP_LOGI(TAG, "Status frame received");
+  ESP_LOGI(TAG, "Status frame (Soyo, %d bytes) received", data.size());
+  ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
   // 0     1   0xA6                   Header
@@ -279,7 +286,13 @@ void SoyosourceDisplay::on_ms51_settings_data_(const std::vector<uint8_t> &data)
 
   // Settings response example   0x5A 0x01 0xD3 0x02 0xD4 0x30 0x31 0x2F 0x00 0xE6 0x64 0x5A 0x00 0x06 0x37 0x5A 0x8A
 
-  ESP_LOGI(TAG, "Settings:");
+  ESP_LOGI(TAG, "Settings (MS51, %d bytes):", data.size());
+  ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
+
+  if (data[4] == 0x00 && data[5] == 0x00) {
+    ESP_LOGD(TAG, "Empty settings frame rejected");
+    return;
+  }
 
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
   // 0     1   0x5A                   Header
@@ -357,7 +370,8 @@ void SoyosourceDisplay::on_soyosource_settings_data_(const std::vector<uint8_t> 
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
 
-  ESP_LOGI(TAG, "Settings:");
+  ESP_LOGI(TAG, "Settings (Soyo, %d bytes):", data.size());
+  ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
   // 0     1   0xA6                   Header
