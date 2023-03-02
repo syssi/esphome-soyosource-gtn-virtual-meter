@@ -87,6 +87,7 @@
 # }
 
 http_request:
+  id: http_request_data
   useragent: esphome/device
   timeout: 5s
 
