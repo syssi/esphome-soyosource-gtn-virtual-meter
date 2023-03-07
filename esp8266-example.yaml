@@ -89,6 +89,18 @@ binary_sensor:
     fan_running:
       name: "${name} fan running"
 
+number:
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter0
+    manual_power_demand:
+      name: "${name} manual power demand"
+      max_value: 900
+    max_power_demand:
+      name: "${name} max power demand"
+      initial_value: 600
+      max_value: 900
+      restore_value: true
+
 sensor:
   - platform: soyosource_virtual_meter
     soyosource_virtual_meter_id: virtualmeter0
@@ -143,18 +155,6 @@ switch:
     emergency_power_off:
       name: "${name} emergency power off"
       restore_mode: RESTORE_DEFAULT_OFF
-
-number:
-  - platform: soyosource_virtual_meter
-    soyosource_virtual_meter_id: virtualmeter0
-    manual_power_demand:
-      name: "${name} manual power demand"
-      max_value: 900
-    max_power_demand:
-      name: "${name} max power demand"
-      initial_value: 600
-      max_value: 900
-      restore_value: true
 
 text_sensor:
   - platform: soyosource_virtual_meter
