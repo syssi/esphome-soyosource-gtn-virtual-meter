@@ -100,6 +100,29 @@ button:
     restart:
       name: "${name} restart"
 
+number:
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter0
+    manual_power_demand:
+      name: "${name} manual power demand"
+      max_value: 900
+    max_power_demand:
+      name: "${name} max power demand"
+      initial_value: 600
+      max_value: 900
+      restore_value: true
+
+  - platform: soyosource_display
+    start_voltage:
+      name: "${name} start voltage"
+    shutdown_voltage:
+      name: "${name} shutdown voltage"
+    # Maximum output power in limiter mode / Output power in constant power mode
+    output_power_limit:
+      name: "${name} output power limit"
+    start_delay:
+      name: "${name} start delay"
+
 select:
   - platform: soyosource_display
     operation_mode:
@@ -171,29 +194,6 @@ switch:
     emergency_power_off:
       name: "${name} emergency power off"
       restore_mode: RESTORE_DEFAULT_OFF
-
-number:
-  - platform: soyosource_virtual_meter
-    soyosource_virtual_meter_id: virtualmeter0
-    manual_power_demand:
-      name: "${name} manual power demand"
-      max_value: 900
-    max_power_demand:
-      name: "${name} max power demand"
-      initial_value: 600
-      max_value: 900
-      restore_value: true
-
-  - platform: soyosource_display
-    start_voltage:
-      name: "${name} start voltage"
-    shutdown_voltage:
-      name: "${name} shutdown voltage"
-    # Maximum output power in limiter mode / Output power in constant power mode
-    output_power_limit:
-      name: "${name} output power limit"
-    start_delay:
-      name: "${name} start delay"
 
 text_sensor:
   - platform: soyosource_virtual_meter

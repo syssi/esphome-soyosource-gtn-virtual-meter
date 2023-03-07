@@ -71,23 +71,10 @@ soyosource_virtual_meter:
     # A positive buffer value (10) tries to avoid exporting power to the grid (demand - 10 watts)
     # A negative buffer value (-10) exports power to the grid (demand + 10 watts)
     buffer: 10
-    # The operation_status_id sensor is expected here. Passing the operation_status won't work
-    # The state is used to suspend the limiter if the operation status of the inverter isn't 0x0 (normal)
-    # operation_status_id: operation_status_id0
 
     # The update interval is important and defaults to 3 seconds. If the demand is sent too frequently
     # or rarely the interverter stops. TODO: Identify and validate the lower and upper update limit
     update_interval: 3s
-
-soyosource_inverter:
-  - id: inverter0
-    soyosource_modbus_id: modbus0
-
-binary_sensor:
-  - platform: soyosource_inverter
-    soyosource_inverter_id: inverter0
-    fan_running:
-      name: "${name} fan running"
 
 number:
   - platform: soyosource_virtual_meter
@@ -106,24 +93,6 @@ sensor:
     soyosource_virtual_meter_id: virtualmeter0
     power_demand:
       name: "${name} power demand"
-
-  - platform: soyosource_inverter
-    soyosource_inverter_id: inverter0
-    operation_status_id:
-      name: "${name} operation status id"
-      id: operation_status_id0
-    battery_voltage:
-      name: "${name} battery voltage"
-    battery_current:
-      name: "${name} battery current"
-    battery_power:
-      name: "${name} battery power"
-    ac_voltage:
-      name: "${name} ac voltage"
-    ac_frequency:
-      name: "${name} ac frequency"
-    temperature:
-      name: "${name} temperature"
 
   # mqtt subscribe example
   - id: powermeter0
@@ -161,8 +130,3 @@ text_sensor:
     soyosource_virtual_meter_id: virtualmeter0
     operation_mode:
       name: "${name} limiter operation mode"
-
-  - platform: soyosource_inverter
-    soyosource_inverter_id: inverter0
-    operation_status:
-      name: "${name} operation status"
