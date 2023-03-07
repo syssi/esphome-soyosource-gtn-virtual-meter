@@ -34,6 +34,7 @@ web_server:
 
 ota:
 
+# The API is enabled to allow connections from the ESPHome CLI to retrieve some log messages via network
 api:
   reboot_timeout: 0s
 
