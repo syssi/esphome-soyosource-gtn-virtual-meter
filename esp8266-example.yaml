@@ -1,12 +1,13 @@
 substitutions:
-  name: soyosource-gtn-virtual-meter
+  hostname: soyosource-gtn-virtual-meter
+  name: soyo
   device_description: "Monitor a Soyosource GTN and control the power output on demand both via RS485"
   external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
   tx_pin: GPIO4
   rx_pin: GPIO5
 
 esphome:
-  name: ${name}
+  name: ${hostname}
   comment: ${device_description}
   project:
     name: "syssi.esphome-soyosource-gtn-virtual-meter"
@@ -140,6 +141,7 @@ sensor:
   - platform: template
     name: "dummy powermeter"
     id: powermeter0
+    internal: true
     update_interval: never
     lambda: |-
       return 100.0;
@@ -149,7 +151,9 @@ switch:
     soyosource_virtual_meter_id: virtualmeter0
     manual_mode:
       name: "${name} manual mode"
-      restore_mode: RESTORE_DEFAULT_ON
+      # You don't want to control this switch. Let's turn in on always and hide it
+      restore_mode: ALWAYS_ON
+      internal: true
     emergency_power_off:
       name: "${name} emergency power off"
       restore_mode: RESTORE_DEFAULT_OFF
