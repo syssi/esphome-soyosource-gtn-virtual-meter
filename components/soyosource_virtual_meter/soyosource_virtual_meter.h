@@ -34,11 +34,15 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
     this->power_demand_calculation_ = power_demand_calculation;
   }
 
+  void set_buffer_number(number::Number *buffer_number) { buffer_number_ = buffer_number; }
   void set_manual_power_demand_number(number::Number *manual_power_demand_number) {
     manual_power_demand_number_ = manual_power_demand_number;
   }
   void set_max_power_demand_number(number::Number *max_power_demand_number) {
     max_power_demand_number_ = max_power_demand_number;
+  }
+  void set_power_demand_divider_number(number::Number *power_demand_divider_number) {
+    power_demand_divider_number_ = power_demand_divider_number;
   }
 
   void set_manual_mode_switch(switch_::Switch *manual_mode_switch) { manual_mode_switch_ = manual_mode_switch; }
@@ -62,8 +66,10 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
  protected:
   PowerDemandCalculation power_demand_calculation_{POWER_DEMAND_CALCULATION_DUMB_OEM_BEHAVIOR};
 
+  number::Number *buffer_number_;
   number::Number *manual_power_demand_number_;
   number::Number *max_power_demand_number_;
+  number::Number *power_demand_divider_number_;
 
   sensor::Sensor *power_sensor_;
   sensor::Sensor *operation_status_sensor_;
