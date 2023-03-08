@@ -49,11 +49,15 @@ uart:
     baud_rate: 9600
     tx_pin: ${tx_pin_ttl_wifi}
     rx_pin: ${rx_pin_ttl_wifi}
+    debug:
+      direction: BOTH
 
   - id: uart1
     baud_rate: 4800
     tx_pin: ${tx_pin_rs485}
     rx_pin: ${rx_pin_rs485}
+    debug:
+      direction: BOTH
 
 soyosource_modbus:
   - id: modbus0
