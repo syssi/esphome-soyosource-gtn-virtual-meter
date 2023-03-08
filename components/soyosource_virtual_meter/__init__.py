@@ -17,10 +17,16 @@ CONF_BUFFER = "buffer"
 CONF_POWER_DEMAND_DIVIDER = "power_demand_divider"
 CONF_OPERATION_STATUS_ID = "operation_status_id"
 
+DEFAULT_MIN_BUFFER = -200
+DEFAULT_MAX_BUFFER = 200
 DEFAULT_BUFFER = 0
+
 DEFAULT_MIN_POWER_DEMAND = 0
 DEFAULT_MAX_POWER_DEMAND = 900
+
 DEFAULT_POWER_DEMAND_DIVIDER = 1
+DEFAULT_MIN_POWER_DEMAND_DIVIDER = 1
+DEFAULT_MAX_POWER_DEMAND_DIVIDER = 6
 
 soyosource_virtual_meter_ns = cg.esphome_ns.namespace("soyosource_virtual_meter")
 SoyosourceVirtualMeter = soyosource_virtual_meter_ns.class_(
@@ -61,11 +67,14 @@ CONFIG_SCHEMA = cv.All(
                 CONF_POWER_SENSOR_INACTIVITY_TIMEOUT, default="20s"
             ): cv.positive_time_period_seconds,
             cv.Optional(CONF_BUFFER, default=DEFAULT_BUFFER): cv.int_range(
-                min=-200, max=200
+                min=DEFAULT_MIN_BUFFER, max=DEFAULT_MAX_BUFFER
             ),
             cv.Optional(
                 CONF_POWER_DEMAND_DIVIDER, default=DEFAULT_POWER_DEMAND_DIVIDER
-            ): cv.int_range(min=1, max=6),
+            ): cv.int_range(
+                min=DEFAULT_MIN_POWER_DEMAND_DIVIDER,
+                max=DEFAULT_MAX_POWER_DEMAND_DIVIDER,
+            ),
             cv.Optional(
                 CONF_MIN_POWER_DEMAND, default=DEFAULT_MIN_POWER_DEMAND
             ): cv.int_range(min=0, max=5400),
