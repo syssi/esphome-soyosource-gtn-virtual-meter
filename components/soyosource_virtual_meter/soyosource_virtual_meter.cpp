@@ -1,4 +1,6 @@
+#include "automation.h"
 #include "soyosource_virtual_meter.h"
+
 #include "esphome/core/log.h"
 
 namespace esphome {

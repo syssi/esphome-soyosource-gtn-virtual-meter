@@ -1,3 +1,4 @@
+from esphome import automation
 import esphome.codegen as cg
 from esphome.components import sensor, soyosource_modbus
 import esphome.config_validation as cv
@@ -29,6 +30,13 @@ SoyosourceVirtualMeter = soyosource_virtual_meter_ns.class_(
     soyosource_modbus.SoyosourceModbusDevice,
 )
 
+SetBufferAction = soyosource_virtual_meter_ns.class_(
+    "SetBufferAction", automation.Action
+)
+SetPowerDemandDividerAction = soyosource_virtual_meter_ns.class_(
+    "SetPowerDemandDividerAction", automation.Action
+)
+
 PowerDemandCalculation = soyosource_virtual_meter_ns.enum("PowerDemandCalculation")
 POWER_DEMAND_CALCULATION_OPTIONS = {
     "DUMB_OEM_BEHAVIOR": PowerDemandCalculation.POWER_DEMAND_CALCULATION_DUMB_OEM_BEHAVIOR,
@@ -46,6 +54,24 @@ def validate_min_max(config):
         )
 
     return config
+
+
+SOYOSOURCE_VIRTUAL_METER_ACTION_SET_BUFFER_SCHEMA = cv.maybe_simple_value(
+    {
+        cv.GenerateID(): cv.use_id(SoyosourceVirtualMeter),
+        cv.Required(CONF_BUFFER): cv.templatable(cv.int_range(min=-200, max=200)),
+    },
+    key=CONF_BUFFER,
+)
+SOYOSOURCE_VIRTUAL_METER_ACTION_SET_POWER_DEMAND_DIVIDER_SCHEMA = cv.maybe_simple_value(
+    {
+        cv.GenerateID(): cv.use_id(SoyosourceVirtualMeter),
+        cv.Required(CONF_POWER_DEMAND_DIVIDER): cv.templatable(
+            cv.int_range(min=1, max=6)
+        ),
+    },
+    key=CONF_POWER_DEMAND_DIVIDER,
+)
 
 
 CONFIG_SCHEMA = cv.All(
@@ -78,6 +104,36 @@ CONFIG_SCHEMA = cv.All(
     .extend(cv.polling_component_schema("3s")),
     validate_min_max,
 )
+
+
+@automation.register_action(
+    "soyosource_virtual_meter.set_buffer",
+    SetBufferAction,
+    SOYOSOURCE_VIRTUAL_METER_ACTION_SET_BUFFER_SCHEMA,
+)
+async def soyosource_virtual_meter_set_buffer_to_code(
+    config, action_id, template_arg, args
+):
+    paren = await cg.get_variable(config[CONF_ID])
+    var = cg.new_Pvariable(action_id, template_arg, paren)
+    template_ = await cg.templatable(config[CONF_BUFFER], args, cg.int16)
+    cg.add(var.set_buffer(template_))
+    return var
+
+
+@automation.register_action(
+    "soyosource_virtual_meter.set_power_demand_divider",
+    SetPowerDemandDividerAction,
+    SOYOSOURCE_VIRTUAL_METER_ACTION_SET_POWER_DEMAND_DIVIDER_SCHEMA,
+)
+async def soyosource_virtual_meter_set_power_demand_divider_to_code(
+    config, action_id, template_arg, args
+):
+    paren = await cg.get_variable(config[CONF_ID])
+    var = cg.new_Pvariable(action_id, template_arg, paren)
+    template_ = await cg.templatable(config[CONF_POWER_DEMAND_DIVIDER], args, cg.uint8)
+    cg.add(var.set_power_demand_divider(template_))
+    return var
 
 
 async def to_code(config):
