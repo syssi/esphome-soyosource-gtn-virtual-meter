@@ -92,6 +92,10 @@ binary_sensor:
 number:
   - platform: soyosource_virtual_meter
     soyosource_virtual_meter_id: virtualmeter0
+    buffer:
+      name: "${name} buffer"
+      initial_value: 10
+      restore_value: true
     manual_power_demand:
       name: "${name} manual power demand"
       max_value: 900
@@ -99,6 +103,10 @@ number:
       name: "${name} max power demand"
       initial_value: 600
       max_value: 900
+      restore_value: true
+    power_demand_divider:
+      name: "${name} power demand divider"
+      initial_value: 1
       restore_value: true
 
 sensor:

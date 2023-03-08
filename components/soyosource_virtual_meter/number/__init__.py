@@ -10,13 +10,22 @@ from esphome.const import (
     CONF_RESTORE_VALUE,
     CONF_STEP,
     CONF_UNIT_OF_MEASUREMENT,
+    UNIT_EMPTY,
     UNIT_WATT,
 )
 
 from .. import (
+    CONF_BUFFER,
+    CONF_POWER_DEMAND_DIVIDER,
     CONF_SOYOSOURCE_VIRTUAL_METER_ID,
+    DEFAULT_BUFFER,
+    DEFAULT_MAX_BUFFER,
     DEFAULT_MAX_POWER_DEMAND,
+    DEFAULT_MAX_POWER_DEMAND_DIVIDER,
+    DEFAULT_MIN_BUFFER,
     DEFAULT_MIN_POWER_DEMAND,
+    DEFAULT_MIN_POWER_DEMAND_DIVIDER,
+    DEFAULT_POWER_DEMAND_DIVIDER,
     SoyosourceVirtualMeter,
     soyosource_virtual_meter_ns,
 )
@@ -29,12 +38,16 @@ DEFAULT_STEP = 1
 CONF_MANUAL_POWER_DEMAND = "manual_power_demand"
 CONF_MAX_POWER_DEMAND = "max_power_demand"
 
+ICON_BUFFER = "mdi:vector-difference"
 ICON_MANUAL_POWER_DEMAND = "mdi:home-lightning-bolt-outline"
 ICON_MAX_POWER_DEMAND = "mdi:transmission-tower-import"
+ICON_POWER_DEMAND_DIVIDER = "mdi:chart-arc"
 
 NUMBERS = {
     CONF_MANUAL_POWER_DEMAND: 0x00,
     CONF_MAX_POWER_DEMAND: 0x01,
+    CONF_BUFFER: 0x02,
+    CONF_POWER_DEMAND_DIVIDER: 0x03,
 }
 
 SoyosourceNumber = soyosource_virtual_meter_ns.class_(
@@ -43,12 +56,10 @@ SoyosourceNumber = soyosource_virtual_meter_ns.class_(
 
 
 def validate_min_max(config):
-    max_power_demand = cv.int_(config[CONF_MAX_VALUE])
-    min_power_demand = cv.int_(config[CONF_MIN_VALUE])
-    if (max_power_demand - min_power_demand) < 0:
-        raise cv.Invalid(
-            "Maximum power demand must be greater than minimum power demand."
-        )
+    max = cv.int_(config[CONF_MAX_VALUE])
+    min = cv.int_(config[CONF_MIN_VALUE])
+    if (max - min) < 0:
+        raise cv.Invalid("Upper limit must be greater than the lower limit.")
 
     return config
 
@@ -64,6 +75,24 @@ CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_SOYOSOURCE_VIRTUAL_METER_ID): cv.use_id(
             SoyosourceVirtualMeter
+        ),
+        cv.Optional(CONF_BUFFER): cv.All(
+            number.NUMBER_SCHEMA.extend(
+                {
+                    cv.GenerateID(): cv.declare_id(SoyosourceNumber),
+                    cv.Optional(CONF_ICON, default=ICON_BUFFER): cv.icon,
+                    cv.Optional(CONF_MIN_VALUE, default=DEFAULT_MIN_BUFFER): cv.float_,
+                    cv.Optional(CONF_MAX_VALUE, default=DEFAULT_MAX_BUFFER): cv.float_,
+                    cv.Optional(CONF_STEP, default=DEFAULT_STEP): cv.float_,
+                    cv.Optional(
+                        CONF_UNIT_OF_MEASUREMENT, default=UNIT_WATT
+                    ): cv.string_strict,
+                    cv.Optional(CONF_INITIAL_VALUE, default=DEFAULT_BUFFER): cv.float_,
+                    cv.Optional(CONF_RESTORE_VALUE, default=False): cv.boolean,
+                }
+            ).extend(cv.COMPONENT_SCHEMA),
+            validate_min_max,
+            validate,
         ),
         cv.Optional(CONF_MANUAL_POWER_DEMAND): cv.All(
             number.NUMBER_SCHEMA.extend(
@@ -103,6 +132,30 @@ CONFIG_SCHEMA = cv.Schema(
                         CONF_UNIT_OF_MEASUREMENT, default=UNIT_WATT
                     ): cv.string_strict,
                     cv.Optional(CONF_INITIAL_VALUE): cv.float_,
+                    cv.Optional(CONF_RESTORE_VALUE, default=False): cv.boolean,
+                }
+            ).extend(cv.COMPONENT_SCHEMA),
+            validate_min_max,
+            validate,
+        ),
+        cv.Optional(CONF_POWER_DEMAND_DIVIDER): cv.All(
+            number.NUMBER_SCHEMA.extend(
+                {
+                    cv.GenerateID(): cv.declare_id(SoyosourceNumber),
+                    cv.Optional(CONF_ICON, default=ICON_POWER_DEMAND_DIVIDER): cv.icon,
+                    cv.Optional(
+                        CONF_MIN_VALUE, default=DEFAULT_MIN_POWER_DEMAND_DIVIDER
+                    ): cv.float_,
+                    cv.Optional(
+                        CONF_MAX_VALUE, default=DEFAULT_MAX_POWER_DEMAND_DIVIDER
+                    ): cv.float_,
+                    cv.Optional(CONF_STEP, default=DEFAULT_STEP): cv.float_,
+                    cv.Optional(
+                        CONF_UNIT_OF_MEASUREMENT, default=UNIT_EMPTY
+                    ): cv.string_strict,
+                    cv.Optional(
+                        CONF_INITIAL_VALUE, default=DEFAULT_POWER_DEMAND_DIVIDER
+                    ): cv.float_,
                     cv.Optional(CONF_RESTORE_VALUE, default=False): cv.boolean,
                 }
             ).extend(cv.COMPONENT_SCHEMA),

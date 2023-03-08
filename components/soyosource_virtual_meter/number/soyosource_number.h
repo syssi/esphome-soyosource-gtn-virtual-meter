@@ -22,6 +22,7 @@ class SoyosourceNumber : public number::Number, public Component {
 
  protected:
   void control(float value) override;
+  void apply_and_publish_(float value);
 
   SoyosourceVirtualMeter *parent_;
   float initial_value_{NAN};
