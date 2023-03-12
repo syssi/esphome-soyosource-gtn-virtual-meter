@@ -1,6 +1,6 @@
 substitutions:
   name: soyosource-gtn-virtual-meter
-  device_description: "Monitor a Soyosource GTN and control the power output on demand both via RS485"
+  device_description: "Control the power output of a Soyosource GTN on demand via RS485"
   external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
   tx_pin: GPIO1
   rx_pin: GPIO3
