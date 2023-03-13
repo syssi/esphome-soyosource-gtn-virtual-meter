@@ -1,7 +1,8 @@
 substitutions:
   name: soyosource-gtn-inverter-emu
-  device_description: "Emulate the TTL-WIFI port traffic of the Soyosource GTN (WiFi version)"
+  device_description: "Emulate the internal display port traffic of the Soyosource GTN (Display version)"
   external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
+  # The display board should be attached to these GPIOs using a SH 1.0mm, 4 Pin connector
   tx_pin: GPIO4
   rx_pin: GPIO5
 
@@ -25,14 +26,19 @@ wifi:
 
 ota:
 api:
+  reboot_timeout: 0s
+
 logger:
 
-# Please be careful: The display port has a logic level of 5V.
 uart:
-  baud_rate: 9600
-  tx_pin: ${tx_pin}
-  rx_pin: ${rx_pin}
-  debug:
-    direction: BOTH
+  - id: uart0
+    baud_rate: 9600
+    tx_pin: ${tx_pin}
+    rx_pin: ${rx_pin}
+    debug:
+      direction: BOTH
 
 soyosource_inverter_emulator:
+  - id: inverter0
+    uart_id: uart0
+    protocol_version: SOYOSOURCE_DISPLAY_VERSION
