@@ -77,7 +77,7 @@ bool SoyosourceInverterEmulator::parse_soyosource_inverter_emulator_byte_(uint8_
     return false;
   }
 
-  std::vector<uint8_t> data(this->rx_buffer_.begin(), this->rx_buffer_.begin() + frame_len - 1);
+  std::vector<uint8_t> data(this->rx_buffer_.begin(), this->rx_buffer_.begin() + frame_len);
 
   this->on_soyosource_inverter_emulator_data_(function, data);
 
@@ -87,15 +87,15 @@ bool SoyosourceInverterEmulator::parse_soyosource_inverter_emulator_byte_(uint8_
 void SoyosourceInverterEmulator::on_soyosource_inverter_emulator_data_(const uint8_t &function,
                                                                        const std::vector<uint8_t> &data) {
   if (this->protocol_version_ == SOYOSOURCE_DISPLAY_VERSION) {
-    this->on_wifi_version_data_(function, data);
+    this->on_display_version_data_(function, data);
     return;
   }
 
-  this->on_display_version_data_(function, data);
+  this->on_wifi_version_data_(function, data);
 }
 
 void SoyosourceInverterEmulator::on_wifi_version_data_(const uint8_t &function, const std::vector<uint8_t> &data) {
-  if (data.size() != 11) {
+  if (data.size() != 12) {
     ESP_LOGW(TAG, "Invalid response size: %d", data.size());
     return;
   }
@@ -181,8 +181,8 @@ void SoyosourceInverterEmulator::on_wifi_version_data_(const uint8_t &function, 
 }
 
 void SoyosourceInverterEmulator::on_display_version_data_(const uint8_t &function, const std::vector<uint8_t> &data) {
-  if (data.size() != 11) {
-    ESP_LOGW(TAG, "Invalid response size: %d", data.size());
+  if (data.size() != 6) {
+    ESP_LOGW(TAG, "Invalid request size: %d", data.size());
     return;
   }
 
