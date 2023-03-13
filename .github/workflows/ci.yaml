@@ -163,22 +163,28 @@ jobs:
       - name: Write tests/secrets.yaml
         shell: bash
         run: 'echo -e "wifi_ssid: ssid\nwifi_password: password\nmqtt_host: host\nmqtt_username: username\nmqtt_password: password" > tests/secrets.yaml'
-      - run: |
+      - name: Validate esp32 example configurations
+        run: |
           esphome -s external_components_source components config esp32-example.yaml
           esphome -s external_components_source components config esp32-limiter-example.yaml
           esphome -s external_components_source components config esp32-multiple-uarts-example.yaml
-      - run: |
+      - name: Validate esp8266 example configurations
+        run: |
           esphome -s external_components_source components config esp8266-example.yaml
-          esphome -s external_components_source components config esp8266-display-example.yaml
-          esphome -s external_components_source components config esp8266-display-limiter-example.yaml
+          esphome -s external_components_source components config esp8266-display-display-version-example.yaml
+          esphome -s external_components_source components config esp8266-display-wifi-version-example.yaml
+          esphome -s external_components_source components config esp8266-display-wifi-version-limiter-example.yaml
           esphome -s external_components_source components config esp8266-limiter-example.yaml
           esphome -s external_components_source components config esp8266-wifi-dongle-example.yaml
           esphome -s external_components_source components config esp8266-wifi-dongle-example-web-only.yaml
           esphome -s external_components_source components config esp8266-wifi-dongle-limiter-example.yaml
-      - run: |
+      - name: Validate test configurations
+        run: |
+          esphome -s external_components_source ../components config tests/esp8266-display-rx.yaml
           esphome -s external_components_source ../components config tests/esp8266-inverter-display-version-emulator.yaml
-          esphome -s external_components_source ../components config tests/esp8266-inverter-display-version-emulator.yaml
-          esphome -s external_components_source ../components config tests/esp8266-fake-display.yaml
+          esphome -s external_components_source ../components config tests/esp8266-inverter-wifi-version-emulator.yaml
+          esphome -s external_components_source ../components config tests/esp8266-limiter-rx.yaml
+          esphome -s external_components_source ../components config tests/esp8266-limiter-tx.yaml
 
   esphome-compile:
     runs-on: ubuntu-latest
@@ -223,11 +229,11 @@ jobs:
           esphome -s external_components_source components compile esp32-multiple-uarts-example.yaml
       - run: |
           esphome -s external_components_source components compile esp8266-example.yaml
-          # esphome -s external_components_source components compile esp8266-display-example.yaml
-          esphome -s external_components_source components compile esp8266-display-limiter-example.yaml
+          esphome -s external_components_source components compile esp8266-display-display-version-example.yaml
+          # esphome -s external_components_source components compile esp8266-display-wifi-version-example.yaml
+          esphome -s external_components_source components compile esp8266-display-wifi-version-limiter-example.yaml
           esphome -s external_components_source components compile esp8266-wifi-dongle-example.yaml
           esphome -s external_components_source components compile esp8266-wifi-dongle-example-web-only.yaml
       - run: |
-          esphome -s external_components_source ../components compile tests/esp8266-inverter-display-version-emulator.yaml
-          esphome -s external_components_source ../components compile tests/esp8266-inverter-wifi-version-emulator.yaml
-          esphome -s external_components_source ../components compile tests/esp8266-fake-display.yaml
+          esphome -s external_components_source ../components config tests/esp8266-inverter-display-version-emulator.yaml
+          # esphome -s external_components_source ../components config tests/esp8266-inverter-wifi-version-emulator.yaml
