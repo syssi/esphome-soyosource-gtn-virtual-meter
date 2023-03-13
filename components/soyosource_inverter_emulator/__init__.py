@@ -25,9 +25,9 @@ CONF_PROTOCOL_VERSION = "protocol_version"
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(SoyosourceInverterEmulator),
-        cv.Optional(
-            CONF_PROTOCOL_VERSION, default="SOYOSOURCE_WIFI_VERSION"
-        ): cv.enum(PROTOCOL_VERSION_OPTIONS, upper=True),
+        cv.Optional(CONF_PROTOCOL_VERSION, default="SOYOSOURCE_WIFI_VERSION"): cv.enum(
+            PROTOCOL_VERSION_OPTIONS, upper=True
+        ),
     }
 ).extend(uart.UART_DEVICE_SCHEMA)
 
