@@ -12,11 +12,22 @@ SoyosourceInverterEmulator = soyosource_inverter_emulator_ns.class_(
     "SoyosourceInverterEmulator", cg.Component, uart.UARTDevice
 )
 
+ProtocolVersion = soyosource_inverter_emulator_ns.enum("ProtocolVersion")
+PROTOCOL_VERSION_OPTIONS = {
+    "SOYOSOURCE_WIFI_VERSION": ProtocolVersion.SOYOSOURCE_WIFI_VERSION,
+    "SOYOSOURCE_DISPLAY_VERSION": ProtocolVersion.SOYOSOURCE_DISPLAY_VERSION,
+}
+
 MULTI_CONF = True
+
+CONF_PROTOCOL_VERSION = "protocol_version"
 
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(SoyosourceInverterEmulator),
+        cv.Optional(
+            CONF_PROTOCOL_VERSION, default="SOYOSOURCE_WIFI_VERSION"
+        ): cv.enum(PROTOCOL_VERSION_OPTIONS, upper=True),
     }
 ).extend(uart.UART_DEVICE_SCHEMA)
 
@@ -26,3 +37,5 @@ async def to_code(config):
     await cg.register_component(var, config)
 
     await uart.register_uart_device(var, config)
+
+    cg.add(var.set_protocol_version(config[CONF_PROTOCOL_VERSION]))

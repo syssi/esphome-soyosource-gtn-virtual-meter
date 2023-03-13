@@ -45,16 +45,20 @@ bool SoyosourceInverterEmulator::parse_soyosource_inverter_emulator_byte_(uint8_
   size_t at = this->rx_buffer_.size();
   this->rx_buffer_.push_back(byte);
   const uint8_t *raw = &this->rx_buffer_[0];
-  uint16_t frame_len = 12;
 
-  // Example request
+  uint16_t frame_len = (this->protocol_version_ == SOYOSOURCE_DISPLAY_VERSION) ? 6 : 12;
+
+  // Example request (WiFi version)
   // 0x55 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xFE
+
+  // Example request (Display version)
+  // 0x55 0x01 0x00 0x00 0x00 0xFE
 
   if (at == 0)
     return true;
 
   if (raw[0] != 0x55) {
-    ESP_LOGW(TAG, "Invalid header.");
+    ESP_LOGW(TAG, "Invalid header");
 
     // return false to reset buffer
     return false;
@@ -69,7 +73,7 @@ bool SoyosourceInverterEmulator::parse_soyosource_inverter_emulator_byte_(uint8_
   uint8_t computed_crc = chksum(raw, frame_len - 1);
   uint8_t remote_crc = raw[frame_len - 1];
   if (computed_crc != remote_crc) {
-    ESP_LOGW(TAG, "SoyosourceInverterEmulator CRC Check failed! %02X != %02X", computed_crc, remote_crc);
+    ESP_LOGW(TAG, "CRC Check failed! %02X != %02X", computed_crc, remote_crc);
     return false;
   }
 
@@ -80,11 +84,19 @@ bool SoyosourceInverterEmulator::parse_soyosource_inverter_emulator_byte_(uint8_
   // return false to reset buffer
   return false;
 }
-
 void SoyosourceInverterEmulator::on_soyosource_inverter_emulator_data_(const uint8_t &function,
                                                                        const std::vector<uint8_t> &data) {
+  if (this->protocol_version_ == SOYOSOURCE_DISPLAY_VERSION) {
+    this->on_wifi_version_data_(function, data);
+    return;
+  }
+
+  this->on_display_version_data_(function, data);
+}
+
+void SoyosourceInverterEmulator::on_wifi_version_data_(const uint8_t &function, const std::vector<uint8_t> &data) {
   if (data.size() != 11) {
-    ESP_LOGW(TAG, "Invalid size for soyosource inverter request frame!");
+    ESP_LOGW(TAG, "Invalid response size: %d", data.size());
     return;
   }
 
@@ -168,7 +180,91 @@ void SoyosourceInverterEmulator::on_soyosource_inverter_emulator_data_(const uin
   }
 }
 
+void SoyosourceInverterEmulator::on_display_version_data_(const uint8_t &function, const std::vector<uint8_t> &data) {
+  if (data.size() != 11) {
+    ESP_LOGW(TAG, "Invalid response size: %d", data.size());
+    return;
+  }
+
+  switch (function) {
+    // Request  0x55 0x01 0x00 0x00 0x00 0xFE
+    // Response 0xA6 0x01 0x01 0x81 0x40 0x02 0x32 0x00 0x00 0x00 0xEB 0x64 0x01 0xC4 0xF4
+    case STATUS_ALT_COMMAND:
+    case STATUS_COMMAND:
+      this->send_status_(
+          0x0101,                                    // Power demand (always 0x0101!)
+          0x81,                                      // Operation mode bitmask
+                                                     //
+                                                     //
+                                                     //
+                                                     //
+                                                     //
+                                                     //
+                                                     //
+                                                     //
+          0x40,                                      // Operation status bitmask
+                                                     //   0x01: 0000 0001   Reserved / Unknown
+                                                     //   0x02: 0000 0010   DC voltage too low
+                                                     //   0x04: 0000 0100   DC voltage too high
+                                                     //   0x08: 0000 1000   AC voltage too high
+                                                     //   0x10: 0001 0000   AC voltage too low
+                                                     //   0x20: 0010 0000   Reserved / Unknown
+                                                     //   0x40: 0100 0000   Limiter connected
+                                                     //   0x80: 1000 0000   Reserved / Unknown
+          562,                                       // Battery voltage (n * 0.1)
+          0,                                         // Battery current
+          250,                                       // AC voltage
+          100,                                       // AC frequency (n * 0.5)
+          ((this->status_counter_ % 80) * 10) + 200  // Temperature ((n-300)*0.1), [~0x0118 = 1°C, ~0x03C0 = 79°C]
+      );
+
+      this->status_counter_++;
+      break;
+
+    // Request   0x55 0x02 0x00 0x00 0x00 0xFD
+    // Response  0xA6 0x01 0x01 0xC3 0x42 0xD4 0x30 0x34 0x31 0x00 0xEB 0x64 0x5A 0x0A 0xDC
+    //
+    // Request   0x55 0x03 0x00 0x00 0x00 0xFC
+    // Response  0xA6 0x01 0x01 0x83 0x40 0xD4 0x30 0x34 0x31 0x00 0xEB 0x64 0x5A 0x0A 0x1E
+    case SETTINGS_ALT_COMMAND:
+    case SETTINGS_COMMAND:
+      this->send_settings_(0x0101,  // Unknown byte 1 and 2 (always 0x0101)
+                           0x83,    // Operation mode
+                           0x40,    // Operation status
+                           0xD4,    // Device model: (value % 100) * 100 = W
+                                    //   0x00: 0W, 0x01: 100W, 0x02: 200W, ..., 0x63: 9900W
+                                    //   0x64: 0W, 0x65: 100W, 0x66: 200W, ..., 0xC7: 9900W
+                                    //   0xC8: 0W, 0xC9, 100W, 0xCA: 200W, ..., 0xFF: 5500W
+                                    //
+                           0x30,    // Device type
+                                    //   0x18: PV 26-56V / BAT 24V
+                                    //   0x24: PV 39-62V / BAT 36V
+                                    //   0x30: PV 55-90V / BAT 48V
+                                    //   0x48: PV 85-130V / BAT 72V
+                                    //   0x60: PV 120-180V / BAT 96V
+                                    //
+                           52,      // Start voltage
+                           49,      // Shutdown voltage
+                           235,     // AC voltage
+                           100,     // AC frequency (n/2)
+                           90,      // Max Power (n*10)
+                           10       // Start delay
+      );
+      this->settings_counter_++;
+      break;
+    case WRITE_SETTINGS_COMMAND:
+      ESP_LOGI(TAG, "Write settings: %s", format_hex_pretty(&data.front(), data.size()).c_str());
+      break;
+    case REBOOT_COMMAND:
+      ESP_LOGI(TAG, "Reboot command received");
+      break;
+    default:
+      ESP_LOGW(TAG, "Unhandled request received: %s", format_hex_pretty(&data.front(), data.size()).c_str());
+  }
+}
+
 void SoyosourceInverterEmulator::dump_config() { ESP_LOGCONFIG(TAG, "SoyosourceInverterEmulator:"); }
+
 float SoyosourceInverterEmulator::get_setup_priority() const {
   // After UART bus
   return setup_priority::BUS - 1.0f;
