@@ -138,10 +138,10 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
 
   uint8_t operation_mode_to_operation_mode_setting_(const uint8_t &operation_mode);
 
-  std::string operation_mode_to_string_(const uint8_t &mask);
+  std::string operation_mode_to_string_(const uint8_t &operation_mode);
   std::string operation_status_to_string_(const uint8_t &operation_status);
   std::string device_type_to_string_(const uint8_t &device_type);
-  std::string error_bits_to_string_(const uint8_t &error_bits);
+  std::string error_bits_to_string_(const uint8_t &mask);
 };
 
 }  // namespace soyosource_display
