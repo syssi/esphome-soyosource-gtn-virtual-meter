@@ -73,7 +73,7 @@ bool SoyosourceInverterEmulator::parse_soyosource_inverter_emulator_byte_(uint8_
   uint8_t computed_crc = chksum(raw, frame_len - 1);
   uint8_t remote_crc = raw[frame_len - 1];
   if (computed_crc != remote_crc) {
-    ESP_LOGW(TAG, "CRC Check failed! %02X != %02X", computed_crc, remote_crc);
+    ESP_LOGW(TAG, "CRC check failed! 0x%02X != 0x%02X", computed_crc, remote_crc);
     return false;
   }
 
