@@ -105,7 +105,7 @@ bool SoyosourceDisplay::parse_soyosource_display_byte_(uint8_t byte) {
   uint8_t computed_crc = chksum(raw, frame_len - 1);
   uint8_t remote_crc = raw[frame_len - 1];
   if (computed_crc != remote_crc) {
-    ESP_LOGW(TAG, "CRC Check failed! %02X != %02X", computed_crc, remote_crc);
+    ESP_LOGW(TAG, "CRC check failed! 0x%02X != 0x%02X", computed_crc, remote_crc);
     return false;
   }
 
@@ -174,16 +174,16 @@ void SoyosourceDisplay::on_ms51_status_data_(const std::vector<uint8_t> &data) {
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
   // 0     1   0x5A                   Header
   // 1     1   0x01
-  ESP_LOGD(TAG, "Unknown (raw): %02X (always 0x01?)", data[1]);
+  ESP_LOGD(TAG, "Unknown1 (raw): 0x%02X (always 0x01?)", data[1]);
 
   // 2     1   0x91                   Operation mode (High nibble), Frame function (Low nibble)
-  ESP_LOGV(TAG, "Operation mode (raw): %02X", data[2]);
+  ESP_LOGV(TAG, "Operation mode: %d (0x%02X)", data[2], data[2]);
   uint8_t raw_operation_mode = data[2] >> 4;
   this->publish_state_(this->operation_mode_id_sensor_, raw_operation_mode);
   this->publish_state_(this->operation_mode_text_sensor_, this->operation_mode_to_string_(raw_operation_mode));
 
   // 3     1   0x40                   Error and status bitmask
-  ESP_LOGV(TAG, "Error and status bitmask (raw): %02X", data[3]);
+  ESP_LOGV(TAG, "Error and status bitmask: %d (0x%02X)", data[3], data[3]);
   uint8_t raw_status_bitmask = data[3] & ~(1 << 6);
   this->publish_state_(this->limiter_connected_binary_sensor_, (bool) (data[3] & (1 << 6)));
   this->publish_state_(this->operation_status_id_sensor_, (raw_status_bitmask == 0x00) ? 0 : 2);
@@ -238,13 +238,13 @@ void SoyosourceDisplay::on_soyosource_status_data_(const std::vector<uint8_t> &d
 
   // 3     1   0x91                   Operation mode (High nibble), Frame function (Low nibble)
   //                                                                0x01: Status frame
-  ESP_LOGV(TAG, "  Operation mode (raw): %02X", data[3]);
+  ESP_LOGV(TAG, "  Operation mode: %d (0x%02X)", data[3], data[3]);
   uint8_t raw_operation_mode = data[3] >> 4;
   this->publish_state_(this->operation_mode_id_sensor_, raw_operation_mode);
   this->publish_state_(this->operation_mode_text_sensor_, this->operation_mode_to_string_(raw_operation_mode));
 
   // 4     1   0x40                   Error and status bitmask
-  ESP_LOGV(TAG, "  Error and status bitmask (raw): %02X", data[4]);
+  ESP_LOGV(TAG, "  Error and status bitmask: %d (0x%02X)", data[4], data[4]);
   uint8_t raw_status_bitmask = data[4] & ~(1 << 6);
   this->publish_state_(this->limiter_connected_binary_sensor_, (bool) (data[4] & (1 << 6)));
   this->publish_state_(this->operation_status_id_sensor_, (raw_status_bitmask == 0x00) ? 0 : 2);
@@ -297,11 +297,11 @@ void SoyosourceDisplay::on_ms51_settings_data_(const std::vector<uint8_t> &data)
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
   // 0     1   0x5A                   Header
   // 1     1   0x01
-  ESP_LOGD(TAG, "  Unknown (byte 1): %02X", data[1]);
+  ESP_LOGD(TAG, "  Unknown (byte 1): 0x%02X", data[1]);
 
   // 2     1   0xD3                   Operation mode (High nibble), Frame function (Low nibble)
   uint8_t operation_mode_setting = this->operation_mode_to_operation_mode_setting_(data[2] >> 4);
-  ESP_LOGI(TAG, "  Operation mode setting: %02X", operation_mode_setting);
+  ESP_LOGI(TAG, "  Operation mode setting: 0x%02X", operation_mode_setting);
   this->current_settings_.OperationMode = operation_mode_setting;
   if (this->operation_mode_select_ != nullptr) {
     for (auto &listener : this->select_listeners_) {
@@ -348,7 +348,7 @@ void SoyosourceDisplay::on_ms51_settings_data_(const std::vector<uint8_t> &data)
   this->publish_state_(this->output_power_limit_number_, output_power_limit * 10);
 
   // 12    1   0x00
-  ESP_LOGD(TAG, "  Unknown (byte 12): %02X", data[12]);
+  ESP_LOGD(TAG, "  Unknown (byte 12): 0x%02X", data[12]);
 
   // 13    1   0x06                   Delay in seconds                 s           6
   uint8_t start_delay = data[13];
@@ -376,14 +376,14 @@ void SoyosourceDisplay::on_soyosource_settings_data_(const std::vector<uint8_t> 
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
   // 0     1   0xA6                   Header
   // 1     1   0x00                   Unknown
-  ESP_LOGD(TAG, "  Unknown (byte 1): %02X", data[1]);
+  ESP_LOGD(TAG, "  Unknown (byte 1): 0x%02X", data[1]);
 
   // 2     1   0x72
-  ESP_LOGD(TAG, "  Unknown (byte 2): %02X", data[2]);
+  ESP_LOGD(TAG, "  Unknown (byte 2): 0x%02X", data[2]);
 
   // 3     1   0x93                   Operation mode (High nibble), Frame function (Low nibble)
   uint8_t operation_mode_setting = this->operation_mode_to_operation_mode_setting_(data[3] >> 4);
-  ESP_LOGI(TAG, "  Operation mode setting: %02X", operation_mode_setting);
+  ESP_LOGI(TAG, "  Operation mode setting: 0x%02X", operation_mode_setting);
   this->current_settings_.OperationMode = operation_mode_setting;
   if (this->operation_mode_select_ != nullptr) {
     for (auto &listener : this->select_listeners_) {
