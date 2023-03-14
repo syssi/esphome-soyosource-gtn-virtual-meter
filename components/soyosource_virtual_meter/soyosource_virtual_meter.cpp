@@ -20,6 +20,11 @@ void SoyosourceVirtualMeter::setup() {
              this->last_power_demand_);
 
     this->last_power_demand_received_ = millis();
+
+    // If the update_interval is set to never, call the update() method on every power sensor update
+    if (this->get_update_interval() == SCHEDULER_DONT_RUN) {
+      this->update();
+    }
   });
 }
 
