@@ -77,7 +77,7 @@ bool SoyosourceInverterEmulator::parse_soyosource_inverter_emulator_byte_(uint8_
     return false;
   }
 
-  std::vector<uint8_t> data(this->rx_buffer_.begin(), this->rx_buffer_.begin() + frame_len - 1);
+  std::vector<uint8_t> data(this->rx_buffer_.begin(), this->rx_buffer_.begin() + frame_len);
 
   this->on_soyosource_inverter_emulator_data_(function, data);
 
@@ -87,15 +87,15 @@ bool SoyosourceInverterEmulator::parse_soyosource_inverter_emulator_byte_(uint8_
 void SoyosourceInverterEmulator::on_soyosource_inverter_emulator_data_(const uint8_t &function,
                                                                        const std::vector<uint8_t> &data) {
   if (this->protocol_version_ == SOYOSOURCE_DISPLAY_VERSION) {
-    this->on_wifi_version_data_(function, data);
+    this->on_display_version_data_(function, data);
     return;
   }
 
-  this->on_display_version_data_(function, data);
+  this->on_wifi_version_data_(function, data);
 }
 
 void SoyosourceInverterEmulator::on_wifi_version_data_(const uint8_t &function, const std::vector<uint8_t> &data) {
-  if (data.size() != 11) {
+  if (data.size() != 12) {
     ESP_LOGW(TAG, "Invalid response size: %d", data.size());
     return;
   }
@@ -181,8 +181,8 @@ void SoyosourceInverterEmulator::on_wifi_version_data_(const uint8_t &function, 
 }
 
 void SoyosourceInverterEmulator::on_display_version_data_(const uint8_t &function, const std::vector<uint8_t> &data) {
-  if (data.size() != 11) {
-    ESP_LOGW(TAG, "Invalid response size: %d", data.size());
+  if (data.size() != 6) {
+    ESP_LOGW(TAG, "Invalid request size: %d", data.size());
     return;
   }
 
@@ -192,30 +192,44 @@ void SoyosourceInverterEmulator::on_display_version_data_(const uint8_t &functio
     case STATUS_ALT_COMMAND:
     case STATUS_COMMAND:
       this->send_status_(
-          0x0101,                                    // Power demand (always 0x0101!)
-          0x81,                                      // Operation mode bitmask
-                                                     //
-                                                     //
-                                                     //
-                                                     //
-                                                     //
-                                                     //
-                                                     //
-                                                     //
-          0x40,                                      // Operation status bitmask
-                                                     //   0x01: 0000 0001   Reserved / Unknown
-                                                     //   0x02: 0000 0010   DC voltage too low
-                                                     //   0x04: 0000 0100   DC voltage too high
-                                                     //   0x08: 0000 1000   AC voltage too high
-                                                     //   0x10: 0001 0000   AC voltage too low
-                                                     //   0x20: 0010 0000   Reserved / Unknown
-                                                     //   0x40: 0100 0000   Limiter connected
-                                                     //   0x80: 1000 0000   Reserved / Unknown
-          562,                                       // Battery voltage (n * 0.1)
-          0,                                         // Battery current
-          250,                                       // AC voltage
-          100,                                       // AC frequency (n * 0.5)
-          ((this->status_counter_ % 80) * 10) + 200  // Temperature ((n-300)*0.1), [~0x0118 = 1°C, ~0x03C0 = 79°C]
+          0x0101,  // Reserved (always 0x0101!)
+          0x02,    // Operation mode bitmask
+                   //   0x01: 0001 BatCP Mode + Operation <-- guessed
+                   //   0x02: 0010 PV Mode + Operation    <-- guessed
+                   //   0x03: 0011 PV Mode + Operation
+                   //   0x04: 0100 PV Mode + Standby
+                   //   0x05: 0101 BatCP Mode + Standby   <-- seen in the wild
+                   //   0x06: 0110 PV Mode + Standby      <-- seen in the wild
+                   //   0x07: 0111 PV Mode + Standby
+                   //   0x08: 1000 Bat Limit + Operation  <-- seen in the wild
+                   //   0x09: 1001 Bat Limit + Operation
+                   //   0x0A: 1010 Bat Limit + Operation
+                   //   0x0B: 1011 Bat Limit + Operation
+                   //   0x0C: 1100 Bat limit + Standby    <-- seen in the wild
+                   //   0x0D: 1101 Bat Limit + Standby
+                   //   0x0E: 1110 Bat Limit + Standby
+                   //   0x0F: 1111 Bat Limit + Standby
+                   //         ||||
+                   //         |||BatCP Mode bit
+                   //         ||PV Mode bit
+                   //         |Standby bit
+                   //         Bat Limit bit
+                   //
+          0x40,    // Operation status bitmask
+                   //   0x01: 0000 0001   Reserved / Unknown    Tested! (no value)
+                   //   0x02: 0000 0010   DC voltage too low    Tested!
+                   //   0x04: 0000 0100   DC voltage too high   Tested!
+                   //   0x08: 0000 1000   AC voltage too high   Tested!
+                   //   0x10: 0001 0000   AC voltage too low    Tested!
+                   //   0x20: 0010 0000   Reserved / Unknown    Tested! (no value)
+                   //   0x40: 0100 0000   Limiter connected     Tested! (no value)
+                   //   0x80: 1000 0000   Reserved / Unknown    Tested! (no value)
+          500,     // Battery voltage (n * 0.1)
+          100,     // Battery current
+          231,     // AC voltage
+          100,     // AC frequency (n * 0.5)
+          ((this->status_counter_ % 80) * 10) +
+              200  // Temperature ((n-300)*0.1), [~0x0118 = 1°C, ~0x03C0 = 79°C], "Over heat" warning at ~70°C
       );
 
       this->status_counter_++;
