@@ -598,24 +598,20 @@ std::string SoyosourceDisplay::device_type_to_string_(const uint8_t &device_type
   return "Unknown";
 }
 
-std::string SoyosourceDisplay::error_bits_to_string_(const uint8_t &error_bits) {
-  bool first = true;
-  std::string errors_list = "";
-
-  if (error_bits) {
+std::string SoyosourceDisplay::error_bits_to_string_(const uint8_t &mask) {
+  std::string values = "";
+  if (mask) {
     for (int i = 0; i < ERRORS_SIZE; i++) {
-      if (error_bits & (1 << i)) {
-        if (first) {
-          first = false;
-        } else {
-          errors_list.append(";");
-        }
-        errors_list.append(ERRORS[i]);
+      if (mask & (1 << i)) {
+        values.append(ERRORS[i]);
+        values.append(";");
       }
     }
+    if (!values.empty()) {
+      values.pop_back();
+    }
   }
-
-  return errors_list;
+  return values;
 }
 
 void SoyosourceDisplay::register_select_listener(uint8_t holding_register, const std::function<void(uint8_t)> &func) {
