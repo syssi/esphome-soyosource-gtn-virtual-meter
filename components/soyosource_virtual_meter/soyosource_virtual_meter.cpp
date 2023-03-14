@@ -111,14 +111,43 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(in
   //     -500           -490         10          500                  0           0
   //     -700           -690         10          500               -200           0
   int16_t importing_now = consumption - this->buffer_;
-  int16_t power_demand = importing_now + last_power_demand;
+  int16_t power_demand;
 
-  if (power_demand >= this->max_power_demand_) {
-    return this->max_power_demand_;
+  if (importing_now == 0) {
+    //let's just keep it 0 then :D
+    power_demand = last_power_demand;
+    this->power_demand_delta_ = 0;
+
+  } else {
+    int16_t consumption_diff = this->last_consumption_ > importing_now ? this->last_consumption_ - importing_now : importing_now - this->last_consumption_;
+
+    ESP_LOGD(TAG, "'%s': consumption_diff: %d, power_demand_delta_: %d, magic_demand_delta_: %f", this->get_modbus_name(), consumption_diff,
+               this->power_demand_delta_, (float) abs(this->power_demand_delta_) * this->power_demand_delta_magic_constant_);
+
+    if (consumption_diff > (float) abs(this->power_demand_delta_) * this->power_demand_delta_magic_constant_) {
+      this->power_demand_delta_ = 0;
+      ESP_LOGD(TAG, "'%s': power_demand_delta_ reset to 0 due to diff", this->get_modbus_name());
+    }
+    else if (millis() > this->power_demand_delta_timestamp_ + this->power_demand_delta_timeout_) {
+      this->power_demand_delta_ = 0;
+      ESP_LOGD(TAG, "'%s': power_demand_delta_ reset to 0 due to timeout", this->get_modbus_name());
+    }
+
+    power_demand = importing_now + last_power_demand - this->power_demand_delta_;
   }
 
-  if (power_demand < this->min_power_demand_) {
-    return (this->zero_output_on_min_power_demand_) ? 0 : this->min_power_demand_;
+  this->last_consumption_ = importing_now;
+
+  if (power_demand >= this->max_power_demand_) {
+    power_demand = this->max_power_demand_;
+  }
+  else if (power_demand < this->min_power_demand_) {
+    power_demand = (this->zero_output_on_min_power_demand_) ? 0 : this->min_power_demand_;
+  }
+
+  if (this->power_demand_delta_ == 0) {
+    this->power_demand_delta_ = power_demand - last_power_demand;
+    this->power_demand_delta_timestamp_ = millis();
   }
 
   return power_demand;
