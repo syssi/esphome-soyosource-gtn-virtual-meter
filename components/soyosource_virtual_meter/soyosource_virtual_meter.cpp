@@ -134,6 +134,12 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(in
     }
 
     power_demand = importing_now + last_power_demand - this->power_demand_delta_;
+
+    if ((importing_now > 0 && power_demand < last_power_demand) || (importing_now < 0 && power_demand > last_power_demand)) {
+      ESP_LOGD(TAG, "'%s': Oscillation prevention, keeping previous demand: %d; consumption: %d", this->get_modbus_name(),
+                    last_power_demand, importing_now);
+      power_demand = last_power_demand;
+    }
   }
 
   this->last_consumption_ = importing_now;
