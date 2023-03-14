@@ -48,7 +48,7 @@ bool SoyosourceModbus::parse_soyosource_modbus_byte_(uint8_t byte) {
     return true;
 
   if (raw[0] != 0x23 || raw[1] != 0x01 || raw[2] != 0x01 || raw[3] != 0x00) {
-    ESP_LOGW(TAG, "Invalid header.");
+    ESP_LOGW(TAG, "Invalid header");
 
     // return false to reset buffer
     return false;
