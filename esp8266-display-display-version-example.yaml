@@ -1,7 +1,9 @@
 substitutions:
   name: soyosource-gtn-display
-  device_description: "Monitor and control the Soyosource GTN (WiFi version) using the display port"
-  external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
+  device_description: "Monitor and control the Soyosource GTN (Display version) using the internal display port"
+  external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@improve-display-support
+  # The internal display port should be connected to these GPIOs using a SH 1.0mm, 4 Pin connector (RX, TX, GND, VCC)
+  # A optocoupler / optical isolator (f.e. ADUM1201) between the display port and the ESP is recommended if the ESP isn't powered by the display port!
   tx_pin: GPIO4
   rx_pin: GPIO5
 
@@ -25,16 +27,11 @@ wifi:
 
 ota:
 
-# If you use Home Assistant please remove this `mqtt` section and uncomment the `api` component!
-mqtt:
-  broker: !secret mqtt_host
-  username: !secret mqtt_username
-  password: !secret mqtt_password
-  id: mqtt_client
-
-# api:
+api:
+  reboot_timeout: 0s
 
 logger:
+  level: DEBUG
 
 # Please be careful: The display port has a logic level of 5V.
 uart:
@@ -42,11 +39,12 @@ uart:
     baud_rate: 9600
     tx_pin: ${tx_pin}
     rx_pin: ${rx_pin}
+    debug:
 
 soyosource_display:
   - id: display0
     uart_id: uart0
-    protocol_version: SOYOSOURCE_WIFI_VERSION
+    protocol_version: SOYOSOURCE_DISPLAY_VERSION
     update_interval: 5s
 
 binary_sensor:
@@ -78,10 +76,9 @@ select:
     operation_mode:
       name: "${name} operation mode"
       optionsmap:
-        1: "PV"
-        2: "Battery Constant Power"
-        17: "PV Limit"
-        18: "Battery Limit"
+        1: "Battery Constant Power"
+        2: "PV"
+        16: "Battery Limit"
 
 sensor:
   - platform: soyosource_display

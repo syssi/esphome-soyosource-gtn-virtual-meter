@@ -171,6 +171,7 @@ jobs:
       - name: Validate esp8266 example configurations
         run: |
           esphome -s external_components_source components config esp8266-example.yaml
+          esphome -s external_components_source components config esp8266-display-display-version-example.yaml
           esphome -s external_components_source components config esp8266-display-wifi-version-example.yaml
           esphome -s external_components_source components config esp8266-display-wifi-version-limiter-example.yaml
           esphome -s external_components_source components config esp8266-limiter-example.yaml
@@ -228,6 +229,7 @@ jobs:
           esphome -s external_components_source components compile esp32-multiple-uarts-example.yaml
       - run: |
           esphome -s external_components_source components compile esp8266-example.yaml
+          esphome -s external_components_source components config esp8266-display-display-version-example.yaml
           # esphome -s external_components_source components compile esp8266-display-wifi-version-example.yaml
           esphome -s external_components_source components compile esp8266-display-wifi-version-limiter-example.yaml
           esphome -s external_components_source components compile esp8266-wifi-dongle-example.yaml
