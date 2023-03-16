@@ -26,6 +26,9 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   void set_buffer(int16_t buffer) { this->buffer_ = buffer; }
   void set_min_power_demand(int16_t min_power_demand) { this->min_power_demand_ = min_power_demand; }
   void set_max_power_demand(int16_t max_power_demand) { this->max_power_demand_ = max_power_demand; }
+  void set_zero_output_on_min_power_demand(bool zero_output_on_min_power_demand) {
+    this->zero_output_on_min_power_demand_ = zero_output_on_min_power_demand;
+  }
   void set_power_demand_divider(uint8_t power_demand_divider) { this->power_demand_divider_ = power_demand_divider; }
   void set_power_sensor_inactivity_timeout(uint16_t power_sensor_inactivity_timeout_s) {
     this->power_sensor_inactivity_timeout_s_ = power_sensor_inactivity_timeout_s;
@@ -80,6 +83,7 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
 
   text_sensor::TextSensor *operation_mode_text_sensor_;
 
+  bool zero_output_on_min_power_demand_{true};
   int16_t buffer_;
   int16_t min_power_demand_;
   int16_t max_power_demand_;

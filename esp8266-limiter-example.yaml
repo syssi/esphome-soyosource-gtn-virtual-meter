@@ -66,6 +66,7 @@ soyosource_virtual_meter:
     power_demand_calculation: NEGATIVE_MEASUREMENTS_REQUIRED
     min_power_demand: 0
     max_power_demand: 900
+    zero_output_on_min_power_demand: true
     # Split/distribute the power demand if you have multiple inverters attached to the same RS485 bus
     power_demand_divider: 1
     # A positive buffer value (10) tries to avoid exporting power to the grid (demand - 10 watts)

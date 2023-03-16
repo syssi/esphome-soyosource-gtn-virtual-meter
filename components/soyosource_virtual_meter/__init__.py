@@ -16,6 +16,7 @@ CONF_MAX_POWER_DEMAND = "max_power_demand"
 CONF_BUFFER = "buffer"
 CONF_POWER_DEMAND_DIVIDER = "power_demand_divider"
 CONF_OPERATION_STATUS_ID = "operation_status_id"
+CONF_ZERO_OUTPUT_ON_MIN_POWER_DEMAND = "zero_output_on_min_power_demand"
 
 DEFAULT_MIN_BUFFER = -200
 DEFAULT_MAX_BUFFER = 200
@@ -81,6 +82,7 @@ CONFIG_SCHEMA = cv.All(
             cv.Optional(
                 CONF_MAX_POWER_DEMAND, default=DEFAULT_MAX_POWER_DEMAND
             ): cv.int_range(min=1, max=5400),
+            cv.Optional(CONF_ZERO_OUTPUT_ON_MIN_POWER_DEMAND, default=True): cv.boolean,
         }
     )
     .extend(soyosource_modbus.soyosource_modbus_device_schema(0x24))
@@ -100,6 +102,11 @@ async def to_code(config):
     cg.add(var.set_buffer(config[CONF_BUFFER]))
     cg.add(var.set_min_power_demand(config[CONF_MIN_POWER_DEMAND]))
     cg.add(var.set_max_power_demand(config[CONF_MAX_POWER_DEMAND]))
+    cg.add(
+        var.set_zero_output_on_min_power_demand(
+            config[CONF_ZERO_OUTPUT_ON_MIN_POWER_DEMAND]
+        )
+    )
     cg.add(var.set_power_demand_divider(config[CONF_POWER_DEMAND_DIVIDER]))
     cg.add(
         var.set_power_sensor_inactivity_timeout(
