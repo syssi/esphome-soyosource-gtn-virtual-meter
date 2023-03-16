@@ -47,6 +47,7 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   void set_power_demand_divider_number(number::Number *power_demand_divider_number) {
     power_demand_divider_number_ = power_demand_divider_number;
   }
+  void set_power_demand_compensation_timeout_ms(uint16_t power_demand_compensation_timeout_ms) { this->power_demand_compensation_timeout_ms_ = power_demand_compensation_timeout_ms; }
 
   void set_manual_mode_switch(switch_::Switch *manual_mode_switch) { manual_mode_switch_ = manual_mode_switch; }
   void set_emergency_power_off_switch(switch_::Switch *emergency_power_off_switch) {
