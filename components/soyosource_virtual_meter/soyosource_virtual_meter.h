@@ -47,7 +47,9 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   void set_power_demand_divider_number(number::Number *power_demand_divider_number) {
     power_demand_divider_number_ = power_demand_divider_number;
   }
-  void set_power_demand_delta_timeout(uint16_t power_demand_delta_timeout) { this->power_demand_delta_timeout_ = power_demand_delta_timeout; }
+  void set_power_demand_delta_timeout(uint16_t power_demand_delta_timeout) {
+    this->power_demand_delta_timeout_ = power_demand_delta_timeout;
+  }
 
   void set_manual_mode_switch(switch_::Switch *manual_mode_switch) { manual_mode_switch_ = manual_mode_switch; }
   void set_emergency_power_off_switch(switch_::Switch *emergency_power_off_switch) {
@@ -99,7 +101,7 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   int16_t power_demand_delta_{0};
   uint32_t power_demand_delta_timestamp_{0};
 
-  float power_demand_delta_magic_constant_{0.8};    //make it configurable?
+  float power_demand_delta_magic_constant_{0.8};  // make it configurable?
   uint16_t power_demand_delta_timeout_{0};
 
   void publish_state_(sensor::Sensor *sensor, float value);

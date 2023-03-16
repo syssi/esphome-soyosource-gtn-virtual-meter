@@ -91,8 +91,12 @@ CONFIG_SCHEMA = cv.All(
             ): cv.int_range(min=1, max=5400),
             cv.Optional(CONF_ZERO_OUTPUT_ON_MIN_POWER_DEMAND, default=True): cv.boolean,
             cv.Optional(
-                CONF_MAX_POWER_SENSOR_LATENCY_MS, default=DEFAULT_MAX_POWER_SENSOR_LATENCY_MS
-            ): cv.int_range(min=DEFAULT_MIN_MAX_POWER_SENSOR_LATENCY_MS, max=DEFAULT_MAX_MAX_POWER_SENSOR_LATENCY_MS),
+                CONF_MAX_POWER_SENSOR_LATENCY_MS,
+                default=DEFAULT_MAX_POWER_SENSOR_LATENCY_MS,
+            ): cv.int_range(
+                min=DEFAULT_MIN_MAX_POWER_SENSOR_LATENCY_MS,
+                max=DEFAULT_MAX_MAX_POWER_SENSOR_LATENCY_MS,
+            ),
         }
     )
     .extend(soyosource_modbus.soyosource_modbus_device_schema(0x24))
