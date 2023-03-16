@@ -1,7 +1,7 @@
 substitutions:
   name: soyosource-gtn-display
   device_description: "Monitor and control the Soyosource GTN (Display version) using the internal display port"
-  external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@improve-display-support
+  external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
   # The internal display port should be connected to these GPIOs using a SH 1.0mm, 4 Pin connector (RX, TX, GND, VCC)
   # A optocoupler / optical isolator (f.e. ADUM1201) between the display port and the ESP is recommended if the ESP isn't powered by the display port!
   tx_pin: GPIO4
