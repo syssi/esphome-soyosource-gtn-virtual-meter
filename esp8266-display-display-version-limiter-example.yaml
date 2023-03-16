@@ -83,7 +83,7 @@ soyosource_virtual_meter:
 soyosource_display:
   - id: display0
     uart_id: uart0
-    protocol_version: SOYOSOURCE_WIFI_VERSION
+    protocol_version: SOYOSOURCE_DISPLAY_VERSION
     update_interval: 5s
 
 binary_sensor:
@@ -134,10 +134,9 @@ select:
     operation_mode:
       name: "${name} operation mode"
       optionsmap:
-        1: "PV"
-        2: "Battery Constant Power"
-        17: "PV Limit"
-        18: "Battery Limit"
+        1: "Battery Constant Power"
+        2: "PV"
+        16: "Battery Limit"
 
 sensor:
   - platform: soyosource_virtual_meter
