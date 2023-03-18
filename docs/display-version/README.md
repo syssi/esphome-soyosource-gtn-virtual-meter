@@ -31,6 +31,6 @@ The display port connector is called JST XH 2.54mm, 4 Pin. Please remove the ori
 
 ![Isolated data cable](isolated-data-cable.jpg "Isolated data cable")
 
-| SH 1.0mm, 4 Pin connector                                                        | Wemos D1 mini                                          |
+| JST XH 2.54mm, 4 Pin connector                                                   | Wemos D1 mini                                          |
 |:--------------------------------------------------------------------------------:|:------------------------------------------------------:|
 | ![Display port connector](display-port-connector.jpg "Display port connector")   | ![ESP8266 pinout](esp8266-pinout.jpg "ESP8266 pinout") |

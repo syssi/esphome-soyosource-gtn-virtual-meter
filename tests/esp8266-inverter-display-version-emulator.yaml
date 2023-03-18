@@ -2,7 +2,7 @@ substitutions:
   name: soyosource-gtn-inverter-emu
   device_description: "Emulate the internal display port traffic of the Soyosource GTN (Display version)"
   external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
-  # The display board should be attached to these GPIOs using a SH 1.0mm, 4 Pin connector
+  # The display board should be attached to these GPIOs using a JST XH 2.54mm, 4 Pin connector
   tx_pin: GPIO4
   rx_pin: GPIO5
 

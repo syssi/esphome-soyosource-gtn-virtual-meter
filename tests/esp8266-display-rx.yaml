@@ -1,6 +1,6 @@
 substitutions:
   name: display-rx
-  # The display board should be attached to these GPIOs using a SH 1.0mm, 4 Pin connector
+  # The display board should be attached to these GPIOs using a JST XH 2.54mm, 4 Pin connector
   tx_pin: GPIO4
   rx_pin: GPIO5
 
