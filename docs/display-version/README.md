@@ -27,7 +27,7 @@
 
 ## Schematics
 
-The display port connector is called SH 1.0mm, 4 Pin. Please remove the original display port cable. The pinout of the second connector is reversed. The digital isolator module is a ADUM1201.
+The display port connector is called JST XH 2.54mm, 4 Pin. Please remove the original display port cable. The pinout of the second connector is reversed. The digital isolator module is a ADUM1201.
 
 ![Isolated data cable](isolated-data-cable.jpg "Isolated data cable")
 
