@@ -13,23 +13,24 @@ static const char *const OPERATION_STATUS[OPERATION_STATUS_SIZE] = {
     "Standby",                 // 0x02
     "Startup aborted",         // 0x03
     "Error or battery mode?",  // 0x04
-    "Unknown",                 // 0x05
-    "Unknown",                 // 0x06
-    "Unknown",                 // 0x07
-    "Unknown",                 // 0x08
-    "Unknown",                 // 0x09
-    "AC input low",            // 0x10
-    "Unknown",                 // 0x11
-    "Unknown",                 // 0x12
+    "Unknown (0x05)",          // 0x05
+    "Unknown (0x06)",          // 0x06
+    "Unknown (0x07)",          // 0x07
+    "Unknown (0x08)",          // 0x08
+    "Unknown (0x09)",          // 0x09
+    "AC voltage too low",      // 0x10
+    "Unknown (0x11)",          // 0x11
+    "Unknown (0x12)",          // 0x12
 };
 
 void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &data) {
   if (data.size() != 10) {
-    ESP_LOGW(TAG, "'%s': Invalid size for soyosource status packet!", this->get_modbus_name());
+    ESP_LOGW(TAG, "'%s': Invalid status frame length!", this->get_modbus_name());
     return;
   }
 
-  ESP_LOGVV(TAG, "Status frame: %s", format_hex_pretty(&data.front(), data.size()).c_str());
+  ESP_LOGI(TAG, "Status frame (RS485, %d bytes) received", data.size());
+  ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
   auto soyosource_get_16bit = [&](size_t i) -> uint16_t {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
@@ -50,9 +51,6 @@ void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &d
 
   float ac_frequency = data[7] * 0.5f;
   float temperature = (soyosource_get_16bit(8) - 300) * 0.1f;
-
-  ESP_LOGVV(TAG, "Temperature (raw): 0x%02X 0x%02X", data[8], data[9]);
-  ESP_LOGVV(TAG, "Temperature (uint16): %d", soyosource_get_16bit(8));
 
   if (battery_power > 2500 || ac_voltage > 300 || ac_frequency > 100 || temperature > 200) {
     ESP_LOGW(TAG, "'%s': Frame dropped because of unlikely measurements!", this->get_modbus_name());
@@ -88,7 +86,8 @@ void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &d
   if (raw_operation_status < OPERATION_STATUS_SIZE) {
     this->publish_state_(this->operation_status_text_sensor_, OPERATION_STATUS[raw_operation_status]);
   } else {
-    this->publish_state_(this->operation_status_text_sensor_, "Unknown");
+    this->publish_state_(this->operation_status_text_sensor_,
+                         str_snprintf("Unknown (0x%02X)", 15, raw_operation_status));
   }
 
   this->no_response_count_ = 0;
