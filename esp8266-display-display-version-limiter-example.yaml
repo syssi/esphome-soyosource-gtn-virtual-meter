@@ -2,6 +2,8 @@ substitutions:
   name: soyosource-gtn-display
   device_description: "Monitor and control the Soyosource GTN (WiFi version) via the display port and control the power output on demand via RS485"
   external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
+  # The internal display port should be connected to these GPIOs using a JST XH 2.54mm, 4 Pin connector (RX, TX, GND, VCC)
+  # A optocoupler / optical isolator (f.e. ADUM1201) between the display port and the ESP is recommended if the ESP isn't powered by the display port!
   tx_pin_ttl_wifi: GPIO4
   rx_pin_ttl_wifi: GPIO5
   tx_pin_rs485: GPIO14
