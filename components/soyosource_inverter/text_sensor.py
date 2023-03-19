@@ -1,8 +1,9 @@
 import esphome.codegen as cg
-import esphome.config_validation as cv
 from esphome.components import text_sensor
-from esphome.const import CONF_ID, CONF_ICON
-from . import SoyosourceInverter, CONF_SOYOSOURCE_INVERTER_ID
+import esphome.config_validation as cv
+from esphome.const import CONF_ICON, CONF_ID
+
+from . import CONF_SOYOSOURCE_INVERTER_ID, SoyosourceInverter
 
 DEPENDENCIES = ["soyosource_inverter"]
 
