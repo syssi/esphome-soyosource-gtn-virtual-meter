@@ -37,8 +37,8 @@ mqtt:
 # api:
 
 logger:
+  level: INFO
 
-# Please be careful: The display port has a logic level of 5V.
 uart:
   - id: uart0
     baud_rate: 9600

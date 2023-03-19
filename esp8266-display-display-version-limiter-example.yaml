@@ -41,7 +41,6 @@ mqtt:
 logger:
   level: INFO
 
-# Please be careful: The display port has a logic level of 5V.
 uart:
   - id: uart0
     baud_rate: 9600
@@ -56,6 +55,13 @@ uart:
 soyosource_modbus:
   - id: modbus0
     uart_id: uart1
+    # flow_control_pin: GPIO12
+
+    # Optional settings
+    #
+    # The name is used as prefix for some log messages and should
+    # help to distinguish between different instances/devices
+    name: firstfloor_inverter
 
 soyosource_virtual_meter:
   - id: virtualmeter0

@@ -43,8 +43,8 @@ uart:
     rx_pin: GPIO3
 
 soyosource_display:
-  uart_id: uart0
-  update_interval: 5s
+  - uart_id: uart0
+    update_interval: 5s
 
 binary_sensor:
   - platform: soyosource_display
@@ -76,8 +76,8 @@ select:
       name: "Operation Mode"
       optionsmap:
         1: "PV"
-        2: "Battery Constant Power"
         17: "PV Limit"
+        2: "Battery Constant Power"
         18: "Battery Limit"
 
 sensor:

@@ -47,6 +47,7 @@ uart:
 soyosource_modbus:
   - id: modbus0
     uart_id: uart0
+    # flow_control_pin: GPIO12
 
     # Optional settings
     #
