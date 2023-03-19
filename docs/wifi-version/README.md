@@ -26,3 +26,7 @@
 ## Schematics
 
 The display port connector is an ordinary USB plug. There is no USB host attached to the USB port. The connector was abused to expose `RXD`, `TXD`, `GND` and `VCC` of the internal display port.
+
+| Isolated data cable                                                              |                                                                        |
+|:--------------------------------------------------------------------------------:|:----------------------------------------------------------------------:|
+| ![Isolated data cable](isolated-data-cable.jpg "Isolated data cable")            | ![Isolated data cable](isolated-data-cable2.jpg "Isolated data cable") |
