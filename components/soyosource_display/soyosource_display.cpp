@@ -489,6 +489,8 @@ void SoyosourceDisplay::send_command(uint8_t function) {
   frame[10] = 0x00;
   frame[11] = chksum(frame, 11);
 
+  ESP_LOGD(TAG, "Send command: %s", format_hex_pretty(frame, sizeof(frame)).c_str());
+
   this->write_array(frame, 12);
   this->flush();
 }
