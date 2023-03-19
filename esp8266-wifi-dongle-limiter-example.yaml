@@ -88,6 +88,7 @@ soyosource_virtual_meter:
 soyosource_display:
   - id: display0
     uart_id: uart0
+    protocol_version: SOYOSOURCE_WIFI_VERSION
     update_interval: 5s
 
 binary_sensor:
