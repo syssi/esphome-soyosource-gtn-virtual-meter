@@ -13,13 +13,13 @@
                    ││││
                    ││││
                    ││││
-                   │││└── RXD
-                   ││└─── TXD
-                   │└──── GND
+                   │││└── GND
+                   ││└─── RXD
+                   │└──── TXD
                    └───── 5V
 ```
 
-![Display port](display-port.jpg "Display port labeled as TTL-WIFI")
+![Display port](display-port-ttl-wifi.jpg "Display port labeled as TTL-WIFI")
 
 ![Internal connections](internal.jpg "Internal connections")
 
