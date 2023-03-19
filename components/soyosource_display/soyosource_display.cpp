@@ -174,7 +174,7 @@ void SoyosourceDisplay::on_ms51_status_data_(const std::vector<uint8_t> &data) {
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
   // 0     1   0x5A                   Header
   // 1     1   0x01
-  ESP_LOGD(TAG, "Unknown1 (raw): 0x%02X (always 0x01?)", data[1]);
+  ESP_LOGV(TAG, "Unknown1 (raw): 0x%02X (always 0x01?)", data[1]);
 
   // 2     1   0x91                   Operation mode (High nibble), Frame function (Low nibble)
   ESP_LOGV(TAG, "Operation mode: %d (0x%02X)", data[2], data[2]);
@@ -307,7 +307,7 @@ void SoyosourceDisplay::on_ms51_settings_data_(const std::vector<uint8_t> &data)
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
   // 0     1   0x5A                   Header
   // 1     1   0x01
-  ESP_LOGD(TAG, "  Unknown (byte 1): 0x%02X", data[1]);
+  ESP_LOGV(TAG, "  Unknown (byte 1): 0x%02X", data[1]);
 
   // 2     1   0xD3                   Operation mode (High nibble), Frame function (Low nibble)
   uint8_t operation_mode_setting = this->operation_mode_to_operation_mode_setting_(data[2] >> 4);
@@ -358,7 +358,7 @@ void SoyosourceDisplay::on_ms51_settings_data_(const std::vector<uint8_t> &data)
   this->publish_state_(this->output_power_limit_number_, output_power_limit * 10);
 
   // 12    1   0x00
-  ESP_LOGD(TAG, "  Unknown (byte 12): 0x%02X", data[12]);
+  ESP_LOGV(TAG, "  Unknown (byte 12): 0x%02X", data[12]);
 
   // 13    1   0x06                   Delay in seconds                 s           6
   uint8_t start_delay = data[13];
@@ -386,10 +386,10 @@ void SoyosourceDisplay::on_soyosource_settings_data_(const std::vector<uint8_t> 
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
   // 0     1   0xA6                   Header
   // 1     1   0x00                   Unknown
-  ESP_LOGD(TAG, "  Unknown (byte 1): 0x%02X", data[1]);
+  ESP_LOGV(TAG, "  Unknown (byte 1): 0x%02X", data[1]);
 
   // 2     1   0x72
-  ESP_LOGD(TAG, "  Unknown (byte 2): 0x%02X", data[2]);
+  ESP_LOGV(TAG, "  Unknown (byte 2): 0x%02X", data[2]);
 
   // 3     1   0x93                   Operation mode (High nibble), Frame function (Low nibble)
   uint8_t operation_mode_setting = this->operation_mode_to_operation_mode_setting_(data[3] >> 4);
