@@ -11,12 +11,12 @@
     └────────┘     ││││    └──┘   └──┘  RS485
      L  N  PE      ││││     B+     B-
                    ││││
+                   ││││                   ESP32/ESP8266
                    ││││
-                   ││││
-                   │││└── GND (black)
-                   ││└─── TXD (green)
-                   │└──── RXD (white)
-                   └───── 5V  (red)
+                   │││└── GND (black) ─── GND
+                   ││└─── TXD (green) ─── GPIO5 `rx_pin`
+                   │└──── RXD (white) ─── GPIO4 `tx_pin`
+                   └───── 5V  (red)  ──── VCC (if you power the ESP using the display port)
 ```
 
 ![Display port](display-port-ttl-wifi.jpg "Display port labeled as TTL-WIFI")
