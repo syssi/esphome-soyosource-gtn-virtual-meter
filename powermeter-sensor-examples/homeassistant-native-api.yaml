@@ -3,7 +3,7 @@ api:
 sensor:
   - platform: homeassistant
     id: powermeter0
-    name: "${name} instantaneous power"
+    name: "Instantaneous Power"
     entity_id: sensor.smartmeter_instantaneous_power
     filters:
       - throttle_average: 15s

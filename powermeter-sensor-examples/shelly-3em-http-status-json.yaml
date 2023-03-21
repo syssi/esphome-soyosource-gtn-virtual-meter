@@ -1,124 +1,34 @@
-# $ curl -sS http://192.168.132.5/status/
-# {
-#   "actions_stats": {
-#     "skipped": 0
-#   },
-#   "fs_size": 233681,
-#   "update": {
-#     "new_version": "20220830-080542/v1.12-3EM-gcf4f7c2",
-#     "old_version": "20220830-080542/v1.12-3EM-gcf4f7c2",
-#     "status": "idle",
-#     "has_update": false
-#   },
-#   "mac": "E8DB84D68FFB",
-#   "fs_free": 153612,
-#   "emeter_n": {
-#     "current": 0,
-#     "ixsum": 12.68,
-#     "is_valid": false,
-#     "mismatch": false
-#   },
-#   "uptime": 3009,
-#   "serial": 92,
-#   "ram_free": 25556,
-#   "ct_calst": 0,
-#   "mqtt": {
-#     "connected": true
-#   },
-#   "fs_mounted": true,
-#   "ram_total": 49928,
-#   "cfg_changed_cnt": 0,
-#   "has_update": false,
-#   "emeters": [
-#     {
-#       "total": 226923.9,
-#       "voltage": 234.79,
-#       "pf": -0.95,
-#       "is_valid": true,
-#       "total_returned": 517029.3,
-#       "power": -458.43,
-#       "current": 2.06
-#     },
-#     {
-#       "voltage": 235.29,
-#       "total": 269829.5,
-#       "power": 357.2,
-#       "current": 1.87,
-#       "total_returned": 0,
-#       "is_valid": true,
-#       "pf": 0.81
-#     },
-#     {
-#       "total": 1348406.2,
-#       "voltage": 232.09,
-#       "pf": 1,
-#       "is_valid": true,
-#       "total_returned": 0,
-#       "current": 11.34,
-#       "power": 2629.79
-#     }
-#   ],
-#   "time": "12:42",
-#   "v_data": 1,
-#   "total_power": 2528.56,
-#   "relays": [
-#     {
-#       "timer_duration": 0,
-#       "timer_started": 0,
-#       "timer_remaining": 0,
-#       "overpower": false,
-#       "ison": true,
-#       "has_timer": false,
-#       "source": "input",
-#       "is_valid": true
-#     }
-#   ],
-#   "wifi_sta": {
-#     "ssid": "AAAAA",
-#     "rssi": -59,
-#     "ip": "192.168.1.X",
-#     "connected": true
-#   },
-#   "unixtime": 1663843375,
-#   "cloud": {
-#     "connected": false,
-#     "enabled": false
-#   }
-# }
+substitutions:
+  shelly_3em_url: "http://192.168.132.5/status/"
 
 http_request:
-  id: http_request_data
+  id: http_request0
   useragent: esphome/device
-  timeout: 5s
+  timeout: 1000ms
 
 sensor:
   - platform: template
     id: powermeter
-    name: "${name} instantaneous power"
-    lambda: |-
-      if (std::isnan(id(powermeter).state)) {
-        return 0.0f;
-      } else {
-        return id(powermeter).state;
-      }
+    name: "Instantaneous Power"
     unit_of_measurement: W
     device_class: "power"
     accuracy_decimals: 2
+    update_interval: never
 
-time:
-  - platform: sntp
-    id: sntp_time
-    on_time:
-      - seconds: /1
-        then:
-          - http_request.get:
-              url: http://192.168.132.5/status/
-              headers:
-                Content-Type: application/json
-              verify_ssl: false
-              on_response:
-                then:
-                  - lambda: |-
-                      json::parse_json(id(http_request_data).get_string(), [](JsonObject root) {
-                        id(powermeter).publish_state(root["total_power"]);
-                      });
+interval:
+  - interval: 1100ms
+    then:
+      - http_request.get:
+          url: ${shelly_3em_url}
+          headers:
+            Content-Type: application/json
+          verify_ssl: false
+          on_response:
+            then:
+              - lambda: |-
+                  std::string response_data = id(http_request0).get_string();
+                  if(!response_data.empty()) {
+                    json::parse_json(response_data, [](JsonObject root) {
+                      id(powermeter).publish_state(root["total_power"]);
+                    });
+                  }

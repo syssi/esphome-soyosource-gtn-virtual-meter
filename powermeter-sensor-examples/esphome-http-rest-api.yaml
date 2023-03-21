@@ -1,58 +1,34 @@
-# $ curl -sS http://192.168.132.5/sensor/instantaneous_power
-# {
-#   "id": "sensor-instantaneous_power",
-#   "state": "19.8 W",
-#   "value": 19.76666
-# }
-
 substitutions:
-  esphome_rest_api_sensor_url: "http://192.168.132.5/sensor/instantaneous_power"
+  esphome_rest_api_sensor_url: "http://192.168.1.100/digitemp/esphome.json"
 
 http_request:
+  id: http_request0
   useragent: esphome/device
-  timeout: 5s
+  timeout: 1000ms
 
 sensor:
   - platform: template
     id: powermeter
-    name: "${name} instantaneous power"
-    lambda: |-
-      if (std::isnan(id(powermeter).state)) {
-        return 0.0f;
-      } else {
-        return id(powermeter).state;
-      }
+    name: "Instantaneous Power"
     unit_of_measurement: W
     device_class: "power"
     accuracy_decimals: 2
+    update_interval: never
 
 interval:
-  - interval: 5s
+  - interval: 1100ms
     then:
-      - lambda: |-
-          if (WiFi.status() == WL_CONNECTED) {
-            HTTPClient http;
-            float value = 0.0f;
-            http.useHTTP10(true); // useHTTP10(true) when you use getStream(), or deserializeJson() will return InvalidInput
-            http.begin("${esphome_rest_api_sensor_url}");
-            http.setConnectTimeout(1000);
-            int httpCode = http.GET();
-
-            ESP_LOGI("main", "Value from httpCode %d", httpCode);
-            if(httpCode == 200) {
-              StaticJsonDocument<1024> doc;
-              DeserializationError error = deserializeJson(doc, http.getStream());
-              if (error) {
-                http.end();
-                ESP_LOGW("main", "deserializeJson() failed: %s", error.c_str());
-                return;
-              }
-              value = doc["value"].as<float>();
-            }
-            http.end();
-
-            id(powermeter).publish_state(value);
-            ESP_LOGD("main", "Value from Remote Counter %0.1f", value);
-          } else {
-            id(powermeter).publish_state(0.0);
-          }
+      - http_request.get:
+          url: ${esphome_rest_api_sensor_url}
+          headers:
+            Content-Type: application/json
+          verify_ssl: false
+          on_response:
+            then:
+              - lambda: |-
+                  std::string response_data = id(http_request0).get_string();
+                  if(!response_data.empty()) {
+                    json::parse_json(response_data, [](JsonObject root) {
+                      id(powermeter).publish_state(root["value"]);
+                    });
+                  }
