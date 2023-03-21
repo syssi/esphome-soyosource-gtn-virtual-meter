@@ -7,7 +7,7 @@ mqtt:
 sensor:
   - id: powermeter0
     platform: mqtt_subscribe
-    name: "${name} instantaneous power"
+    name: "Instantaneous Power"
     topic: "smartmeter/sensor/instantaneous_power/obis/1-0:16.7.0/255/value"
     accuracy_decimals: 2
     unit_of_measurement: W
