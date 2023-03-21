@@ -86,39 +86,37 @@
 #   }
 # }
 
+substitutions:
+  shelly_3em_url: "http://192.168.132.5/status/"
+
 http_request:
-  id: http_request_data
+  id: http_request0
   useragent: esphome/device
-  timeout: 5s
+  timeout: 1000ms
 
 sensor:
   - platform: template
     id: powermeter
     name: "${name} instantaneous power"
-    lambda: |-
-      if (std::isnan(id(powermeter).state)) {
-        return 0.0f;
-      } else {
-        return id(powermeter).state;
-      }
     unit_of_measurement: W
     device_class: "power"
     accuracy_decimals: 2
+    update_interval: never
 
-time:
-  - platform: sntp
-    id: sntp_time
-    on_time:
-      - seconds: /1
-        then:
-          - http_request.get:
-              url: http://192.168.132.5/status/
-              headers:
-                Content-Type: application/json
-              verify_ssl: false
-              on_response:
-                then:
-                  - lambda: |-
-                      json::parse_json(id(http_request_data).get_string(), [](JsonObject root) {
-                        id(powermeter).publish_state(root["total_power"]);
-                      });
+interval:
+  - interval: 1100ms
+    then:
+      - http_request.get:
+          url: ${shelly_3em_url}
+          headers:
+            Content-Type: application/json
+          verify_ssl: false
+          on_response:
+            then:
+              - lambda: |-
+                  std::string response_data = id(http_request0).get_string();
+                  if(!response_data.empty()) {
+                    json::parse_json(response_data, [](JsonObject root) {
+                      id(powermeter).publish_state(root["total_power"]);
+                    });
+                  }
