@@ -46,7 +46,7 @@ SELECTS = {
 SOYOSOURCE_SELECT_SCHEMA = select.SELECT_SCHEMA.extend(
     {
         cv.GenerateID(): cv.declare_id(SoyosourceSelect),
-        cv.Optional(CONF_ICON, default=ICON_OPERATION_MODE): select.icon,
+        cv.Optional(CONF_ICON, default=ICON_OPERATION_MODE): cv.icon,
         cv.Optional(CONF_OPTIONSMAP): ensure_option_map,
     }
 ).extend(cv.COMPONENT_SCHEMA)
