@@ -5,17 +5,19 @@ import esphome.config_validation as cv
 from esphome.const import CONF_ADDRESS, CONF_FLOW_CONTROL_PIN, CONF_ID, CONF_NAME
 from esphome.cpp_helpers import gpio_pin_expression
 
-DEPENDENCIES = ["uart"]
 CODEOWNERS = ["@syssi"]
+
+DEPENDENCIES = ["uart"]
+MULTI_CONF = True
+
+CONF_SOYOSOURCE_MODBUS_ID = "soyosource_modbus_id"
 
 soyosource_modbus_ns = cg.esphome_ns.namespace("soyosource_modbus")
 SoyosourceModbus = soyosource_modbus_ns.class_(
     "SoyosourceModbus", cg.Component, uart.UARTDevice
 )
 SoyosourceModbusDevice = soyosource_modbus_ns.class_("SoyosourceModbusDevice")
-MULTI_CONF = True
 
-CONF_SOYOSOURCE_MODBUS_ID = "soyosource_modbus_id"
 CONFIG_SCHEMA = (
     cv.Schema(
         {

@@ -3,9 +3,14 @@ from esphome.components import uart
 import esphome.config_validation as cv
 from esphome.const import CONF_ID
 
-DEPENDENCIES = ["uart"]
+CODEOWNERS = ["@syssi"]
 
+DEPENDENCIES = ["uart"]
 AUTO_LOAD = ["button", "number", "select", "sensor", "text_sensor"]
+MULTI_CONF = True
+
+CONF_SOYOSOURCE_DISPLAY_ID = "soyosource_display_id"
+CONF_PROTOCOL_VERSION = "protocol_version"
 
 soyosource_display_ns = cg.esphome_ns.namespace("soyosource_display")
 SoyosourceDisplay = soyosource_display_ns.class_(
@@ -17,11 +22,6 @@ PROTOCOL_VERSION_OPTIONS = {
     "SOYOSOURCE_WIFI_VERSION": ProtocolVersion.SOYOSOURCE_WIFI_VERSION,
     "SOYOSOURCE_DISPLAY_VERSION": ProtocolVersion.SOYOSOURCE_DISPLAY_VERSION,
 }
-
-MULTI_CONF = True
-
-CONF_SOYOSOURCE_DISPLAY_ID = "soyosource_display_id"
-CONF_PROTOCOL_VERSION = "protocol_version"
 
 CONF_SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA = cv.Schema(
     {

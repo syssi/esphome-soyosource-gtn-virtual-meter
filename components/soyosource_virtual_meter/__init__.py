@@ -3,8 +3,10 @@ from esphome.components import sensor, soyosource_modbus
 import esphome.config_validation as cv
 from esphome.const import CONF_ID
 
-AUTO_LOAD = ["soyosource_modbus", "number", "sensor", "switch", "text_sensor"]
 CODEOWNERS = ["@syssi"]
+
+DEPENDENCIES = ["soyosource_modbus"]
+AUTO_LOAD = ["number", "sensor", "switch", "text_sensor"]
 MULTI_CONF = True
 
 CONF_SOYOSOURCE_VIRTUAL_METER_ID = "soyosource_virtual_meter_id"

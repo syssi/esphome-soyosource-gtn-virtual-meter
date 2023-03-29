@@ -3,7 +3,12 @@ from esphome.components import uart
 import esphome.config_validation as cv
 from esphome.const import CONF_ID
 
+CODEOWNERS = ["@syssi"]
+
 DEPENDENCIES = ["uart"]
+MULTI_CONF = True
+
+CONF_PROTOCOL_VERSION = "protocol_version"
 
 soyosource_inverter_emulator_ns = cg.esphome_ns.namespace(
     "soyosource_inverter_emulator"
@@ -17,10 +22,6 @@ PROTOCOL_VERSION_OPTIONS = {
     "SOYOSOURCE_WIFI_VERSION": ProtocolVersion.SOYOSOURCE_WIFI_VERSION,
     "SOYOSOURCE_DISPLAY_VERSION": ProtocolVersion.SOYOSOURCE_DISPLAY_VERSION,
 }
-
-MULTI_CONF = True
-
-CONF_PROTOCOL_VERSION = "protocol_version"
 
 CONFIG_SCHEMA = cv.Schema(
     {
