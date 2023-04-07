@@ -77,11 +77,15 @@ bool SoyosourceModbus::parse_soyosource_modbus_byte_(uint8_t byte) {
 void SoyosourceModbus::dump_config() {
   ESP_LOGCONFIG(TAG, "SoyosourceModbus:");
   LOG_PIN("  Flow Control Pin: ", this->flow_control_pin_);
+
+  this->check_uart_settings(4800);
 }
+
 float SoyosourceModbus::get_setup_priority() const {
   // After UART bus
   return setup_priority::BUS - 1.0f;
 }
+
 void SoyosourceModbus::send(uint8_t address, uint16_t measurement) {
   // 239V AC 1 Unit
   // 24 56 00 21 00 00 80 08 -> 0 Watt
