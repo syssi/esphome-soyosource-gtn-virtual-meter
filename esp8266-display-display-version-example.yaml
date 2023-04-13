@@ -27,11 +27,11 @@ wifi:
 
 ota:
 
-api:
-  reboot_timeout: 0s
-
 logger:
   level: INFO
+
+api:
+  reboot_timeout: 0s
 
 uart:
   - id: uart0

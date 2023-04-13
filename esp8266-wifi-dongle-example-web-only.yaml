@@ -29,12 +29,12 @@ web_server:
 
 ota:
 
-api:
-  reboot_timeout: 0s
-
 logger:
   baud_rate: 0
   level: INFO
+
+api:
+  reboot_timeout: 0s
 
 uart:
   - id: uart0
