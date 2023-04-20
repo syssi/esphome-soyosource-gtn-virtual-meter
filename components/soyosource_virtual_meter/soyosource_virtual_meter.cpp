@@ -173,7 +173,7 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_oem_(int16_t consumption)
   //  100 >= 100: (abs(100 - 10) + (100 - 10)) / 2 = 90
   //   90 >= 100: continue
   if (consumption >= this->min_power_demand_)
-    return (int16_t)((std::abs(consumption - this->buffer_) + (consumption - this->buffer_)) / 2);
+    return (int16_t) ((std::abs(consumption - this->buffer_) + (consumption - this->buffer_)) / 2);
 
   // 90: 0
   return 0;

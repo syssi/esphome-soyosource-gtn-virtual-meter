@@ -40,18 +40,18 @@ mqtt:
 # api:
 
 uart:
-  - id: uart0
+  - id: uart_0
     baud_rate: 9600
     tx_pin: GPIO1
     rx_pin: GPIO3
-  - id: uart1
+  - id: uart_1
     baud_rate: 4800
     tx_pin: ${tx_pin_rs485}
     rx_pin: ${rx_pin_rs485}
 
 soyosource_modbus:
   - id: modbus0
-    uart_id: uart1
+    uart_id: uart_1
     # flow_control_pin: GPIO12
 
     # Optional settings
@@ -88,7 +88,7 @@ soyosource_virtual_meter:
 
 soyosource_display:
   - id: display0
-    uart_id: uart0
+    uart_id: uart_0
     protocol_version: SOYOSOURCE_WIFI_VERSION
     update_interval: 5s
 

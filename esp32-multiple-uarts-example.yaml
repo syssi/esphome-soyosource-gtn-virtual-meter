@@ -4,10 +4,10 @@ substitutions:
   device0: firstfloor_soyosource_gtn_virtual_meter
   device1: groundfloor_soyosource_gtn_virtual_meter
   external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
-  tx_pin_uart0: GPIO1
-  rx_pin_uart0: GPIO3
-  tx_pin_uart1: GPIO14
-  rx_pin_uart1: GPIO4
+  tx_pin_uart_0: GPIO1
+  rx_pin_uart_0: GPIO3
+  tx_pin_uart_1: GPIO14
+  rx_pin_uart_1: GPIO4
 
 esphome:
   name: ${name}
@@ -47,24 +47,24 @@ mqtt:
 # api:
 
 uart:
-  - id: uart0
+  - id: uart_0
     baud_rate: 4800
-    tx_pin: ${tx_pin_uart0}
-    rx_pin: ${rx_pin_uart0}
-  - id: uart1
+    tx_pin: ${tx_pin_uart_0}
+    rx_pin: ${rx_pin_uart_0}
+  - id: uart_1
     baud_rate: 4800
-    tx_pin: ${tx_pin_uart1}
-    rx_pin: ${rx_pin_uart1}
+    tx_pin: ${tx_pin_uart_1}
+    rx_pin: ${rx_pin_uart_1}
 
 soyosource_modbus:
   - id: modbus0
-    uart_id: uart0
+    uart_id: uart_0
     # flow_control_pin: GPIO12
     # The name is used as prefix for some log messages and should
     # help to distinguish between different instances/devices
     name: firstfloor
   - id: modbus1
-    uart_id: uart1
+    uart_id: uart_1
     name: groundfloor
     # flow_control_pin: GPIO13
 
