@@ -525,7 +525,7 @@ void SoyosourceDisplay::update_setting(uint8_t holding_register, float value) {
       new_settings.ShutdownVoltage = (uint8_t) value;
       break;
     case 0x04:
-      new_settings.OutputPowerLimit = (uint8_t)(value * 0.1);
+      new_settings.OutputPowerLimit = (uint8_t) (value * 0.1);
       break;
     case 0x09:
       new_settings.StartDelay = (uint8_t) value;

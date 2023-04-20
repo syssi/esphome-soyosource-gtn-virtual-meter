@@ -33,7 +33,7 @@ api:
   reboot_timeout: 0s
 
 uart:
-  - id: uart0
+  - id: uart_0
     baud_rate: 9600
     tx_pin: ${tx_pin}
     rx_pin: ${rx_pin}
@@ -42,5 +42,5 @@ uart:
 
 soyosource_inverter_emulator:
   - id: inverter0
-    uart_id: uart0
+    uart_id: uart_0
     protocol_version: SOYOSOURCE_WIFI_VERSION

@@ -40,14 +40,14 @@ mqtt:
 # api:
 
 uart:
-  - id: uart0
+  - id: uart_0
     baud_rate: 4800
     tx_pin: ${tx_pin}
     rx_pin: ${rx_pin}
 
 soyosource_modbus:
   - id: modbus0
-    uart_id: uart0
+    uart_id: uart_0
     # flow_control_pin: GPIO12
 
     # Optional settings
