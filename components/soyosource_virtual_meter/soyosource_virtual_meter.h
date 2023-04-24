@@ -101,7 +101,7 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   int16_t power_demand_delta_{0};
   uint32_t power_demand_delta_timestamp_{0};
 
-  float power_demand_delta_magic_constant_{0.8};  // make it configurable?
+  float power_demand_delta_magic_constant_{0.65};  // make it configurable?
   uint16_t power_demand_delta_timeout_{0};
 
   void publish_state_(sensor::Sensor *sensor, float value);
