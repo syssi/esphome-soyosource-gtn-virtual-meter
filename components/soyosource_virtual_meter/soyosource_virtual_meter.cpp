@@ -124,10 +124,10 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(in
     float magic_demand_delta = abs(this->power_demand_delta_) * this->power_demand_delta_magic_constant_;
     this->last_consumption_ = importing_now;
 
-    ESP_LOGD(TAG, "'%s': consumption_diff: %d, power_demand_delta_: %d, magic_demand_delta_: %f",
+    ESP_LOGD(TAG, "'%s': consumption_diff: %d, power_demand_delta_: %d, magic_demand_delta: %f",
              this->get_modbus_name(), consumption_diff, this->power_demand_delta_, magic_demand_delta);
 
-    if (this->power_demand_delta_ > 0 &&
+    if (this->power_demand_delta_ != 0 &&
         (consumption_diff > magic_demand_delta ||
          millis() > this->power_demand_delta_timestamp_ + this->power_demand_delta_timeout_)) {
       this->power_demand_delta_ = 0;
@@ -137,7 +137,7 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(in
 
     power_demand = importing_now + last_power_demand - this->power_demand_delta_;
 
-    if (this->power_demand_delta_ > 0 && ((importing_now > 0 && power_demand < last_power_demand) ||
+    if (this->power_demand_delta_ != 0 && ((importing_now > 0 && power_demand < last_power_demand) ||
                                           (importing_now < 0 && power_demand > last_power_demand))) {
       power_demand = last_power_demand;
       ESP_LOGD(TAG, "'%s': Oscillation prevention, keeping previous demand: %d; consumption: %d",
