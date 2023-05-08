@@ -51,8 +51,8 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
     this->power_demand_delta_timeout_ = power_demand_delta_timeout;
   }
 
-  void set_power_demand_delta_pid_Kp(float power_demand_delta_pid_Kp) {
-    this->power_demand_delta_pid_Kp_ = power_demand_delta_pid_Kp;
+  void set_power_demand_delta_pid_kp(float power_demand_delta_pid_kp) {
+    this->power_demand_delta_pid_kp_ = power_demand_delta_pid_kp;
   }
 
   void set_manual_mode_switch(switch_::Switch *manual_mode_switch) { manual_mode_switch_ = manual_mode_switch; }
@@ -105,7 +105,7 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   int16_t power_demand_delta_{0};
   uint32_t power_demand_delta_timestamp_{0};
 
-  float power_demand_delta_pid_Kp_{0.65};
+  float power_demand_delta_pid_kp_{0.65};
   uint16_t power_demand_delta_timeout_{0};
 
   void publish_state_(sensor::Sensor *sensor, float value);

@@ -20,7 +20,7 @@ CONF_POWER_DEMAND_DIVIDER = "power_demand_divider"
 CONF_OPERATION_STATUS_ID = "operation_status_id"
 CONF_ZERO_OUTPUT_ON_MIN_POWER_DEMAND = "zero_output_on_min_power_demand"
 CONF_MAX_POWER_SENSOR_LATENCY_MS = "max_power_sensor_latency_ms"
-CONF_POWER_SENSOR_PID_KP = "power_sensor_pid_Kp"
+CONF_POWER_SENSOR_PID_KP = "power_sensor_pid_kp"
 
 DEFAULT_MIN_BUFFER = -200
 DEFAULT_MAX_BUFFER = 200
@@ -139,7 +139,7 @@ async def to_code(config):
     )
     cg.add(var.set_power_demand_calculation(config[CONF_POWER_DEMAND_CALCULATION]))
     cg.add(var.set_power_demand_delta_timeout(config[CONF_MAX_POWER_SENSOR_LATENCY_MS]))
-    cg.add(var.set_power_demand_delta_pid_Kp(config[CONF_POWER_SENSOR_PID_KP]))
+    cg.add(var.set_power_demand_delta_pid_kp(config[CONF_POWER_SENSOR_PID_KP]))
 
     if CONF_OPERATION_STATUS_ID in config:
         operation_status_sensor = await cg.get_variable(

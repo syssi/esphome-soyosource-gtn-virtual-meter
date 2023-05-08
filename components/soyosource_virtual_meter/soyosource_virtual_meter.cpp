@@ -123,7 +123,7 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(in
   } else if (this->power_demand_delta_timeout_ > 0) {
     int16_t consumption_diff = this->last_consumption_ > importing_now ? this->last_consumption_ - importing_now
                                                                        : importing_now - this->last_consumption_;
-    float demand_delta_pid = abs(this->power_demand_delta_) * this->power_demand_delta_pid_Kp_;
+    float demand_delta_pid = abs(this->power_demand_delta_) * this->power_demand_delta_pid_kp_;
     this->last_consumption_ = importing_now;
 
     ESP_LOGD(TAG, "'%s': consumption_diff: %d, power_demand_delta_: %d, demand_delta_pid: %f", this->get_modbus_name(),
