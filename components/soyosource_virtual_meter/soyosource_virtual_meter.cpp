@@ -113,7 +113,7 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(in
   int16_t importing_now = consumption - this->buffer_;
   int16_t power_demand;
 
-  if (importing_now == 0 || last_consumption_ == importing_now) {
+  if (importing_now == 0 || (this->last_consumption_ == importing_now && millis() <= this->power_demand_delta_timestamp_ + this->power_demand_delta_timeout_)) {
     power_demand = last_power_demand;
 
     ESP_LOGD(TAG, "'%s': keeping old demand (importing now is 0 or no new sensor reading available)",
