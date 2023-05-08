@@ -20,6 +20,7 @@ CONF_POWER_DEMAND_DIVIDER = "power_demand_divider"
 CONF_OPERATION_STATUS_ID = "operation_status_id"
 CONF_ZERO_OUTPUT_ON_MIN_POWER_DEMAND = "zero_output_on_min_power_demand"
 CONF_MAX_POWER_SENSOR_LATENCY_MS = "max_power_sensor_latency_ms"
+CONF_POWER_SENSOR_PID_KP = "power_sensor_pid_Kp"
 
 DEFAULT_MIN_BUFFER = -200
 DEFAULT_MAX_BUFFER = 200
@@ -35,6 +36,8 @@ DEFAULT_MAX_POWER_DEMAND_DIVIDER = 6
 DEFAULT_MAX_POWER_SENSOR_LATENCY_MS = 4000
 DEFAULT_MIN_MAX_POWER_SENSOR_LATENCY_MS = 0
 DEFAULT_MAX_MAX_POWER_SENSOR_LATENCY_MS = 30000
+
+DEFAULT_CONF_POWER_SENSOR_PID_KP = 0.65
 
 soyosource_virtual_meter_ns = cg.esphome_ns.namespace("soyosource_virtual_meter")
 SoyosourceVirtualMeter = soyosource_virtual_meter_ns.class_(
@@ -97,6 +100,13 @@ CONFIG_SCHEMA = cv.All(
                 min=DEFAULT_MIN_MAX_POWER_SENSOR_LATENCY_MS,
                 max=DEFAULT_MAX_MAX_POWER_SENSOR_LATENCY_MS,
             ),
+            cv.Optional(
+                CONF_POWER_SENSOR_PID_KP,
+                default=DEFAULT_CONF_POWER_SENSOR_PID_KP,
+            ): cv.float_range(
+                min=0.01,
+                max=1.0,
+            ),
         }
     )
     .extend(soyosource_modbus.soyosource_modbus_device_schema(0x24))
@@ -129,6 +139,7 @@ async def to_code(config):
     )
     cg.add(var.set_power_demand_calculation(config[CONF_POWER_DEMAND_CALCULATION]))
     cg.add(var.set_power_demand_delta_timeout(config[CONF_MAX_POWER_SENSOR_LATENCY_MS]))
+    cg.add(var.set_power_demand_delta_pid_Kp(config[CONF_POWER_SENSOR_PID_KP]))
 
     if CONF_OPERATION_STATUS_ID in config:
         operation_status_sensor = await cg.get_variable(

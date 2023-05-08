@@ -113,7 +113,8 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(in
   int16_t importing_now = consumption - this->buffer_;
   int16_t power_demand;
 
-  if (importing_now == 0 || (this->last_consumption_ == importing_now && millis() <= this->power_demand_delta_timestamp_ + this->power_demand_delta_timeout_)) {
+  if (importing_now == 0 || (this->last_consumption_ == importing_now &&
+                             millis() <= this->power_demand_delta_timestamp_ + this->power_demand_delta_timeout_)) {
     power_demand = last_power_demand;
 
     ESP_LOGD(TAG, "'%s': keeping old demand (importing now is 0 or no new sensor reading available)",
@@ -122,18 +123,18 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(in
   } else if (this->power_demand_delta_timeout_ > 0) {
     int16_t consumption_diff = this->last_consumption_ > importing_now ? this->last_consumption_ - importing_now
                                                                        : importing_now - this->last_consumption_;
-    float magic_demand_delta = abs(this->power_demand_delta_) * this->power_demand_delta_magic_constant_;
+    float demand_delta_pid = abs(this->power_demand_delta_) * this->power_demand_delta_pid_Kp_;
     this->last_consumption_ = importing_now;
 
-    ESP_LOGD(TAG, "'%s': consumption_diff: %d, power_demand_delta_: %d, magic_demand_delta: %f",
-             this->get_modbus_name(), consumption_diff, this->power_demand_delta_, magic_demand_delta);
+    ESP_LOGD(TAG, "'%s': consumption_diff: %d, power_demand_delta_: %d, demand_delta_pid: %f", this->get_modbus_name(),
+             consumption_diff, this->power_demand_delta_, demand_delta_pid);
 
     if (this->power_demand_delta_ != 0 &&
-        (consumption_diff > magic_demand_delta ||
+        (consumption_diff > demand_delta_pid ||
          millis() > this->power_demand_delta_timestamp_ + this->power_demand_delta_timeout_)) {
       this->power_demand_delta_ = 0;
       ESP_LOGD(TAG, "'%s': power_demand_delta_ reset to 0 due to %s", this->get_modbus_name(),
-               consumption_diff > magic_demand_delta ? "consumption_diff" : "timeout");
+               consumption_diff > demand_delta_pid ? "consumption_diff" : "timeout");
     }
 
     power_demand = importing_now + last_power_demand - this->power_demand_delta_;
