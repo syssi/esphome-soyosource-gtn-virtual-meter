@@ -215,7 +215,9 @@ void SoyosourceDisplay::on_ms51_status_data_(const std::vector<uint8_t> &data) {
   // 11    2   0x00 0xCA              Output Power         1.0         W           202 W
   this->publish_state_(this->output_power_sensor_, soyosource_get_16bit(11) * 1.0f);
 
-  // 13    2   0x00 0x00              Total energy         0.1         kWh         00.0 kWh (wrap around at 6553.5 kWh)
+  // 13    2   0x00 0x00              Total energy         0.1         kWh         00.0 kWh
+  // When this value reaches 6500, it only delivers a sawtooth resetting to 6477 on each hit of 6500.
+  // The expected wrap around on 6553.5 to 0 doesn't happen.
   this->publish_state_(this->total_energy_sensor_, soyosource_get_16bit(13) * 0.1f);
 
   // 15    1   0x17                   Temperature          1.0         °C          23 °C
