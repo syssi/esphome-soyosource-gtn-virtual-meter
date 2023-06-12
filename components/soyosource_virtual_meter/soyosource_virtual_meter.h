@@ -5,7 +5,7 @@
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/switch/switch.h"
 #include "esphome/components/text_sensor/text_sensor.h"
-#include "esphome/components/soyosource_modbus/soyosource_modbus.h"
+#include "../soyosource_modbus/soyosource_modbus.h"
 
 namespace esphome {
 namespace soyosource_virtual_meter {
@@ -94,6 +94,10 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   uint32_t last_power_demand_received_{0};
   uint16_t last_power_demand_{0};
 
+  int16_t power_demand_compensation_{0};
+  uint32_t power_demand_compensation_timestamp_;
+  uint16_t power_demand_compensation_timeout_ms_{5000};
+
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
   bool inactivity_timeout_();
@@ -102,6 +106,7 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   int16_t calculate_power_demand_negative_measurements_(int16_t consumption, uint16_t last_power_demand);
   int16_t calculate_power_demand_restart_on_crossing_zero_(int16_t consumption, uint16_t last_power_demand);
   int16_t calculate_power_demand_oem_(int16_t consumption);
+  void reset_power_demand_compensation(int16_t importing_now);
 };
 
 }  // namespace soyosource_virtual_meter
