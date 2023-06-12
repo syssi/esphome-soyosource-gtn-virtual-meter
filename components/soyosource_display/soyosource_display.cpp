@@ -73,14 +73,15 @@ bool SoyosourceDisplay::parse_soyosource_display_byte_(uint8_t byte) {
   // Settings request      >>> 0x55 0x03 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xFC
   // Settings response     <<< 0xA6 0x00 0x00 0xD3 0x02 0xD4 0x30 0x30 0x2D 0x00 0xFB 0x64 0x4B 0x06 0x19
   //
-  if (at == 0)
+  if (at == 0) {
+    if (raw[0] != SOF_SOYO_RESPONSE && raw[0] != SOF_MS51_RESPONSE) {
+      ESP_LOGVV(TAG, "Invalid header: 0x%02X", raw[0]);
+
+      // return false to reset buffer
+      return false;
+    }
+
     return true;
-
-  if (raw[0] != SOF_SOYO_RESPONSE && raw[0] != SOF_MS51_RESPONSE) {
-    ESP_LOGVV(TAG, "Invalid header");
-
-    // return false to reset buffer
-    return false;
   }
 
   // Supported MS51 responses

@@ -43,16 +43,20 @@ bool SoyosourceModbus::parse_soyosource_modbus_byte_(uint8_t byte) {
     return true;
   uint8_t address = raw[0];
 
+  if (at == 3) {
+    if (raw[0] != 0x23 || raw[1] != 0x01 || raw[2] != 0x01 || raw[3] != 0x00) {
+      ESP_LOGW(TAG, "Invalid header: 0x%02X 0x%02X 0x%02X 0x%02X", raw[0], raw[1], raw[2], raw[3]);
+
+      // return false to reset buffer
+      return false;
+    }
+
+    return true;
+  }
+
   // Byte 4..15: Data + CRC
   if (at < 4 + 10)
     return true;
-
-  if (raw[0] != 0x23 || raw[1] != 0x01 || raw[2] != 0x01 || raw[3] != 0x00) {
-    ESP_LOGW(TAG, "Invalid header");
-
-    // return false to reset buffer
-    return false;
-  }
 
   ESP_LOGVV(TAG, "RX <- %s", format_hex_pretty(raw, at + 1).c_str());
   ESP_LOGVV(TAG, "CRC: 0x%02X", raw[14]);
