@@ -54,14 +54,15 @@ bool SoyosourceInverterEmulator::parse_soyosource_inverter_emulator_byte_(uint8_
   // Example request (Display version)
   // 0x55 0x01 0x00 0x00 0x00 0xFE
 
-  if (at == 0)
+  if (at == 0) {
+    if (raw[0] != 0x55) {
+      ESP_LOGW(TAG, "Invalid header: 0x%02X", raw[0]);
+
+      // return false to reset buffer
+      return false;
+    }
+
     return true;
-
-  if (raw[0] != 0x55) {
-    ESP_LOGW(TAG, "Invalid header");
-
-    // return false to reset buffer
-    return false;
   }
 
   // Byte 0...11
