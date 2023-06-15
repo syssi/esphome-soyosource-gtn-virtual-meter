@@ -112,7 +112,7 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(in
   //     -700           -690         10          500               -200           0
   int16_t importing_now = consumption - this->buffer_;
 
-  reset_power_demand_compensation(importing_now);
+  reset_power_demand_compensation_(importing_now);
 
   int16_t power_demand = importing_now + last_power_demand - this->power_demand_compensation_;
 
@@ -124,10 +124,11 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(in
     power_demand = (this->zero_output_on_min_power_demand_) ? 0 : this->min_power_demand_;
   }
 
-  ESP_LOGD(TAG, "'%s': updated power_demand_compensation_ from %d", this->get_modbus_name(), this->power_demand_compensation_);
-  //only reduction of compensation but keep old demand:
+  ESP_LOGD(TAG, "'%s': updated power_demand_compensation_ from %d", this->get_modbus_name(),
+           this->power_demand_compensation_);
+  // only reduction of compensation but keep old demand:
   if (this->power_demand_compensation_ != 0 && ((importing_now > 0 && power_demand < last_power_demand) ||
-                                         (importing_now < 0 && power_demand > last_power_demand))) {
+                                                (importing_now < 0 && power_demand > last_power_demand))) {
     this->power_demand_compensation_ += power_demand - last_power_demand;
     power_demand = last_power_demand;
     ESP_LOGD(TAG, "'%s': Oscillation prevention, keeping previous demand: %d; reducing compensation",
@@ -135,7 +136,8 @@ int16_t SoyosourceVirtualMeter::calculate_power_demand_negative_measurements_(in
   } else {
     this->power_demand_compensation_ += power_demand - last_power_demand;
   }
-  ESP_LOGD(TAG, "'%s': updated power_demand_compensation_ to %d", this->get_modbus_name(), this->power_demand_compensation_);
+  ESP_LOGD(TAG, "'%s': updated power_demand_compensation_ to %d", this->get_modbus_name(),
+           this->power_demand_compensation_);
 
   return power_demand;
 }
@@ -222,13 +224,15 @@ void SoyosourceVirtualMeter::publish_state_(text_sensor::TextSensor *text_sensor
   text_sensor->publish_state(state);
 }
 
-void SoyosourceVirtualMeter::reset_power_demand_compensation(int16_t importing_now) {
-  //reset on zero crossing or timeout
-  if (importing_now == 0 || (this->power_demand_compensation_ > 0 && importing_now < 0)
-      || (this->power_demand_compensation_ < 0 && importing_now > 0)
-      || this->power_demand_compensation_timestamp_ + this->power_demand_compensation_timeout_ms_ < millis()) {
+void SoyosourceVirtualMeter::reset_power_demand_compensation_(int16_t importing_now) {
+  // reset on zero crossing or timeout
+  if (importing_now == 0 || (this->power_demand_compensation_ > 0 && importing_now < 0) ||
+      (this->power_demand_compensation_ < 0 && importing_now > 0) ||
+      this->power_demand_compensation_timestamp_ + this->power_demand_compensation_timeout_ms_ < millis()) {
     ESP_LOGD(TAG, "'%s': reset power_demand_compensation_ to 0 %s", this->get_modbus_name(),
-             this->power_demand_compensation_timestamp_ + this->power_demand_compensation_timeout_ms_ < millis() ? "after timout" : "after zero crossing");
+             this->power_demand_compensation_timestamp_ + this->power_demand_compensation_timeout_ms_ < millis()
+                 ? "after timout"
+                 : "after zero crossing");
     this->power_demand_compensation_timestamp_ = millis();
     this->power_demand_compensation_ = 0;
   }
