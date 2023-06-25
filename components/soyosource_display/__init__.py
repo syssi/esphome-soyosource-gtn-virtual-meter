@@ -6,7 +6,7 @@ from esphome.const import CONF_ID
 CODEOWNERS = ["@syssi"]
 
 DEPENDENCIES = ["uart"]
-AUTO_LOAD = ["button", "number", "select", "sensor", "text_sensor"]
+AUTO_LOAD = ["binary_sensor", "button", "number", "select", "sensor", "text_sensor"]
 MULTI_CONF = True
 
 CONF_SOYOSOURCE_DISPLAY_ID = "soyosource_display_id"
