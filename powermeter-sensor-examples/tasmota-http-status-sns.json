@@ -1,0 +1,20 @@
+{
+  "StatusSNS": {
+    "Gas": {
+      "Verbrauch": 2342.45
+    },
+    "SML": {
+      "Einspeisung": 0.118,
+      "Frequenz": 49.9,
+      "Leistung": 589,
+      "Spannung L1": 230.4,
+      "Spannung L2": 229.9,
+      "Spannung L3": 230.6,
+      "Strom L1": 1.51,
+      "Strom L2": 0.42,
+      "Strom L3": 1.12,
+      "Verbrauch": 10722.5
+    },
+    "Time": "2023-06-01T00:10:41"
+  }
+}
