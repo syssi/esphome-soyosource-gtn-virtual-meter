@@ -669,7 +669,9 @@ std::string SoyosourceDisplay::display_version_operation_mode_to_string_(const u
   // 0x05: 0101 BatCP Mode + Standby
   // 0x06: 0110 PV Mode + Standby
   // 0x08: 1000 Bat Limit + Operation
+  // 0x09: 1001 Bat Limit + (BatCP Mode) + Operation
   // 0x0C: 1100 Bat limit + Standby
+  // 0x0D: 1101 Bat Limit + (BatCP Mode) + Standby
   //       ||||
   //       |||BatCP Mode bit
   //       |||
@@ -687,7 +689,9 @@ std::string SoyosourceDisplay::display_version_operation_mode_to_string_(const u
     case 0x06:
       return "PV";
     case 0x08:
+    case 0x09:
     case 0x0C:
+    case 0x0D:
       return "Battery Limit";
   }
 
@@ -704,11 +708,10 @@ uint8_t SoyosourceDisplay::operation_mode_to_operation_mode_setting_(const uint8
     case 0x06:
       return 0x01;  // PV
     case 0x08:
-    case 0x0C:
-      return 0x10;  // Different operation mode of the Display version
     case 0x09:
+    case 0x0C:
     case 0x0D:
-      return 0x12;  // Battery Limit
+      return (this->protocol_version_ == SOYOSOURCE_DISPLAY_VERSION) ? 0x10 : 0x12;  // Battery Limit
     case 0x0A:
     case 0x0E:
       return 0x11;  // PV Limit
