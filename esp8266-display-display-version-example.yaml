@@ -74,8 +74,8 @@ select:
     operation_mode:
       name: "${name} operation mode"
       optionsmap:
-        1: "Battery Constant Power"
-        2: "PV"
+        1: "PV"
+        2: "Battery Constant Power"
         16: "Battery Limit"
 
 sensor:
