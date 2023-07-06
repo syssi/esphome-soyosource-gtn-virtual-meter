@@ -8,7 +8,7 @@ http_request:
 
 sensor:
   - platform: template
-    id: powermeter
+    id: powermeter0
     name: "Instantaneous Power"
     unit_of_measurement: W
     device_class: "power"
@@ -29,6 +29,6 @@ interval:
                   std::string response_data = id(http_request0).get_string();
                   if(!response_data.empty()) {
                     json::parse_json(response_data, [](JsonObject root) {
-                      id(powermeter).publish_state(root["total_power"]);
+                      id(powermeter0).publish_state(root["total_power"]);
                     });
                   }
