@@ -1,0 +1,23 @@
+{
+  "StatusSNS": {
+    "SML": {
+      "amp_p1": 0.7,
+      "amp_p2": 0.9,
+      "amp_p3": 0.3,
+      "curr_w": -141,
+      "export_total_kwh": 406.3138,
+      "freq": 50,
+      "phase_angle_l2_l1": 240,
+      "phase_angle_l3_l1": 120,
+      "phase_angle_p1": 233,
+      "phase_angle_p2": 112,
+      "phase_angle_p3": 306,
+      "server_id": "ffffffffffffffffffff",
+      "total_kwh": 1608.8451,
+      "volt_p1": 239.7,
+      "volt_p2": 239.8,
+      "volt_p3": 239
+    },
+    "Time": "2023-07-07T09:32:07"
+  }
+}
