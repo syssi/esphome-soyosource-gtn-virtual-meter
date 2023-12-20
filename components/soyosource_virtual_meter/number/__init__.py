@@ -195,6 +195,30 @@ CONFIG_SCHEMA = cv.Schema(
             validate_min_max,
             validate,
         ),
+        cv.Optional(CONF_MAX_POWER_SENSOR_LATENCY_MS): cv.All(
+            number.NUMBER_SCHEMA.extend(
+                {
+                    cv.GenerateID(): cv.declare_id(SoyosourceNumber),
+                    cv.Optional(CONF_ICON, default=ICON_POWER_SENSOR_LATENCY): cv.icon,
+                    cv.Optional(
+                        CONF_MIN_VALUE, default=DEFAULT_MIN_MAX_POWER_SENSOR_LATENCY_MS
+                    ): cv.float_,
+                    cv.Optional(
+                        CONF_MAX_VALUE, default=DEFAULT_MAX_MAX_POWER_SENSOR_LATENCY_MS
+                    ): cv.float_,
+                    cv.Optional(CONF_STEP, default=DEFAULT_STEP): cv.float_,
+                    cv.Optional(
+                        CONF_UNIT_OF_MEASUREMENT, default=UNIT_MILLISECOND
+                    ): cv.string_strict,
+                    cv.Optional(
+                        CONF_INITIAL_VALUE, default=DEFAULT_MAX_POWER_SENSOR_LATENCY_MS
+                    ): cv.float_,
+                    cv.Optional(CONF_RESTORE_VALUE, default=False): cv.boolean,
+                }
+            ).extend(cv.COMPONENT_SCHEMA),
+            validate_min_max,
+            validate,
+        ),
     }
 )
 
