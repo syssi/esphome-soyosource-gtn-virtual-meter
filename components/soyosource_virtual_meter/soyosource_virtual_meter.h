@@ -47,6 +47,9 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   void set_power_demand_divider_number(number::Number *power_demand_divider_number) {
     power_demand_divider_number_ = power_demand_divider_number;
   }
+  void set_max_power_sensor_latency_ms_number(number::Number *max_power_sensor_latency_ms_number) {
+    this->power_demand_compensation_timeout_ms_number = max_power_sensor_latency_ms_number;
+  }
   void set_power_demand_compensation_timeout_ms(uint16_t power_demand_compensation_timeout_ms) {
     this->power_demand_compensation_timeout_ms_ = power_demand_compensation_timeout_ms;
   }
@@ -76,6 +79,7 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   number::Number *manual_power_demand_number_;
   number::Number *max_power_demand_number_;
   number::Number *power_demand_divider_number_;
+  number::Number *power_demand_compensation_timeout_ms_number;
 
   sensor::Sensor *power_sensor_;
   sensor::Sensor *operation_status_sensor_;
