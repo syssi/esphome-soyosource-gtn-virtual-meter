@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import button
 import esphome.config_validation as cv
-from esphome.const import CONF_ICON, CONF_ID
+from esphome.const import CONF_ICON, CONF_ID, CONF_RESTART
 
 from .. import (
     CONF_SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA,
@@ -13,7 +13,7 @@ DEPENDENCIES = ["soyosource_display"]
 
 CODEOWNERS = ["@syssi"]
 
-CONF_RESTART = "restart"
+# CONF_RESTART = "restart"
 
 ICON_RESTART = "mdi:restart"
 
