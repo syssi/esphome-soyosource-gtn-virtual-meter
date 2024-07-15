@@ -5,6 +5,7 @@ http_request:
   id: http_request0
   useragent: esphome/device
   timeout: 1000ms
+  esp8266_disable_ssl_support: true
 
 sensor:
   - platform: template
@@ -22,13 +23,12 @@ interval:
           url: ${shelly_3em_url}
           headers:
             Content-Type: application/json
-          verify_ssl: false
+          capture_response: true
+          max_response_buffer_size: 2000
           on_response:
             then:
               - lambda: |-
-                  std::string response_data = id(http_request0).get_string();
-                  if(!response_data.empty()) {
-                    json::parse_json(response_data, [](JsonObject root) {
-                      id(powermeter0).publish_state(root["total_power"]);
-                    });
-                  }
+                  json::parse_json(body, [](JsonObject root) -> bool {
+                    id(powermeter0).publish_state(root["total_power"]);
+                    return true;
+                  });
