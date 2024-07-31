@@ -20,6 +20,7 @@ from esphome.const import (
     UNIT_CELSIUS,
     UNIT_EMPTY,
     UNIT_HERTZ,
+    UNIT_KILOWATT_HOURS,
     UNIT_VOLT,
     UNIT_WATT,
 )
@@ -43,8 +44,6 @@ CONF_OUTPUT_POWER = "output_power"
 ICON_ERROR_BITMASK = "mdi:alert-circle-outline"
 ICON_OPERATION_MODE = "mdi:heart-pulse"
 ICON_OPERATION_STATUS = "mdi:heart-pulse"
-
-UNIT_KILO_WATT_HOURS = "kWh"
 
 SENSORS = [
     CONF_BATTERY_VOLTAGE,
@@ -129,7 +128,7 @@ CONFIG_SCHEMA = cv.Schema(
             state_class=STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional(CONF_TOTAL_ENERGY): sensor.sensor_schema(
-            unit_of_measurement=UNIT_KILO_WATT_HOURS,
+            unit_of_measurement=UNIT_KILOWATT_HOURS,
             icon=ICON_COUNTER,
             accuracy_decimals=1,
             device_class=DEVICE_CLASS_ENERGY,
