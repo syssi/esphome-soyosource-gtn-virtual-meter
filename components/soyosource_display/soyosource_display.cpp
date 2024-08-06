@@ -246,7 +246,9 @@ void SoyosourceDisplay::on_soyosource_status_data_(const std::vector<uint8_t> &d
 
   if (this->protocol_version_ == SOYOSOURCE_DISPLAY_VERSION) {
     // Replicate the behaviour of the display firmware to avoid confusion
-    this->publish_state_(this->output_power_sensor_, battery_power);
+    // We are using a constant efficiency of 87% like the display firmware (empirically discovered)
+    // See https://github.com/syssi/esphome-soyosource-gtn-virtual-meter/issues/184#issuecomment-2264960366
+    this->publish_state_(this->output_power_sensor_, battery_power * 0.86956f);
   } else {
     this->publish_state_(this->output_power_sensor_, soyosource_get_16bit(1) * 1.0f);
   }
