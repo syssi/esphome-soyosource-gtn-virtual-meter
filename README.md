@@ -121,8 +121,8 @@ logger:
 
 uart:
   baud_rate: 4800
-  tx_pin: GPIO1
-  rx_pin: GPIO3
+  tx_pin: ${tx_pin}
+  rx_pin: ${rx_pin}
   debug:
     direction: BOTH
 ```
