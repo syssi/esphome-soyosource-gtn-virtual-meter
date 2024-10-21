@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import binary_sensor
 import esphome.config_validation as cv
-from esphome.const import CONF_ICON, CONF_ID
+from esphome.const import CONF_ID
 
 from . import CONF_SOYOSOURCE_DISPLAY_ID, SoyosourceDisplay
 
@@ -12,9 +12,6 @@ CODEOWNERS = ["@syssi"]
 CONF_FAN_RUNNING = "fan_running"
 CONF_LIMITER_CONNECTED = "limiter_connected"
 
-ICON_FAN_RUNNING = "mdi:fan"
-ICON_LIMITER_CONNECTED = "mdi:connection"
-
 BINARY_SENSORS = [
     CONF_FAN_RUNNING,
     CONF_LIMITER_CONNECTED,
@@ -23,17 +20,11 @@ BINARY_SENSORS = [
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_SOYOSOURCE_DISPLAY_ID): cv.use_id(SoyosourceDisplay),
-        cv.Optional(CONF_FAN_RUNNING): binary_sensor.BINARY_SENSOR_SCHEMA.extend(
-            {
-                cv.GenerateID(): cv.declare_id(binary_sensor.BinarySensor),
-                cv.Optional(CONF_ICON, default=ICON_FAN_RUNNING): cv.icon,
-            }
+        cv.Optional(CONF_FAN_RUNNING): binary_sensor.binary_sensor_schema(
+            icon="mdi:fan"
         ),
-        cv.Optional(CONF_LIMITER_CONNECTED): binary_sensor.BINARY_SENSOR_SCHEMA.extend(
-            {
-                cv.GenerateID(): cv.declare_id(binary_sensor.BinarySensor),
-                cv.Optional(CONF_ICON, default=ICON_LIMITER_CONNECTED): cv.icon,
-            }
+        cv.Optional(CONF_LIMITER_CONNECTED): binary_sensor.binary_sensor_schema(
+            icon="mdi:connection"
         ),
     }
 )
