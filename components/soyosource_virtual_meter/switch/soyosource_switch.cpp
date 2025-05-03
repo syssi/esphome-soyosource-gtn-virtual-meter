@@ -34,7 +34,7 @@ void SoyosourceSwitch::setup() {
 }
 void SoyosourceSwitch::dump_config() {
   LOG_SWITCH("", "SoyosourceVirtualMeter Switch", this);
-  const LogString *restore_mode = LOG_STR("");
+  const LogString *restore_mode = LOG_STR("Unknown");
   switch (this->restore_mode_) {
     case SOYOSOURCE_SWITCH_RESTORE_DEFAULT_OFF:
       restore_mode = LOG_STR("Restore (Defaults to OFF)");
