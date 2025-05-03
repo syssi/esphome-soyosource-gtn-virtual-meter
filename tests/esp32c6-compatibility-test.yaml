@@ -1,0 +1,257 @@
+substitutions:
+  name: esp32c6-compatibility-test
+  device_description: "Verify the project builds from source on ESP32C6"
+  external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
+
+esphome:
+  name: ${name}
+  comment: ${device_description}
+  min_version: 2024.6.0
+  platformio_options:
+    # board_build.f_cpu: 160000000L
+    # board_build.f_flash: 80000000L
+    board_build.flash_size: 8MB
+    # build_flags: "-DBOARD_HAS_PSRAM"
+    # board_build.arduino.memory_type: qio_opi
+
+# Board is waveshare esp32-c6-devkit-n8
+esp32:
+  board: esp32-c6-devkitc-1
+  variant: esp32c6
+  framework:
+    type: esp-idf
+    version: 5.3.1
+    platform_version: 6.9.0
+    sdkconfig_options:
+      CONFIG_ESPTOOLPY_FLASHSIZE_8MB: y
+
+external_components:
+  - source: ${external_components_source}
+    refresh: 0s
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+ota:
+  platform: esphome
+
+logger:
+  level: VERY_VERBOSE
+
+mqtt:
+  broker: !secret mqtt_host
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+  id: mqtt_client
+
+uart:
+  - id: uart_0
+    baud_rate: 4800
+    tx_pin: GPIO16
+    rx_pin: GPIO17
+  - id: uart_1
+    baud_rate: 9600
+    tx_pin: GPIO14
+    rx_pin: GPIO4
+
+soyosource_modbus:
+  - id: modbus0
+    uart_id: uart_0
+    # flow_control_pin: GPIO12
+
+    # Optional settings
+    #
+    # The name is used as prefix for some log messages and should
+    # help to distinguish between different instances/devices
+    name: firstfloor_inverter
+
+soyosource_virtual_meter:
+  - id: virtualmeter0
+    soyosource_modbus_id: modbus0
+
+    # The state of this sensor (instantaneous power in watt) is used as source
+    power_id: powermeter0
+
+    # Optional settings
+    power_sensor_inactivity_timeout: 20s
+    power_demand_calculation: NEGATIVE_MEASUREMENTS_REQUIRED
+    min_power_demand: 0
+    max_power_demand: 900
+    zero_output_on_min_power_demand: true
+    # Split/distribute the power demand if you have multiple inverters attached to the same RS485 bus
+    power_demand_divider: 1
+    # A positive buffer value (10) tries to avoid exporting power to the grid (demand - 10 watts)
+    # A negative buffer value (-10) exports power to the grid (demand + 10 watts)
+    buffer: 10
+    # The operation_status_id sensor is expected here. Passing the operation_status won't work
+    # The state is used to suspend the limiter if the operation status of the inverter isn't 0x0 (normal)
+    # operation_status_id: operation_status_id0
+
+    # The update interval is important and defaults to 3 seconds. If the demand is sent too frequently
+    # or rarely the interverter stops. TODO: Identify and validate the lower and upper update limit
+    update_interval: 3s
+
+soyosource_inverter:
+  - id: inverter0
+    soyosource_modbus_id: modbus0
+
+#
+#
+#
+
+soyosource_display:
+  - id: display0
+    uart_id: uart_1
+    protocol_version: SOYOSOURCE_WIFI_VERSION
+    update_interval: 5s
+
+#
+#
+#
+
+binary_sensor:
+  - platform: soyosource_inverter
+    soyosource_inverter_id: inverter0
+    fan_running:
+      name: "inverter0 fan running"
+
+  - platform: soyosource_display
+    fan_running:
+      name: "inverter1 fan running"
+    limiter_connected:
+      name: "inverter1 limiter connected"
+
+button:
+  - platform: soyosource_display
+    restart:
+      name: "inverter1 restart"
+
+number:
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter0
+    buffer:
+      name: "inverter0 buffer"
+      initial_value: 10
+      restore_value: true
+    manual_power_demand:
+      name: "inverter0 manual power demand"
+      max_value: 900
+    max_power_demand:
+      name: "inverter0 max power demand"
+      initial_value: 600
+      max_value: 900
+      restore_value: true
+    power_demand_divider:
+      name: "inverter0 power demand divider"
+      initial_value: 1
+      restore_value: true
+
+  - platform: soyosource_display
+    start_voltage:
+      name: "inverter1 start voltage"
+    shutdown_voltage:
+      name: "inverter1 shutdown voltage"
+    # Maximum output power in limiter mode / Output power in constant power mode
+    output_power_limit:
+      name: "inverter1 output power limit"
+    start_delay:
+      name: "inverter1 start delay"
+
+select:
+  - platform: soyosource_display
+    operation_mode:
+      name: "inverter1 operation mode"
+      optionsmap:
+        1: "PV"
+        2: "Battery Constant Power"
+        17: "PV Limit"
+        18: "Battery Limit"
+
+sensor:
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter0
+    power_demand:
+      name: "inverter0 power demand"
+
+  - platform: soyosource_inverter
+    soyosource_inverter_id: inverter0
+    operation_status_id:
+      name: "inverter0 operation status id"
+      id: operation_status_id0
+    battery_voltage:
+      name: "inverter0 battery voltage"
+    battery_current:
+      name: "inverter0 battery current"
+    battery_power:
+      name: "inverter0 battery power"
+    ac_voltage:
+      name: "inverter0 ac voltage"
+    ac_frequency:
+      name: "inverter0 ac frequency"
+    temperature:
+      name: "inverter0 temperature"
+
+  # mqtt subscribe example
+  - id: powermeter0
+    internal: true
+    platform: mqtt_subscribe
+    name: "inverter0 instantaneous power consumption"
+    topic: "smartmeter/sensor/groundfloor/obis/1-0:16.7.0/255/value"
+    accuracy_decimals: 2
+    unit_of_measurement: W
+    device_class: power
+    filters:
+      - throttle_average: 15s
+
+  - platform: soyosource_display
+    error_bitmask:
+      name: "inverter1 error bitmask"
+    operation_mode_id:
+      name: "inverter1 operation mode id"
+    operation_status_id:
+      name: "inverter1 operation status id"
+      id: operation_status_id1
+    battery_voltage:
+      name: "inverter1 battery voltage"
+    battery_current:
+      name: "inverter1 battery current"
+    battery_power:
+      name: "inverter1 battery power"
+    ac_voltage:
+      name: "inverter1 ac voltage"
+    ac_frequency:
+      name: "inverter1 ac frequency"
+    temperature:
+      name: "inverter1 temperature"
+    output_power:
+      name: "inverter1 output power"
+
+switch:
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter0
+    manual_mode:
+      name: "inverter0 manual mode"
+      restore_mode: RESTORE_DEFAULT_ON
+    emergency_power_off:
+      name: "inverter0 emergency power off"
+      restore_mode: RESTORE_DEFAULT_OFF
+
+text_sensor:
+  - platform: soyosource_inverter
+    soyosource_inverter_id: inverter0
+    operation_status:
+      name: "inverter0 operation status"
+
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter0
+    operation_mode:
+      name: "inverter0 limiter operation mode"
+
+  - platform: soyosource_display
+    errors:
+      name: "inverter1 errors"
+    operation_mode:
+      name: "inverter1 operation mode"
+    operation_status:
+      name: "inverter1 operation status"
