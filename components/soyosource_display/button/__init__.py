@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import button
 import esphome.config_validation as cv
-from esphome.const import CONF_ICON, CONF_ID, CONF_RESTART
+from esphome.const import CONF_ID, CONF_RESTART
 
 from .. import (
     CONF_SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA,
@@ -27,11 +27,9 @@ SoyosourceButton = soyosource_display_ns.class_(
 
 CONFIG_SCHEMA = CONF_SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA.extend(
     {
-        cv.Optional(CONF_RESTART): button.BUTTON_SCHEMA.extend(
-            {
-                cv.GenerateID(): cv.declare_id(SoyosourceButton),
-                cv.Optional(CONF_ICON, default=ICON_RESTART): cv.icon,
-            }
+        cv.Optional(CONF_RESTART): button.button_schema(
+            SoyosourceButton,
+            icon=ICON_RESTART,
         ).extend(cv.COMPONENT_SCHEMA),
     }
 )
