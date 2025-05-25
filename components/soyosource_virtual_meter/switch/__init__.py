@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import switch
 import esphome.config_validation as cv
-from esphome.const import CONF_ICON, CONF_ID, CONF_RESTORE_MODE
+from esphome.const import CONF_ID, CONF_RESTORE_MODE
 
 from .. import (
     CONF_SOYOSOURCE_VIRTUAL_METER_ID,
@@ -43,24 +43,30 @@ CONFIG_SCHEMA = cv.Schema(
         cv.GenerateID(CONF_SOYOSOURCE_VIRTUAL_METER_ID): cv.use_id(
             SoyosourceVirtualMeter
         ),
-        cv.Optional(CONF_MANUAL_MODE): switch.SWITCH_SCHEMA.extend(
+        cv.Optional(CONF_MANUAL_MODE): switch.switch_schema(
+            SoyosourceSwitch,
+            icon=ICON_MANUAL_MODE,
+        )
+        .extend(
             {
-                cv.GenerateID(): cv.declare_id(SoyosourceSwitch),
-                cv.Optional(CONF_ICON, default=ICON_MANUAL_MODE): cv.icon,
                 cv.Optional(CONF_RESTORE_MODE, default="RESTORE_DEFAULT_OFF"): cv.enum(
                     RESTORE_MODES, upper=True, space="_"
                 ),
             }
-        ).extend(cv.COMPONENT_SCHEMA),
-        cv.Optional(CONF_EMERGENCY_POWER_OFF): switch.SWITCH_SCHEMA.extend(
+        )
+        .extend(cv.COMPONENT_SCHEMA),
+        cv.Optional(CONF_EMERGENCY_POWER_OFF): switch.switch_schema(
+            SoyosourceSwitch,
+            icon=ICON_EMERGENCY_POWER_OFF,
+        )
+        .extend(
             {
-                cv.GenerateID(): cv.declare_id(SoyosourceSwitch),
-                cv.Optional(CONF_ICON, default=ICON_EMERGENCY_POWER_OFF): cv.icon,
                 cv.Optional(CONF_RESTORE_MODE, default="RESTORE_DEFAULT_OFF"): cv.enum(
                     RESTORE_MODES, upper=True, space="_"
                 ),
             }
-        ).extend(cv.COMPONENT_SCHEMA),
+        )
+        .extend(cv.COMPONENT_SCHEMA),
     }
 )
 
