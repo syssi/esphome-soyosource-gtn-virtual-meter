@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import select
 import esphome.config_validation as cv
-from esphome.const import CONF_ICON, CONF_ID
+from esphome.const import CONF_ID
 
 from .. import (
     CONF_SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA,
@@ -43,13 +43,18 @@ SELECTS = {
     CONF_OPERATION_MODE: 0x0A,
 }
 
-SOYOSOURCE_SELECT_SCHEMA = select.SELECT_SCHEMA.extend(
-    {
-        cv.GenerateID(): cv.declare_id(SoyosourceSelect),
-        cv.Optional(CONF_ICON, default=ICON_OPERATION_MODE): cv.icon,
-        cv.Optional(CONF_OPTIONSMAP): ensure_option_map,
-    }
-).extend(cv.COMPONENT_SCHEMA)
+SOYOSOURCE_SELECT_SCHEMA = (
+    select.select_schema(
+        SoyosourceSelect,
+        icon=ICON_OPERATION_MODE,
+    )
+    .extend(
+        {
+            cv.Optional(CONF_OPTIONSMAP): ensure_option_map,
+        }
+    )
+    .extend(cv.COMPONENT_SCHEMA)
+)
 
 CONFIG_SCHEMA = CONF_SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA.extend(
     {

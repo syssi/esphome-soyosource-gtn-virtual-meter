@@ -2,14 +2,12 @@ import esphome.codegen as cg
 from esphome.components import number
 import esphome.config_validation as cv
 from esphome.const import (
-    CONF_ICON,
     CONF_ID,
     CONF_INITIAL_VALUE,
     CONF_MAX_VALUE,
     CONF_MIN_VALUE,
     CONF_RESTORE_VALUE,
     CONF_STEP,
-    CONF_UNIT_OF_MEASUREMENT,
     UNIT_EMPTY,
     UNIT_WATT,
     UNIT_MILLISECOND,
@@ -84,28 +82,32 @@ CONFIG_SCHEMA = cv.Schema(
             SoyosourceVirtualMeter
         ),
         cv.Optional(CONF_BUFFER): cv.All(
-            number.NUMBER_SCHEMA.extend(
+            number.number_schema(
+                SoyosourceNumber,
+                icon=ICON_BUFFER,
+                unit_of_measurement=UNIT_WATT,
+            )
+            .extend(
                 {
-                    cv.GenerateID(): cv.declare_id(SoyosourceNumber),
-                    cv.Optional(CONF_ICON, default=ICON_BUFFER): cv.icon,
                     cv.Optional(CONF_MIN_VALUE, default=DEFAULT_MIN_BUFFER): cv.float_,
                     cv.Optional(CONF_MAX_VALUE, default=DEFAULT_MAX_BUFFER): cv.float_,
                     cv.Optional(CONF_STEP, default=DEFAULT_STEP): cv.float_,
-                    cv.Optional(
-                        CONF_UNIT_OF_MEASUREMENT, default=UNIT_WATT
-                    ): cv.string_strict,
                     cv.Optional(CONF_INITIAL_VALUE, default=DEFAULT_BUFFER): cv.float_,
                     cv.Optional(CONF_RESTORE_VALUE, default=False): cv.boolean,
                 }
-            ).extend(cv.COMPONENT_SCHEMA),
+            )
+            .extend(cv.COMPONENT_SCHEMA),
             validate_min_max,
             validate,
         ),
         cv.Optional(CONF_MANUAL_POWER_DEMAND): cv.All(
-            number.NUMBER_SCHEMA.extend(
+            number.number_schema(
+                SoyosourceNumber,
+                icon=ICON_MANUAL_POWER_DEMAND,
+                unit_of_measurement=UNIT_WATT,
+            )
+            .extend(
                 {
-                    cv.GenerateID(): cv.declare_id(SoyosourceNumber),
-                    cv.Optional(CONF_ICON, default=ICON_MANUAL_POWER_DEMAND): cv.icon,
                     cv.Optional(
                         CONF_MIN_VALUE, default=DEFAULT_MIN_POWER_DEMAND
                     ): cv.float_,
@@ -113,21 +115,22 @@ CONFIG_SCHEMA = cv.Schema(
                         CONF_MAX_VALUE, default=DEFAULT_MAX_POWER_DEMAND
                     ): cv.float_,
                     cv.Optional(CONF_STEP, default=DEFAULT_STEP): cv.float_,
-                    cv.Optional(
-                        CONF_UNIT_OF_MEASUREMENT, default=UNIT_WATT
-                    ): cv.string_strict,
                     cv.Optional(CONF_INITIAL_VALUE): cv.float_,
                     cv.Optional(CONF_RESTORE_VALUE, default=False): cv.boolean,
                 }
-            ).extend(cv.COMPONENT_SCHEMA),
+            )
+            .extend(cv.COMPONENT_SCHEMA),
             validate_min_max,
             validate,
         ),
         cv.Optional(CONF_MAX_POWER_DEMAND): cv.All(
-            number.NUMBER_SCHEMA.extend(
+            number.number_schema(
+                SoyosourceNumber,
+                icon=ICON_MAX_POWER_DEMAND,
+                unit_of_measurement=UNIT_WATT,
+            )
+            .extend(
                 {
-                    cv.GenerateID(): cv.declare_id(SoyosourceNumber),
-                    cv.Optional(CONF_ICON, default=ICON_MAX_POWER_DEMAND): cv.icon,
                     cv.Optional(
                         CONF_MIN_VALUE, default=DEFAULT_MIN_POWER_DEMAND
                     ): cv.float_,
@@ -135,21 +138,22 @@ CONFIG_SCHEMA = cv.Schema(
                         CONF_MAX_VALUE, default=DEFAULT_MAX_POWER_DEMAND
                     ): cv.float_,
                     cv.Optional(CONF_STEP, default=DEFAULT_STEP): cv.float_,
-                    cv.Optional(
-                        CONF_UNIT_OF_MEASUREMENT, default=UNIT_WATT
-                    ): cv.string_strict,
                     cv.Optional(CONF_INITIAL_VALUE): cv.float_,
                     cv.Optional(CONF_RESTORE_VALUE, default=False): cv.boolean,
                 }
-            ).extend(cv.COMPONENT_SCHEMA),
+            )
+            .extend(cv.COMPONENT_SCHEMA),
             validate_min_max,
             validate,
         ),
         cv.Optional(CONF_POWER_DEMAND_DIVIDER): cv.All(
-            number.NUMBER_SCHEMA.extend(
+            number.number_schema(
+                SoyosourceNumber,
+                icon=ICON_POWER_DEMAND_DIVIDER,
+                unit_of_measurement=UNIT_EMPTY,
+            )
+            .extend(
                 {
-                    cv.GenerateID(): cv.declare_id(SoyosourceNumber),
-                    cv.Optional(CONF_ICON, default=ICON_POWER_DEMAND_DIVIDER): cv.icon,
                     cv.Optional(
                         CONF_MIN_VALUE, default=DEFAULT_MIN_POWER_DEMAND_DIVIDER
                     ): cv.float_,
@@ -158,14 +162,12 @@ CONFIG_SCHEMA = cv.Schema(
                     ): cv.float_,
                     cv.Optional(CONF_STEP, default=DEFAULT_STEP): cv.float_,
                     cv.Optional(
-                        CONF_UNIT_OF_MEASUREMENT, default=UNIT_EMPTY
-                    ): cv.string_strict,
-                    cv.Optional(
                         CONF_INITIAL_VALUE, default=DEFAULT_POWER_DEMAND_DIVIDER
                     ): cv.float_,
                     cv.Optional(CONF_RESTORE_VALUE, default=False): cv.boolean,
                 }
-            ).extend(cv.COMPONENT_SCHEMA),
+            )
+            .extend(cv.COMPONENT_SCHEMA),
             validate_min_max,
             validate,
         ),
