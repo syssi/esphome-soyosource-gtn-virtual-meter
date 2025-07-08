@@ -20,7 +20,7 @@ from esphome.const import (
     UNIT_WATT,
 )
 
-from . import CONF_SOYOSOURCE_INVERTER_COMPONENT_SCHEMA, CONF_SOYOSOURCE_INVERTER_ID
+from . import CONF_SOYOSOURCE_INVERTER_ID, SOYOSOURCE_INVERTER_COMPONENT_SCHEMA
 
 DEPENDENCIES = ["soyosource_inverter"]
 
@@ -45,7 +45,7 @@ SENSORS = [
 ]
 
 # pylint: disable=too-many-function-args
-CONFIG_SCHEMA = CONF_SOYOSOURCE_INVERTER_COMPONENT_SCHEMA.extend(
+CONFIG_SCHEMA = SOYOSOURCE_INVERTER_COMPONENT_SCHEMA.extend(
     {
         cv.Optional(CONF_OPERATION_STATUS_ID): sensor.sensor_schema(
             unit_of_measurement=UNIT_EMPTY,

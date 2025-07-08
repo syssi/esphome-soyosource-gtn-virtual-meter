@@ -4,8 +4,8 @@ import esphome.config_validation as cv
 from esphome.const import CONF_ID
 
 from . import (
-    CONF_SOYOSOURCE_VIRTUAL_METER_COMPONENT_SCHEMA,
     CONF_SOYOSOURCE_VIRTUAL_METER_ID,
+    SOYOSOURCE_VIRTUAL_METER_COMPONENT_SCHEMA,
 )
 
 DEPENDENCIES = ["soyosource_virtual_meter"]
@@ -20,7 +20,7 @@ TEXT_SENSORS = [
     CONF_OPERATION_MODE,
 ]
 
-CONFIG_SCHEMA = CONF_SOYOSOURCE_VIRTUAL_METER_COMPONENT_SCHEMA.extend(
+CONFIG_SCHEMA = SOYOSOURCE_VIRTUAL_METER_COMPONENT_SCHEMA.extend(
     {
         cv.Optional(CONF_OPERATION_MODE): text_sensor.text_sensor_schema(
             text_sensor.TextSensor,

@@ -14,7 +14,7 @@ SoyosourceInverter = soyosource_inverter_ns.class_(
     "SoyosourceInverter", cg.PollingComponent, soyosource_modbus.SoyosourceModbusDevice
 )
 
-CONF_SOYOSOURCE_INVERTER_COMPONENT_SCHEMA = cv.Schema(
+SOYOSOURCE_INVERTER_COMPONENT_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_SOYOSOURCE_INVERTER_ID): cv.use_id(SoyosourceInverter),
     }

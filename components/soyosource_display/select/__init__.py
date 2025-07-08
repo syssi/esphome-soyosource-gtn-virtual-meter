@@ -4,8 +4,8 @@ import esphome.config_validation as cv
 from esphome.const import CONF_ID
 
 from .. import (
-    CONF_SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA,
     CONF_SOYOSOURCE_DISPLAY_ID,
+    SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA,
     soyosource_display_ns,
 )
 from ..const import CONF_OPERATION_MODE
@@ -56,7 +56,7 @@ SOYOSOURCE_SELECT_SCHEMA = (
     .extend(cv.COMPONENT_SCHEMA)
 )
 
-CONFIG_SCHEMA = CONF_SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA.extend(
+CONFIG_SCHEMA = SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA.extend(
     {
         cv.Optional(CONF_OPERATION_MODE): SOYOSOURCE_SELECT_SCHEMA,
     }
