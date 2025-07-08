@@ -45,6 +45,14 @@ POWER_DEMAND_CALCULATION_OPTIONS = {
     "RESTART_ON_CROSSING_ZERO": PowerDemandCalculation.POWER_DEMAND_CALCULATION_RESTART_ON_CROSSING_ZERO,
 }
 
+CONF_SOYOSOURCE_VIRTUAL_METER_COMPONENT_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(CONF_SOYOSOURCE_VIRTUAL_METER_ID): cv.use_id(
+            SoyosourceVirtualMeter
+        ),
+    }
+)
+
 
 def validate_min_max(config):
     max_power_demand = cv.int_(config[CONF_MAX_POWER_DEMAND])

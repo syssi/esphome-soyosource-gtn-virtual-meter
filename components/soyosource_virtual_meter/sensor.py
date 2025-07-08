@@ -3,18 +3,18 @@ from esphome.components import sensor
 import esphome.config_validation as cv
 from esphome.const import DEVICE_CLASS_POWER, ICON_EMPTY, UNIT_WATT
 
-from . import CONF_SOYOSOURCE_VIRTUAL_METER_ID, SoyosourceVirtualMeter
+from . import (
+    CONF_SOYOSOURCE_VIRTUAL_METER_COMPONENT_SCHEMA,
+    CONF_SOYOSOURCE_VIRTUAL_METER_ID,
+)
 
 DEPENDENCIES = ["soyosource_virtual_meter"]
 
 CONF_POWER_DEMAND = "power_demand"
 
 # pylint: disable=too-many-function-args
-CONFIG_SCHEMA = cv.Schema(
+CONFIG_SCHEMA = CONF_SOYOSOURCE_VIRTUAL_METER_COMPONENT_SCHEMA.extend(
     {
-        cv.GenerateID(CONF_SOYOSOURCE_VIRTUAL_METER_ID): cv.use_id(
-            SoyosourceVirtualMeter
-        ),
         cv.Optional(CONF_POWER_DEMAND): sensor.sensor_schema(
             unit_of_measurement=UNIT_WATT,
             icon=ICON_EMPTY,

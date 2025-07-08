@@ -3,7 +3,10 @@ from esphome.components import text_sensor
 import esphome.config_validation as cv
 from esphome.const import CONF_ID
 
-from . import CONF_SOYOSOURCE_VIRTUAL_METER_ID, SoyosourceVirtualMeter
+from . import (
+    CONF_SOYOSOURCE_VIRTUAL_METER_COMPONENT_SCHEMA,
+    CONF_SOYOSOURCE_VIRTUAL_METER_ID,
+)
 
 DEPENDENCIES = ["soyosource_virtual_meter"]
 
@@ -17,11 +20,8 @@ TEXT_SENSORS = [
     CONF_OPERATION_MODE,
 ]
 
-CONFIG_SCHEMA = cv.Schema(
+CONFIG_SCHEMA = CONF_SOYOSOURCE_VIRTUAL_METER_COMPONENT_SCHEMA.extend(
     {
-        cv.GenerateID(CONF_SOYOSOURCE_VIRTUAL_METER_ID): cv.use_id(
-            SoyosourceVirtualMeter
-        ),
         cv.Optional(CONF_OPERATION_MODE): text_sensor.text_sensor_schema(
             text_sensor.TextSensor,
             icon=ICON_OPERATION_MODE,
