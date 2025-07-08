@@ -3,7 +3,7 @@ from esphome.components import binary_sensor
 import esphome.config_validation as cv
 from esphome.const import CONF_ID
 
-from . import CONF_SOYOSOURCE_INVERTER_ID, SoyosourceInverter
+from . import CONF_SOYOSOURCE_INVERTER_COMPONENT_SCHEMA, CONF_SOYOSOURCE_INVERTER_ID
 
 DEPENDENCIES = ["soyosource_inverter"]
 
@@ -15,9 +15,8 @@ BINARY_SENSORS = [
     CONF_FAN_RUNNING,
 ]
 
-CONFIG_SCHEMA = cv.Schema(
+CONFIG_SCHEMA = CONF_SOYOSOURCE_INVERTER_COMPONENT_SCHEMA.extend(
     {
-        cv.GenerateID(CONF_SOYOSOURCE_INVERTER_ID): cv.use_id(SoyosourceInverter),
         cv.Optional(CONF_FAN_RUNNING): binary_sensor.binary_sensor_schema(
             icon="mdi:fan"
         ),
