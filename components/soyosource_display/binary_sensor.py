@@ -3,7 +3,7 @@ from esphome.components import binary_sensor
 import esphome.config_validation as cv
 from esphome.const import CONF_ID
 
-from . import CONF_SOYOSOURCE_DISPLAY_ID, SoyosourceDisplay
+from . import CONF_SOYOSOURCE_DISPLAY_ID, SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA
 
 DEPENDENCIES = ["soyosource_display"]
 
@@ -17,9 +17,8 @@ BINARY_SENSORS = [
     CONF_LIMITER_CONNECTED,
 ]
 
-CONFIG_SCHEMA = cv.Schema(
+CONFIG_SCHEMA = SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA.extend(
     {
-        cv.GenerateID(CONF_SOYOSOURCE_DISPLAY_ID): cv.use_id(SoyosourceDisplay),
         cv.Optional(CONF_FAN_RUNNING): binary_sensor.binary_sensor_schema(
             icon="mdi:fan"
         ),

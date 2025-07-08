@@ -4,8 +4,8 @@ import esphome.config_validation as cv
 from esphome.const import CONF_ID, CONF_RESTORE_MODE
 
 from .. import (
-    CONF_SOYOSOURCE_VIRTUAL_METER_COMPONENT_SCHEMA,
     CONF_SOYOSOURCE_VIRTUAL_METER_ID,
+    SOYOSOURCE_VIRTUAL_METER_COMPONENT_SCHEMA,
     soyosource_virtual_meter_ns,
 )
 
@@ -38,7 +38,7 @@ RESTORE_MODES = {
     "ALWAYS_ON": SoyosourceSwitchRestoreMode.SOYOSOURCE_SWITCH_ALWAYS_ON,
 }
 
-CONFIG_SCHEMA = CONF_SOYOSOURCE_VIRTUAL_METER_COMPONENT_SCHEMA.extend(
+CONFIG_SCHEMA = SOYOSOURCE_VIRTUAL_METER_COMPONENT_SCHEMA.extend(
     {
         cv.Optional(CONF_MANUAL_MODE): switch.switch_schema(
             SoyosourceSwitch,

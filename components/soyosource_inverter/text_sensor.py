@@ -3,7 +3,7 @@ from esphome.components import text_sensor
 import esphome.config_validation as cv
 from esphome.const import CONF_ID
 
-from . import CONF_SOYOSOURCE_INVERTER_COMPONENT_SCHEMA, CONF_SOYOSOURCE_INVERTER_ID
+from . import CONF_SOYOSOURCE_INVERTER_ID, SOYOSOURCE_INVERTER_COMPONENT_SCHEMA
 
 DEPENDENCIES = ["soyosource_inverter"]
 
@@ -17,7 +17,7 @@ TEXT_SENSORS = [
     CONF_OPERATION_STATUS,
 ]
 
-CONFIG_SCHEMA = CONF_SOYOSOURCE_INVERTER_COMPONENT_SCHEMA.extend(
+CONFIG_SCHEMA = SOYOSOURCE_INVERTER_COMPONENT_SCHEMA.extend(
     {
         cv.Optional(CONF_OPERATION_STATUS): text_sensor.text_sensor_schema(
             text_sensor.TextSensor, icon=ICON_OPERATION_STATUS

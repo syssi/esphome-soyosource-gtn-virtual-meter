@@ -25,7 +25,7 @@ from esphome.const import (
     UNIT_WATT,
 )
 
-from . import CONF_SOYOSOURCE_DISPLAY_ID, SoyosourceDisplay
+from . import CONF_SOYOSOURCE_DISPLAY_ID, SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA
 
 DEPENDENCIES = ["soyosource_display"]
 
@@ -60,9 +60,8 @@ SENSORS = [
 ]
 
 # pylint: disable=too-many-function-args
-CONFIG_SCHEMA = cv.Schema(
+CONFIG_SCHEMA = SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA.extend(
     {
-        cv.GenerateID(CONF_SOYOSOURCE_DISPLAY_ID): cv.use_id(SoyosourceDisplay),
         cv.Optional(CONF_ERROR_BITMASK): sensor.sensor_schema(
             unit_of_measurement=UNIT_EMPTY,
             icon=ICON_ERROR_BITMASK,
