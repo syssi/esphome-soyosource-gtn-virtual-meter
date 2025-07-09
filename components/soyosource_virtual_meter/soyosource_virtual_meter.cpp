@@ -26,7 +26,11 @@ void SoyosourceVirtualMeter::setup() {
 void SoyosourceVirtualMeter::dump_config() {
   ESP_LOGCONFIG(TAG, "SoyosourceVirtualMeter:");
   ESP_LOGCONFIG(TAG, "  Address: 0x%02X", this->address_);
+
   LOG_SENSOR("", "Power Demand", this->power_demand_sensor_);
+  LOG_SENSOR("", "Operation Status", this->operation_status_sensor_);
+
+  LOG_TEXT_SENSOR("", "Operation Mode", this->operation_mode_text_sensor_);
 }
 
 void SoyosourceVirtualMeter::update() {
