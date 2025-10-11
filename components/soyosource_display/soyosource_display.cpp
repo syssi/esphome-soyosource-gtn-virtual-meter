@@ -455,7 +455,7 @@ void SoyosourceDisplay::dump_config() {
   LOG_TEXT_SENSOR("", "Errors", this->errors_text_sensor_);
   LOG_SENSOR("", "Operation Mode ID", this->operation_mode_id_sensor_);
   LOG_TEXT_SENSOR("", "Operation Mode", this->operation_mode_text_sensor_);
-  LOG_TEXT_SENSOR("", "Operation Status ID", this->operation_status_id_sensor_);
+  LOG_SENSOR("", "Operation Status ID", this->operation_status_id_sensor_);
   LOG_TEXT_SENSOR("", "Operation Status", this->operation_status_text_sensor_);
   LOG_SENSOR("", "Battery Voltage", this->battery_voltage_sensor_);
   LOG_SENSOR("", "Battery Current", this->battery_current_sensor_);
