@@ -17,6 +17,7 @@ ESPHome component to simulate the current clamp to control the Soyosource GTN120
 * GTN-1200LIM48, GTN-1200LIM72, GTN-1200LIM96
 * GTN-1000LIM24W, GTN-1000LIM36W, GTN-1000LIM48W, GTN-1000LIM72W, GTN-1000LIM96W
 * GTN-1200LIM48W, GTN-1200LIM72W, GTN-1200LIM96W
+* GTN-1500LIM24W, GTN-2000LIM48W
 
 It looks like there is no GTW (waterproof) version of the device with limiter / RS485 support.
 
