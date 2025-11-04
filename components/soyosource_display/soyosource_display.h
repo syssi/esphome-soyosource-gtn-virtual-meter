@@ -135,6 +135,7 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
   void on_soyosource_settings_data_(const std::vector<uint8_t> &data);
   void on_ms51_status_data_(const std::vector<uint8_t> &data);
   void on_ms51_settings_data_(const std::vector<uint8_t> &data);
+  void on_ms51_extended_settings_data_(const std::vector<uint8_t> &data);
   bool parse_soyosource_display_byte_(uint8_t byte);
   void publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state);
   void publish_state_(number::Number *number, float value);
