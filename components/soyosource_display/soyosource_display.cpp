@@ -13,12 +13,15 @@ static const uint8_t SOF_MS51_RESPONSE = 0x5A;
 
 static const uint8_t SOF_SOYO_RESPONSE_LEN = 15;
 static const uint8_t SOF_MS51_RESPONSE_LEN = 17;
-static const uint8_t SOF_MS51_EXTENDED_RESPONSE_LEN = 25;
+static const uint8_t SOF_MS51_V2_RESPONSE_LEN = 25;
 
 static const uint8_t STATUS_COMMAND = 0x01;
 static const uint8_t SETTINGS_COMMAND = 0x03;
 static const uint8_t REBOOT_COMMAND = 0x11;
 static const uint8_t WRITE_SETTINGS_COMMAND = 0x0B;
+
+static const uint8_t FRAME_TYPE_MS51_V2_SETTINGS = 0x17;
+static const uint8_t FRAME_TYPE_MS51_V2_STATUS = 0x19;
 
 static const uint8_t ERRORS_SIZE = 8;
 static const char *const ERRORS[ERRORS_SIZE] = {
@@ -93,19 +96,19 @@ bool SoyosourceDisplay::parse_soyosource_display_byte_(uint8_t byte) {
   // Settings request     >>> 0x55 0x03 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xFC
   // Settings response    <<< 0x5A 0x01 0xD3 0x02 0xD4 0x30 0x31 0x2F 0x00 0xE7 0x64 0x5A 0x00 0x06 0x37 0x5A 0x89
   //
-  // Extended MS51 response (25 bytes with frame type indicator)
+  // V2 MS51 response (25 bytes with frame type indicator)
   //
-  // Status request           >>> 0x55 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xFE
-  // Status response (0x19)   <<< 0x5A 0x19 0x51 0x42 0x00 0xED 0x00 0x00 0x00 0xE3 0x32 0x00 0x00 0x00 0x03 0x16 0x16
-  //                              0x20 0x19 0x34 0x00 0x00 0x00 0x1B 0x9A
+  // Status request                >>> 0x55 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xFE
+  // Status response (v2, 0x19)    <<< 0x5A 0x19 0x51 0x42 0x00 0xED 0x00 0x00 0x00 0xE3 0x32 0x00 0x00 0x00 0x03 0x16 0x16
+  //                                   0x20 0x19 0x34 0x00 0x00 0x00 0x1B 0x9A
   //
-  // Settings request         >>> 0x55 0x03 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xFC
-  // Settings response (0x17) <<< 0x5A 0x17 0xD3 0x42 0xD7 0x18 0x1B 0x19 0x19 0x08 0x24 0x05 0x00 0x0A 0x1A 0x2D
-  //                              0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x15
+  // Settings request              >>> 0x55 0x03 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xFC
+  // Settings response (v2, 0x17)  <<< 0x5A 0x17 0xD3 0x42 0xD7 0x18 0x1B 0x19 0x19 0x08 0x24 0x05 0x00 0x0A 0x1A 0x2D
+  //                                   0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x15
   //
   if (raw[0] == SOF_MS51_RESPONSE && at >= 1) {
-    if (raw[1] == 0x17 || raw[1] == 0x19) {
-      frame_len = SOF_MS51_EXTENDED_RESPONSE_LEN;
+    if (raw[1] == FRAME_TYPE_MS51_V2_SETTINGS || raw[1] == FRAME_TYPE_MS51_V2_STATUS) {
+      frame_len = SOF_MS51_V2_RESPONSE_LEN;
     } else {
       frame_len = SOF_MS51_RESPONSE_LEN;
     }
@@ -135,7 +138,7 @@ bool SoyosourceDisplay::parse_soyosource_display_byte_(uint8_t byte) {
 
 void SoyosourceDisplay::on_soyosource_display_data_(const uint8_t &function, const std::vector<uint8_t> &data) {
   if (data.size() != SOF_SOYO_RESPONSE_LEN && data.size() != SOF_MS51_RESPONSE_LEN &&
-      data.size() != SOF_MS51_EXTENDED_RESPONSE_LEN) {
+      data.size() != SOF_MS51_V2_RESPONSE_LEN) {
     ESP_LOGW(TAG, "Invalid frame size!");
     return;
   }
@@ -144,8 +147,8 @@ void SoyosourceDisplay::on_soyosource_display_data_(const uint8_t &function, con
   if (response_source == SOF_MS51_RESPONSE) {
     uint8_t frame_type = data[1];
 
-    if (frame_type == 0x17) {
-      this->on_ms51_extended_settings_data_(data);
+    if (frame_type == FRAME_TYPE_MS51_V2_SETTINGS) {
+      this->on_ms51_v2_settings_data_(data);
       return;
     }
 
@@ -155,8 +158,8 @@ void SoyosourceDisplay::on_soyosource_display_data_(const uint8_t &function, con
         this->send_command(SETTINGS_COMMAND);
         return;
       case SETTINGS_COMMAND:
-        if (frame_type == 0x19) {
-          ESP_LOGW(TAG, "Unexpected settings function (0x03) with 0x19 frame type");
+        if (frame_type == FRAME_TYPE_MS51_V2_STATUS) {
+          ESP_LOGW(TAG, "Unexpected settings function (0x03) with status frame type");
         }
         this->on_ms51_settings_data_(data);
         return;
@@ -406,18 +409,18 @@ void SoyosourceDisplay::on_ms51_settings_data_(const std::vector<uint8_t> &data)
   // 16    1   0x8A                   Checksum
 }
 
-void SoyosourceDisplay::on_ms51_extended_settings_data_(const std::vector<uint8_t> &data) {
-  ESP_LOGI(TAG, "Extended Settings (0x17, %d bytes):", data.size());
+void SoyosourceDisplay::on_ms51_v2_settings_data_(const std::vector<uint8_t> &data) {
+  ESP_LOGI(TAG, "V2 Settings (%d bytes):", data.size());
   ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
   if (data[4] == 0x00 && data[5] == 0x00) {
-    ESP_LOGD(TAG, "Empty extended settings frame rejected");
+    ESP_LOGD(TAG, "Empty V2 settings frame rejected");
     return;
   }
 
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
   // 0     1   0x5A                   Header
-  // 1     1   0x17                   Frame type (Extended SETTINGS)
+  // 1     1   0x17                   Frame type
   // 2     1   0xD3                   Operation mode (High nibble), Frame function (Low nibble)
   uint8_t operation_mode_setting = this->operation_mode_to_operation_mode_setting_(data[2] >> 4);
   ESP_LOGI(TAG, "  Operation mode setting: %d (0x%02X)", operation_mode_setting, operation_mode_setting);
@@ -480,8 +483,8 @@ void SoyosourceDisplay::on_ms51_extended_settings_data_(const std::vector<uint8_
   // 15    1   0x2D                   Unknown
   ESP_LOGV(TAG, "  Unknown (byte 15): 0x%02X", data[15]);
 
-  // 16-23     0x00...                Extended data (8 bytes, all zeros in samples)
-  ESP_LOGV(TAG, "  Extended data: %s", format_hex_pretty(&data[16], 8).c_str());
+  // 16-23     0x00...                V2 data (8 bytes, all zeros in samples)
+  ESP_LOGV(TAG, "  V2 data: %s", format_hex_pretty(&data[16], 8).c_str());
 
   // 24    1   0x15                   Checksum
 }
