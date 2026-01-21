@@ -58,7 +58,7 @@ bool SoyosourceModbus::parse_soyosource_modbus_byte_(uint8_t byte) {
   if (at < 4 + 10)
     return true;
 
-  ESP_LOGVV(TAG, "RX <- %s", format_hex_pretty(raw, at + 1).c_str());
+  ESP_LOGVV(TAG, "RX <- %s", format_hex_pretty(raw, at + 1).c_str());  // NOLINT
   ESP_LOGVV(TAG, "CRC: 0x%02X", raw[14]);
 
   std::vector<uint8_t> data(this->rx_buffer_.begin() + 4, this->rx_buffer_.begin() + 4 + 10);
