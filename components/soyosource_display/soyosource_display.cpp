@@ -35,6 +35,12 @@ static const char *const ERRORS[ERRORS_SIZE] = {
     "Reserved (Bit 8)",     // 1000 0000
 };
 
+static std::string format_unknown_hex(uint8_t value) {
+  char buf[16];
+  snprintf(buf, sizeof(buf), "Unknown (0x%02X)", value);
+  return buf;
+}
+
 void SoyosourceDisplay::loop() {
   const uint32_t now = millis();
 
@@ -771,7 +777,7 @@ std::string SoyosourceDisplay::wifi_version_operation_mode_to_string_(const uint
   }
 
   ESP_LOGW(TAG, "  Operation mode: Unknown (%d)", operation_mode);
-  return str_snprintf("Unknown (0x%02X)", 15, operation_mode);
+  return format_unknown_hex(operation_mode);
 }
 
 std::string SoyosourceDisplay::display_version_operation_mode_to_string_(const uint8_t &operation_mode) {
@@ -807,7 +813,7 @@ std::string SoyosourceDisplay::display_version_operation_mode_to_string_(const u
   }
 
   ESP_LOGW(TAG, "  Operation mode: Unknown (%d)", operation_mode);
-  return str_snprintf("Unknown (0x%02X)", 15, operation_mode);
+  return format_unknown_hex(operation_mode);
 }
 
 uint8_t SoyosourceDisplay::operation_mode_to_operation_mode_setting_(const uint8_t &operation_mode) {
@@ -846,7 +852,7 @@ std::string SoyosourceDisplay::device_type_to_string_(const uint8_t &device_type
   }
 
   ESP_LOGW(TAG, "  Device type: Unknown (%d)", device_type);
-  return str_snprintf("Unknown (0x%02X)", 15, device_type);
+  return format_unknown_hex(device_type);
 }
 
 std::string SoyosourceDisplay::error_bits_to_string_(const uint8_t &mask) {
