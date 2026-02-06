@@ -23,6 +23,12 @@ static const char *const OPERATION_STATUS[OPERATION_STATUS_SIZE] = {
     "Unknown (0x12)",          // 0x12
 };
 
+static std::string format_unknown_hex(uint8_t value) {
+  char buf[16];
+  snprintf(buf, sizeof(buf), "Unknown (0x%02X)", value);
+  return buf;
+}
+
 void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &data) {
   if (data.size() != 10) {
     ESP_LOGW(TAG, "'%s': Invalid status frame length!", this->get_modbus_name());
@@ -86,8 +92,7 @@ void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &d
   if (raw_operation_status < OPERATION_STATUS_SIZE) {
     this->publish_state_(this->operation_status_text_sensor_, OPERATION_STATUS[raw_operation_status]);
   } else {
-    this->publish_state_(this->operation_status_text_sensor_,
-                         str_snprintf("Unknown (0x%02X)", 15, raw_operation_status));
+    this->publish_state_(this->operation_status_text_sensor_, format_unknown_hex(raw_operation_status));
   }
 
   this->no_response_count_ = 0;
