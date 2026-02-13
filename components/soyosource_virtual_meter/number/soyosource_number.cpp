@@ -42,6 +42,9 @@ void SoyosourceNumber::apply_and_publish_(float value) {
     case 0x03:
       this->parent_->set_power_demand_divider((uint8_t) value);
       break;
+    case 0x04:
+      this->parent_->set_power_demand_compensation_timeout_ms((uint16_t) value);
+      break;
   }
 
   this->publish_state(value);

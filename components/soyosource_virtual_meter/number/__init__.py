@@ -10,12 +10,14 @@ from esphome.const import (
     CONF_STEP,
     UNIT_EMPTY,
     UNIT_WATT,
+    UNIT_MILLISECOND,
 )
 
 from .. import (
     CONF_BUFFER,
     CONF_POWER_DEMAND_DIVIDER,
     CONF_SOYOSOURCE_VIRTUAL_METER_ID,
+    CONF_MAX_POWER_SENSOR_LATENCY_MS,
     DEFAULT_BUFFER,
     DEFAULT_MAX_BUFFER,
     DEFAULT_MAX_POWER_DEMAND,
@@ -24,6 +26,9 @@ from .. import (
     DEFAULT_MIN_POWER_DEMAND,
     DEFAULT_MIN_POWER_DEMAND_DIVIDER,
     DEFAULT_POWER_DEMAND_DIVIDER,
+    DEFAULT_MAX_POWER_SENSOR_LATENCY_MS,
+    DEFAULT_MIN_MAX_POWER_SENSOR_LATENCY_MS,
+    DEFAULT_MAX_MAX_POWER_SENSOR_LATENCY_MS,
     SoyosourceVirtualMeter,
     soyosource_virtual_meter_ns,
 )
@@ -40,12 +45,14 @@ ICON_BUFFER = "mdi:vector-difference"
 ICON_MANUAL_POWER_DEMAND = "mdi:home-lightning-bolt-outline"
 ICON_MAX_POWER_DEMAND = "mdi:transmission-tower-import"
 ICON_POWER_DEMAND_DIVIDER = "mdi:chart-arc"
+ICON_POWER_SENSOR_LATENCY = "mdi:timer-sync-outline"
 
 NUMBERS = {
     CONF_MANUAL_POWER_DEMAND: 0x00,
     CONF_MAX_POWER_DEMAND: 0x01,
     CONF_BUFFER: 0x02,
     CONF_POWER_DEMAND_DIVIDER: 0x03,
+    CONF_MAX_POWER_SENSOR_LATENCY_MS: 0x04,
 }
 
 SoyosourceNumber = soyosource_virtual_meter_ns.class_(
@@ -156,6 +163,31 @@ CONFIG_SCHEMA = cv.Schema(
                     cv.Optional(CONF_STEP, default=DEFAULT_STEP): cv.float_,
                     cv.Optional(
                         CONF_INITIAL_VALUE, default=DEFAULT_POWER_DEMAND_DIVIDER
+                    ): cv.float_,
+                    cv.Optional(CONF_RESTORE_VALUE, default=False): cv.boolean,
+                }
+            )
+            .extend(cv.COMPONENT_SCHEMA),
+            validate_min_max,
+            validate,
+        ),
+        cv.Optional(CONF_MAX_POWER_SENSOR_LATENCY_MS): cv.All(
+            number.number_schema(
+                SoyosourceNumber,
+                icon=ICON_POWER_SENSOR_LATENCY,
+                unit_of_measurement=UNIT_MILLISECOND,
+            )
+            .extend(
+                {
+                    cv.Optional(
+                        CONF_MIN_VALUE, default=DEFAULT_MIN_MAX_POWER_SENSOR_LATENCY_MS
+                    ): cv.float_,
+                    cv.Optional(
+                        CONF_MAX_VALUE, default=DEFAULT_MAX_MAX_POWER_SENSOR_LATENCY_MS
+                    ): cv.float_,
+                    cv.Optional(CONF_STEP, default=DEFAULT_STEP): cv.float_,
+                    cv.Optional(
+                        CONF_INITIAL_VALUE, default=DEFAULT_MAX_POWER_SENSOR_LATENCY_MS
                     ): cv.float_,
                     cv.Optional(CONF_RESTORE_VALUE, default=False): cv.boolean,
                 }

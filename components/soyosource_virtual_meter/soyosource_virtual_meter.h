@@ -5,7 +5,7 @@
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/switch/switch.h"
 #include "esphome/components/text_sensor/text_sensor.h"
-#include "esphome/components/soyosource_modbus/soyosource_modbus.h"
+#include "../soyosource_modbus/soyosource_modbus.h"
 
 namespace esphome {
 namespace soyosource_virtual_meter {
@@ -47,6 +47,12 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   void set_power_demand_divider_number(number::Number *power_demand_divider_number) {
     power_demand_divider_number_ = power_demand_divider_number;
   }
+  void set_max_power_sensor_latency_ms_number(number::Number *max_power_sensor_latency_ms_number) {
+    this->power_demand_compensation_timeout_ms_number_ = max_power_sensor_latency_ms_number;
+  }
+  void set_power_demand_compensation_timeout_ms(uint16_t power_demand_compensation_timeout_ms) {
+    this->power_demand_compensation_timeout_ms_ = power_demand_compensation_timeout_ms;
+  }
 
   void set_manual_mode_switch(switch_::Switch *manual_mode_switch) { manual_mode_switch_ = manual_mode_switch; }
   void set_emergency_power_off_switch(switch_::Switch *emergency_power_off_switch) {
@@ -73,6 +79,7 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   number::Number *manual_power_demand_number_;
   number::Number *max_power_demand_number_;
   number::Number *power_demand_divider_number_;
+  number::Number *power_demand_compensation_timeout_ms_number_;
 
   sensor::Sensor *power_sensor_;
   sensor::Sensor *operation_status_sensor_;
@@ -94,6 +101,10 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   uint32_t last_power_demand_received_{0};
   uint16_t last_power_demand_{0};
 
+  int16_t power_demand_compensation_{0};
+  uint32_t power_demand_compensation_timestamp_;
+  uint16_t power_demand_compensation_timeout_ms_{5000};
+
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
   bool inactivity_timeout_();
@@ -102,6 +113,7 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   int16_t calculate_power_demand_negative_measurements_(int16_t consumption, uint16_t last_power_demand);
   int16_t calculate_power_demand_restart_on_crossing_zero_(int16_t consumption, uint16_t last_power_demand);
   int16_t calculate_power_demand_oem_(int16_t consumption);
+  void reset_power_demand_compensation_(int16_t importing_now);
 };
 
 }  // namespace soyosource_virtual_meter
