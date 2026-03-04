@@ -171,13 +171,13 @@ void SoyosourceInverterEmulator::on_wifi_version_data_(const uint8_t &function, 
       this->settings_counter_++;
       break;
     case WRITE_SETTINGS_COMMAND:
-      ESP_LOGI(TAG, "Write settings: %s", format_hex_pretty(&data.front(), data.size()).c_str());
+      ESP_LOGI(TAG, "Write settings: %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
       break;
     case REBOOT_COMMAND:
       ESP_LOGI(TAG, "Reboot command received");
       break;
     default:
-      ESP_LOGW(TAG, "Unhandled request received: %s", format_hex_pretty(&data.front(), data.size()).c_str());
+      ESP_LOGW(TAG, "Unhandled request received: %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
   }
 }
 
@@ -268,13 +268,13 @@ void SoyosourceInverterEmulator::on_display_version_data_(const uint8_t &functio
       this->settings_counter_++;
       break;
     case WRITE_SETTINGS_COMMAND:
-      ESP_LOGI(TAG, "Write settings: %s", format_hex_pretty(&data.front(), data.size()).c_str());
+      ESP_LOGI(TAG, "Write settings: %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
       break;
     case REBOOT_COMMAND:
       ESP_LOGI(TAG, "Reboot command received");
       break;
     default:
-      ESP_LOGW(TAG, "Unhandled request received: %s", format_hex_pretty(&data.front(), data.size()).c_str());
+      ESP_LOGW(TAG, "Unhandled request received: %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
   }
 }
 

@@ -21,7 +21,7 @@ interval:
     then:
       - http_request.get:
           url: ${shelly_3em_url}
-          headers:
+          request_headers:
             Content-Type: application/json
           capture_response: true
           max_response_buffer_size: 2000
