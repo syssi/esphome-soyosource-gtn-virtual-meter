@@ -29,7 +29,8 @@ SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA = cv.Schema(
     }
 )
 
-CONFIG_SCHEMA = (
+CONFIG_SCHEMA = cv.All(
+    cv.require_esphome_version(2024, 6, 0),
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(SoyosourceDisplay),
