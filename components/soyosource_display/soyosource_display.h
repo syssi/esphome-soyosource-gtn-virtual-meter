@@ -99,31 +99,31 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
  protected:
   ProtocolVersion protocol_version_{SOYOSOURCE_WIFI_VERSION};
 
-  binary_sensor::BinarySensor *fan_running_binary_sensor_;
-  binary_sensor::BinarySensor *limiter_connected_binary_sensor_;
+  binary_sensor::BinarySensor *fan_running_binary_sensor_{nullptr};
+  binary_sensor::BinarySensor *limiter_connected_binary_sensor_{nullptr};
 
-  number::Number *start_voltage_number_;
-  number::Number *shutdown_voltage_number_;
-  number::Number *output_power_limit_number_;
-  number::Number *start_delay_number_;
+  number::Number *start_voltage_number_{nullptr};
+  number::Number *shutdown_voltage_number_{nullptr};
+  number::Number *output_power_limit_number_{nullptr};
+  number::Number *start_delay_number_{nullptr};
 
-  select::Select *operation_mode_select_;
+  select::Select *operation_mode_select_{nullptr};
 
-  sensor::Sensor *error_bitmask_sensor_;
-  sensor::Sensor *operation_mode_id_sensor_;
-  sensor::Sensor *operation_status_id_sensor_;
-  sensor::Sensor *battery_voltage_sensor_;
-  sensor::Sensor *battery_current_sensor_;
-  sensor::Sensor *battery_power_sensor_;
-  sensor::Sensor *ac_voltage_sensor_;
-  sensor::Sensor *ac_frequency_sensor_;
-  sensor::Sensor *temperature_sensor_;
-  sensor::Sensor *total_energy_sensor_;
-  sensor::Sensor *output_power_sensor_;
+  sensor::Sensor *error_bitmask_sensor_{nullptr};
+  sensor::Sensor *operation_mode_id_sensor_{nullptr};
+  sensor::Sensor *operation_status_id_sensor_{nullptr};
+  sensor::Sensor *battery_voltage_sensor_{nullptr};
+  sensor::Sensor *battery_current_sensor_{nullptr};
+  sensor::Sensor *battery_power_sensor_{nullptr};
+  sensor::Sensor *ac_voltage_sensor_{nullptr};
+  sensor::Sensor *ac_frequency_sensor_{nullptr};
+  sensor::Sensor *temperature_sensor_{nullptr};
+  sensor::Sensor *total_energy_sensor_{nullptr};
+  sensor::Sensor *output_power_sensor_{nullptr};
 
-  text_sensor::TextSensor *operation_mode_text_sensor_;
-  text_sensor::TextSensor *operation_status_text_sensor_;
-  text_sensor::TextSensor *errors_text_sensor_;
+  text_sensor::TextSensor *operation_mode_text_sensor_{nullptr};
+  text_sensor::TextSensor *operation_status_text_sensor_{nullptr};
+  text_sensor::TextSensor *errors_text_sensor_{nullptr};
 
   std::vector<SoyosourceSelectListener> select_listeners_;
   std::vector<uint8_t> rx_buffer_;
