@@ -42,17 +42,17 @@ class SoyosourceInverter : public PollingComponent, public soyosource_modbus::So
   void dump_config() override;
 
  protected:
-  binary_sensor::BinarySensor *fan_running_binary_sensor_;
+  binary_sensor::BinarySensor *fan_running_binary_sensor_{nullptr};
 
-  sensor::Sensor *operation_status_id_sensor_;
-  sensor::Sensor *battery_voltage_sensor_;
-  sensor::Sensor *battery_current_sensor_;
-  sensor::Sensor *battery_power_sensor_;
-  sensor::Sensor *ac_voltage_sensor_;
-  sensor::Sensor *ac_frequency_sensor_;
-  sensor::Sensor *temperature_sensor_;
+  sensor::Sensor *operation_status_id_sensor_{nullptr};
+  sensor::Sensor *battery_voltage_sensor_{nullptr};
+  sensor::Sensor *battery_current_sensor_{nullptr};
+  sensor::Sensor *battery_power_sensor_{nullptr};
+  sensor::Sensor *ac_voltage_sensor_{nullptr};
+  sensor::Sensor *ac_frequency_sensor_{nullptr};
+  sensor::Sensor *temperature_sensor_{nullptr};
 
-  text_sensor::TextSensor *operation_status_text_sensor_;
+  text_sensor::TextSensor *operation_status_text_sensor_{nullptr};
 
   uint8_t no_response_count_ = 0;
 
