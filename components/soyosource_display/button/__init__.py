@@ -30,7 +30,7 @@ CONFIG_SCHEMA = SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA.extend(
         cv.Optional(CONF_RESTART): button.button_schema(
             SoyosourceButton,
             icon=ICON_RESTART,
-        ).extend(cv.COMPONENT_SCHEMA),
+        ),
     }
 )
 
