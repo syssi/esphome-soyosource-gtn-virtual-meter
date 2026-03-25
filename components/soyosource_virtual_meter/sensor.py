@@ -1,7 +1,12 @@
 import esphome.codegen as cg
 from esphome.components import sensor
 import esphome.config_validation as cv
-from esphome.const import DEVICE_CLASS_POWER, ICON_EMPTY, STATE_CLASS_MEASUREMENT, UNIT_WATT
+from esphome.const import (
+    DEVICE_CLASS_POWER,
+    ICON_EMPTY,
+    STATE_CLASS_MEASUREMENT,
+    UNIT_WATT,
+)
 
 from . import (
     CONF_SOYOSOURCE_VIRTUAL_METER_ID,
