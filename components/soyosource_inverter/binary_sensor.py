@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import binary_sensor
 import esphome.config_validation as cv
-from esphome.const import CONF_ID
+from esphome.const import CONF_ID, ENTITY_CATEGORY_DIAGNOSTIC
 
 from . import CONF_SOYOSOURCE_INVERTER_ID, SOYOSOURCE_INVERTER_COMPONENT_SCHEMA
 
@@ -18,7 +18,8 @@ BINARY_SENSORS = [
 CONFIG_SCHEMA = SOYOSOURCE_INVERTER_COMPONENT_SCHEMA.extend(
     {
         cv.Optional(CONF_FAN_RUNNING): binary_sensor.binary_sensor_schema(
-            icon="mdi:fan"
+            icon="mdi:fan",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
     }
 )
