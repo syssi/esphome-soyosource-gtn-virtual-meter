@@ -1,6 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import binary_sensor
 import esphome.config_validation as cv
+from esphome.const import ENTITY_CATEGORY_DIAGNOSTIC
 
 from . import CONF_SOYOSOURCE_DISPLAY_ID, SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA
 
@@ -19,10 +20,12 @@ BINARY_SENSORS = [
 CONFIG_SCHEMA = SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA.extend(
     {
         cv.Optional(CONF_FAN_RUNNING): binary_sensor.binary_sensor_schema(
-            icon="mdi:fan"
+            icon="mdi:fan",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
         cv.Optional(CONF_LIMITER_CONNECTED): binary_sensor.binary_sensor_schema(
-            icon="mdi:connection"
+            icon="mdi:connection",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
     }
 )
