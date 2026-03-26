@@ -8,7 +8,6 @@ from esphome.const import (
     CONF_STEP,
     CONF_UNIT_OF_MEASUREMENT,
     ENTITY_CATEGORY_CONFIG,
-    ICON_EMPTY,
     UNIT_SECOND,
     UNIT_VOLT,
     UNIT_WATT,
@@ -73,7 +72,7 @@ SoyosourceNumber = soyosource_display_ns.class_(
 SOYOSOURCE_NUMBER_SCHEMA = (
     number.number_schema(
         SoyosourceNumber,
-        icon=ICON_EMPTY,
+        icon=None,
         entity_category=ENTITY_CATEGORY_CONFIG,
         unit_of_measurement=UNIT_VOLT,
     )
