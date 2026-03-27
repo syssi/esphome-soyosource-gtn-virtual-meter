@@ -22,7 +22,6 @@ TEXT_SENSORS = [
 CONFIG_SCHEMA = SOYOSOURCE_VIRTUAL_METER_COMPONENT_SCHEMA.extend(
     {
         cv.Optional(CONF_OPERATION_MODE): text_sensor.text_sensor_schema(
-            text_sensor.TextSensor,
             icon=ICON_OPERATION_MODE,
         ),
     }
