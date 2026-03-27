@@ -14,6 +14,7 @@ from . import (
 )
 
 DEPENDENCIES = ["soyosource_virtual_meter"]
+CODEOWNERS = ["@syssi"]
 
 CONF_POWER_DEMAND = "power_demand"
 
