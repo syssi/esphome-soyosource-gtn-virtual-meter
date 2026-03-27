@@ -19,7 +19,7 @@ TEXT_SENSORS = [
 CONFIG_SCHEMA = SOYOSOURCE_INVERTER_COMPONENT_SCHEMA.extend(
     {
         cv.Optional(CONF_OPERATION_STATUS): text_sensor.text_sensor_schema(
-            text_sensor.TextSensor, icon=ICON_OPERATION_STATUS
+            icon=ICON_OPERATION_STATUS
         ),
     }
 )
