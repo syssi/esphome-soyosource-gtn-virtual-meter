@@ -91,25 +91,25 @@ binary_sensor:
   - platform: soyosource_inverter
     soyosource_inverter_id: inverter0
     fan_running:
-      name: "${name} fan running"
+      name: "fan running"
 
 number:
   - platform: soyosource_virtual_meter
     soyosource_virtual_meter_id: virtualmeter0
     buffer:
-      name: "${name} buffer"
+      name: "buffer"
       initial_value: 10
       restore_value: true
     manual_power_demand:
-      name: "${name} manual power demand"
+      name: "manual power demand"
       max_value: 900
     max_power_demand:
-      name: "${name} max power demand"
+      name: "max power demand"
       initial_value: 600
       max_value: 900
       restore_value: true
     power_demand_divider:
-      name: "${name} power demand divider"
+      name: "power demand divider"
       initial_value: 1
       restore_value: true
 
@@ -117,31 +117,31 @@ sensor:
   - platform: soyosource_virtual_meter
     soyosource_virtual_meter_id: virtualmeter0
     power_demand:
-      name: "${name} power demand"
+      name: "power demand"
 
   - platform: soyosource_inverter
     soyosource_inverter_id: inverter0
     operation_status_id:
-      name: "${name} operation status id"
+      name: "operation status id"
       id: operation_status_id0
     battery_voltage:
-      name: "${name} battery voltage"
+      name: "battery voltage"
     battery_current:
-      name: "${name} battery current"
+      name: "battery current"
     battery_power:
-      name: "${name} battery power"
+      name: "battery power"
     ac_voltage:
-      name: "${name} ac voltage"
+      name: "ac voltage"
     ac_frequency:
-      name: "${name} ac frequency"
+      name: "ac frequency"
     temperature:
-      name: "${name} temperature"
+      name: "temperature"
 
   # mqtt subscribe example
   - id: powermeter0
     internal: true
     platform: mqtt_subscribe
-    name: "${name} instantaneous power consumption"
+    name: "instantaneous power consumption"
     topic: "smartmeter/sensor/groundfloor/obis/1-0:16.7.0/255/value"
     accuracy_decimals: 2
     unit_of_measurement: W
@@ -153,7 +153,7 @@ sensor:
 #   # requires the "api" component see above
 #   - platform: homeassistant
 #     id: powermeter0
-#     name: "${name} smartmeter instantaneous power"
+#     name: "smartmeter instantaneous power"
 #     entity_id: sensor.firstfloor_smartmeter_instantaneous_power
 #     filters:
 #       - throttle_average: 15s
@@ -162,19 +162,19 @@ switch:
   - platform: soyosource_virtual_meter
     soyosource_virtual_meter_id: virtualmeter0
     manual_mode:
-      name: "${name} manual mode"
+      name: "manual mode"
       restore_mode: RESTORE_DEFAULT_ON
     emergency_power_off:
-      name: "${name} emergency power off"
+      name: "emergency power off"
       restore_mode: RESTORE_DEFAULT_OFF
 
 text_sensor:
   - platform: soyosource_virtual_meter
     soyosource_virtual_meter_id: virtualmeter0
     operation_mode:
-      name: "${name} limiter operation mode"
+      name: "limiter operation mode"
 
   - platform: soyosource_inverter
     soyosource_inverter_id: inverter0
     operation_status:
-      name: "${name} operation status"
+      name: "operation status"
