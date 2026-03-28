@@ -5,6 +5,7 @@ substitutions:
 
 esphome:
   name: ${name}
+  friendly_name: ${name}
   comment: ${device_description}
   project:
     name: "syssi.esphome-soyosource-gtn-virtual-meter"
@@ -52,31 +53,31 @@ soyosource_display:
 binary_sensor:
   - platform: soyosource_display
     fan_running:
-      name: "${name} fan running"
+      name: "fan running"
     limiter_connected:
-      name: "${name} limiter connected"
+      name: "limiter connected"
 
 button:
   - platform: soyosource_display
     restart:
-      name: "${name} restart"
+      name: "restart"
 
 number:
   - platform: soyosource_display
     start_voltage:
-      name: "${name} start voltage"
+      name: "start voltage"
     shutdown_voltage:
-      name: "${name} shutdown voltage"
+      name: "shutdown voltage"
     # Maximum output power in limiter mode / Output power in constant power mode
     output_power_limit:
-      name: "${name} output power limit"
+      name: "output power limit"
     start_delay:
-      name: "${name} start delay"
+      name: "start delay"
 
 select:
   - platform: soyosource_display
     operation_mode:
-      name: "${name} operation mode"
+      name: "operation mode"
       optionsmap:
         1: "PV"
         2: "Battery Constant Power"
@@ -86,33 +87,33 @@ select:
 sensor:
   - platform: soyosource_display
     error_bitmask:
-      name: "${name} error bitmask"
+      name: "error bitmask"
     operation_mode_id:
-      name: "${name} operation mode id"
+      name: "operation mode id"
     operation_status_id:
-      name: "${name} operation status id"
+      name: "operation status id"
     battery_voltage:
-      name: "${name} battery voltage"
+      name: "battery voltage"
     battery_current:
-      name: "${name} battery current"
+      name: "battery current"
     battery_power:
-      name: "${name} battery power"
+      name: "battery power"
     ac_voltage:
-      name: "${name} ac voltage"
+      name: "ac voltage"
     ac_frequency:
-      name: "${name} ac frequency"
+      name: "ac frequency"
     temperature:
-      name: "${name} temperature"
+      name: "temperature"
     total_energy:
-      name: "${name} total energy"
+      name: "total energy"
     output_power:
-      name: "${name} output power"
+      name: "output power"
 
 text_sensor:
   - platform: soyosource_display
     errors:
-      name: "${name} errors"
+      name: "errors"
     operation_mode:
-      name: "${name} operation mode"
+      name: "operation mode"
     operation_status:
-      name: "${name} operation status"
+      name: "operation status"
