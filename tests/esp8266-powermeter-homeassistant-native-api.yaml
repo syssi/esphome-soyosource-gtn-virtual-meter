@@ -3,6 +3,7 @@ substitutions:
 
 esphome:
   name: ${name}
+  friendly_name: ${name}
 
 esp8266:
   board: d1_mini
