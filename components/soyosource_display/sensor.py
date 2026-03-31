@@ -27,6 +27,11 @@ from esphome.const import (
 
 from . import CONF_SOYOSOURCE_DISPLAY_ID, SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA
 
+try:
+    from esphome.const import CONF_OUTPUT_POWER
+except ImportError:
+    CONF_OUTPUT_POWER = "output_power"
+
 DEPENDENCIES = ["soyosource_display"]
 
 CODEOWNERS = ["@syssi"]
@@ -39,7 +44,6 @@ CONF_ERROR_BITMASK = "error_bitmask"
 CONF_OPERATION_MODE_ID = "operation_mode_id"
 CONF_OPERATION_STATUS_ID = "operation_status_id"
 CONF_TOTAL_ENERGY = "total_energy"
-CONF_OUTPUT_POWER = "output_power"
 
 ICON_ERROR_BITMASK = "mdi:alert-circle-outline"
 ICON_OPERATION_MODE = "mdi:heart-pulse"
@@ -67,7 +71,6 @@ CONFIG_SCHEMA = SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA.extend(
             icon=ICON_ERROR_BITMASK,
             accuracy_decimals=0,
             device_class=DEVICE_CLASS_EMPTY,
-            state_class=STATE_CLASS_MEASUREMENT,
             entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
         cv.Optional(CONF_OPERATION_MODE_ID): sensor.sensor_schema(
