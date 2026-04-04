@@ -23,14 +23,18 @@ PROTOCOL_VERSION_OPTIONS = {
     "SOYOSOURCE_DISPLAY_VERSION": ProtocolVersion.SOYOSOURCE_DISPLAY_VERSION,
 }
 
-CONFIG_SCHEMA = cv.Schema(
-    {
-        cv.GenerateID(): cv.declare_id(SoyosourceInverterEmulator),
-        cv.Optional(CONF_PROTOCOL_VERSION, default="SOYOSOURCE_WIFI_VERSION"): cv.enum(
-            PROTOCOL_VERSION_OPTIONS, upper=True
-        ),
-    }
-).extend(uart.UART_DEVICE_SCHEMA)
+CONFIG_SCHEMA = (
+    cv.Schema(
+        {
+            cv.GenerateID(): cv.declare_id(SoyosourceInverterEmulator),
+            cv.Optional(
+                CONF_PROTOCOL_VERSION, default="SOYOSOURCE_WIFI_VERSION"
+            ): cv.enum(PROTOCOL_VERSION_OPTIONS, upper=True),
+        }
+    )
+    .extend(uart.UART_DEVICE_SCHEMA)
+    .extend(cv.COMPONENT_SCHEMA)
+)
 
 
 async def to_code(config):
