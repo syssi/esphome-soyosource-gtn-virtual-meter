@@ -7,7 +7,7 @@ namespace soyosource_inverter {
 static const char *const TAG = "soyosource_inverter";
 
 static const uint8_t OPERATION_STATUS_SIZE = 13;
-static const char *const OPERATION_STATUS[OPERATION_STATUS_SIZE] = {
+static constexpr const char *const OPERATION_STATUS[OPERATION_STATUS_SIZE] = {
     "Normal",                  // 0x00
     "Startup",                 // 0x01
     "Standby",                 // 0x02
