@@ -24,7 +24,7 @@ static const uint8_t FRAME_TYPE_MS51_V2_SETTINGS = 0x17;
 static const uint8_t FRAME_TYPE_MS51_V2_STATUS = 0x19;
 
 static const uint8_t ERRORS_SIZE = 8;
-static const char *const ERRORS[ERRORS_SIZE] = {
+static constexpr const char *const ERRORS[ERRORS_SIZE] = {
     "Reserved (Bit 1)",     // 0000 0001
     "DC voltage too low",   // 0000 0010
     "DC voltage too high",  // 0000 0100
