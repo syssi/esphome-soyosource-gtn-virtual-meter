@@ -1,0 +1,18 @@
+sensor:
+  - platform: template
+    id: power_sensor
+    update_interval: 60s
+    lambda: "return 0.0f;"
+
+uart:
+  - id: uart_bus
+    baud_rate: 4800
+
+soyosource_modbus:
+  id: modbus_bus
+  uart_id: uart_bus
+
+soyosource_virtual_meter:
+  id: test_vm
+  soyosource_modbus_id: modbus_bus
+  power_id: power_sensor
