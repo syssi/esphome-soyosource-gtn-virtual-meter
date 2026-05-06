@@ -14,7 +14,7 @@ namespace esphome::soyosource_display::testing {
 //   grid_voltage: 247 V                       ac_frequency: 50.0 Hz
 //   temperature: 22.1 °C                      fan_running: false
 static const std::vector<uint8_t> SOYO_STATUS_WIFI_VERSION = {
-    0xA6,  // header
+    0xA6,        // header
     0x03, 0x84,  // output power: 900 W (WiFi version uses bytes 1-2)
     0x91,        // op_mode (high nibble=0x9 → Battery Limit) | function (low nibble=0x1 → STATUS)
     0x40,        // status bitmask: limiter connected (bit 6), no errors

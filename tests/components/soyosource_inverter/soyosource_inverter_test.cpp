@@ -167,5 +167,4 @@ TEST(StartupStatusTest, Temperature) {
   EXPECT_NEAR(temperature.state, 21.7f, 0.001f);
 }
 
-
 }  // namespace esphome::soyosource_inverter::testing

@@ -30,7 +30,7 @@ static const std::vector<uint8_t> MS51_V2_SETTINGS = {
     0x1A,  // unknown
     0x2D,  // unknown
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // V2 data (8 bytes)
-    0x15,  // checksum
+    0x15,                                            // checksum
 };
 
 }  // namespace esphome::soyosource_display::testing
