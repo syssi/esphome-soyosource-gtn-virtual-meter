@@ -1,5 +1,14 @@
 # esphome-soyosource-gtn-virtual-meter
 
+
+Original project from https://github.com/syssi/esphome-soyosource-gtn-virtual-meter but with overshoot compensation, which
+allows to run the inverter with 200ms update interval for the least possible latency.
+
+See https://github.com/syssi/esphome-soyosource-gtn-virtual-meter/pulls for details.
+
+
+Rest of readme is a copy of the original:
+
 ![GitHub actions](https://github.com/syssi/esphome-soyosource-gtn-virtual-meter/actions/workflows/ci.yaml/badge.svg)
 ![GitHub stars](https://img.shields.io/github/stars/syssi/esphome-soyosource-gtn-virtual-meter)
 ![GitHub forks](https://img.shields.io/github/forks/syssi/esphome-soyosource-gtn-virtual-meter)
