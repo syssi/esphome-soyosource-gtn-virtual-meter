@@ -3,9 +3,7 @@
 #include <vector>
 #include "esphome/components/soyosource_inverter/soyosource_inverter.h"
 
-#include "rs485_status_error.h"
-#include "rs485_status_normal.h"
-#include "rs485_status_startup.h"
+#include "rs485_status.h"
 
 namespace esphome::soyosource_inverter::testing {
 
