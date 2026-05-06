@@ -14,6 +14,7 @@ namespace soyosource_display {
 enum ProtocolVersion {
   SOYOSOURCE_WIFI_VERSION,
   SOYOSOURCE_DISPLAY_VERSION,
+  SOYOSOURCE_DISPLAY_AND_WIFI_VERSION,
 };
 
 struct SoyosourceSettingsFrameT {
