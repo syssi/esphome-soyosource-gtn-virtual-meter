@@ -245,6 +245,104 @@ TEST(SoyoSettingsDisplayVersionTest, OperationModeStoredInCurrentSettings) {
   EXPECT_EQ(d.get_current_settings().OperationMode, 0x02);  // BatCP
 }
 
+// ── Soyo (Display + WiFi version) status ─────────────────────────────────────
+
+TEST(SoyoStatusDisplayAndWifiVersionTest, OutputPowerUsesEfficiency) {
+  TestableSoyosourceDisplay d;
+  d.set_protocol(SOYOSOURCE_DISPLAY_AND_WIFI_VERSION);
+  sensor::Sensor output_power, battery_power;
+  d.set_output_power_sensor(&output_power);
+  d.set_battery_power_sensor(&battery_power);
+
+  d.on_soyo_status(SOYO_STATUS_DISPLAY_AND_WIFI_VERSION);
+
+  // bytes 1-2 = 0x0000 → WiFi version would give 0 W; display+wifi applies efficiency
+  // battery_power = 26.3 × 4.3 = 113.09 W; output = × 0.86956
+  EXPECT_NEAR(battery_power.state, 26.3f * 4.3f, 0.01f);
+  EXPECT_NEAR(output_power.state, 26.3f * 4.3f * 0.86956f, 1.0f);
+}
+
+TEST(SoyoStatusDisplayAndWifiVersionTest, BatteryMeasurements) {
+  TestableSoyosourceDisplay d;
+  d.set_protocol(SOYOSOURCE_DISPLAY_AND_WIFI_VERSION);
+  sensor::Sensor battery_voltage, battery_current;
+  d.set_battery_voltage_sensor(&battery_voltage);
+  d.set_battery_current_sensor(&battery_current);
+
+  d.on_soyo_status(SOYO_STATUS_DISPLAY_AND_WIFI_VERSION);
+
+  EXPECT_NEAR(battery_voltage.state, 26.3f, 0.001f);
+  EXPECT_NEAR(battery_current.state, 4.3f, 0.001f);
+}
+
+TEST(SoyoStatusDisplayAndWifiVersionTest, GridMeasurements) {
+  TestableSoyosourceDisplay d;
+  d.set_protocol(SOYOSOURCE_DISPLAY_AND_WIFI_VERSION);
+  sensor::Sensor ac_voltage, ac_frequency;
+  d.set_ac_voltage_sensor(&ac_voltage);
+  d.set_ac_frequency_sensor(&ac_frequency);
+
+  d.on_soyo_status(SOYO_STATUS_DISPLAY_AND_WIFI_VERSION);
+
+  EXPECT_FLOAT_EQ(ac_voltage.state, 233.0f);
+  EXPECT_FLOAT_EQ(ac_frequency.state, 50.0f);
+}
+
+TEST(SoyoStatusDisplayAndWifiVersionTest, Temperature) {
+  TestableSoyosourceDisplay d;
+  d.set_protocol(SOYOSOURCE_DISPLAY_AND_WIFI_VERSION);
+  sensor::Sensor temperature;
+  binary_sensor::BinarySensor fan_running;
+  d.set_temperature_sensor(&temperature);
+  d.set_fan_running_binary_sensor(&fan_running);
+
+  d.on_soyo_status(SOYO_STATUS_DISPLAY_AND_WIFI_VERSION);
+
+  EXPECT_NEAR(temperature.state, 15.4f, 0.001f);
+  EXPECT_FALSE(fan_running.state);
+}
+
+TEST(SoyoStatusDisplayAndWifiVersionTest, OperationModeUsesWifiVersionStrings) {
+  TestableSoyosourceDisplay d;
+  d.set_protocol(SOYOSOURCE_DISPLAY_AND_WIFI_VERSION);
+  sensor::Sensor op_mode_id, op_status_id;
+  text_sensor::TextSensor op_mode_text, op_status_text;
+  d.set_operation_mode_id_sensor(&op_mode_id);
+  d.set_operation_mode_text_sensor(&op_mode_text);
+  d.set_operation_status_id_sensor(&op_status_id);
+  d.set_operation_status_text_sensor(&op_status_text);
+
+  d.on_soyo_status(SOYO_STATUS_DISPLAY_AND_WIFI_VERSION);
+
+  EXPECT_FLOAT_EQ(op_mode_id.state, 9.0f);
+  EXPECT_EQ(op_mode_text.state, "Battery Limit");
+  EXPECT_FLOAT_EQ(op_status_id.state, 0.0f);
+  EXPECT_EQ(op_status_text.state, "Normal");
+}
+
+TEST(SoyoStatusDisplayAndWifiVersionTest, LimiterConnectedAndErrors) {
+  TestableSoyosourceDisplay d;
+  d.set_protocol(SOYOSOURCE_DISPLAY_AND_WIFI_VERSION);
+  binary_sensor::BinarySensor limiter_connected;
+  sensor::Sensor error_bitmask;
+  text_sensor::TextSensor errors_text;
+  d.set_limiter_connected_binary_sensor(&limiter_connected);
+  d.set_error_bitmask_sensor(&error_bitmask);
+  d.set_errors_text_sensor(&errors_text);
+
+  d.on_soyo_status(SOYO_STATUS_DISPLAY_AND_WIFI_VERSION);
+
+  EXPECT_TRUE(limiter_connected.state);
+  EXPECT_FLOAT_EQ(error_bitmask.state, 0.0f);
+  EXPECT_EQ(errors_text.state, "");
+}
+
+TEST(SoyoStatusDisplayAndWifiVersionTest, NullSensorsDoNotCrash) {
+  TestableSoyosourceDisplay d;
+  d.set_protocol(SOYOSOURCE_DISPLAY_AND_WIFI_VERSION);
+  d.on_soyo_status(SOYO_STATUS_DISPLAY_AND_WIFI_VERSION);
+}
+
 // ── MS51 status ───────────────────────────────────────────────────────────────
 
 TEST(Ms51StatusTest, StandbyWithNoLoad) {
