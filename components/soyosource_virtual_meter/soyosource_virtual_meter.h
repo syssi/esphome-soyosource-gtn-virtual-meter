@@ -7,8 +7,7 @@
 #include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/soyosource_modbus/soyosource_modbus.h"
 
-namespace esphome {
-namespace soyosource_virtual_meter {
+namespace esphome::soyosource_virtual_meter {
 
 enum PowerDemandCalculation {
   POWER_DEMAND_CALCULATION_DUMB_OEM_BEHAVIOR,
@@ -104,5 +103,4 @@ class SoyosourceVirtualMeter : public PollingComponent, public soyosource_modbus
   int16_t calculate_power_demand_oem_(int16_t consumption);
 };
 
-}  // namespace soyosource_virtual_meter
-}  // namespace esphome
+}  // namespace esphome::soyosource_virtual_meter

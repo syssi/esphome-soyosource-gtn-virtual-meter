@@ -1,8 +1,7 @@
 #include "soyosource_inverter.h"
 #include "esphome/core/log.h"
 
-namespace esphome {
-namespace soyosource_inverter {
+namespace esphome::soyosource_inverter {
 
 static const char *const TAG = "soyosource_inverter";
 
@@ -158,5 +157,4 @@ void SoyosourceInverter::dump_config() {
   LOG_BINARY_SENSOR("", "Fan Running", this->fan_running_binary_sensor_);
 }
 
-}  // namespace soyosource_inverter
-}  // namespace esphome
+}  // namespace esphome::soyosource_inverter

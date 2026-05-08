@@ -1,8 +1,7 @@
 #include "soyosource_select.h"
 #include "esphome/core/log.h"
 
-namespace esphome {
-namespace soyosource_display {
+namespace esphome::soyosource_display {
 
 static const char *const TAG = "soyosource_display.select";
 
@@ -43,5 +42,4 @@ void SoyosourceSelect::control(const std::string &value) {
   ESP_LOGW(TAG, "Invalid value %s", value.c_str());
 }
 
-}  // namespace soyosource_display
-}  // namespace esphome
+}  // namespace esphome::soyosource_display

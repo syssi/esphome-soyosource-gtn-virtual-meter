@@ -8,8 +8,7 @@
 #include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/uart/uart.h"
 
-namespace esphome {
-namespace soyosource_display {
+namespace esphome::soyosource_display {
 
 enum ProtocolVersion {
   SOYOSOURCE_WIFI_VERSION,
@@ -155,5 +154,4 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
   std::string error_bits_to_string_(const uint8_t &mask);
 };
 
-}  // namespace soyosource_display
-}  // namespace esphome
+}  // namespace esphome::soyosource_display

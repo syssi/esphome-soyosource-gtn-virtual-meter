@@ -6,8 +6,7 @@
 #include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/soyosource_modbus/soyosource_modbus.h"
 
-namespace esphome {
-namespace soyosource_inverter {
+namespace esphome::soyosource_inverter {
 
 static const uint8_t NO_RESPONSE_THRESHOLD = 15;
 
@@ -62,5 +61,4 @@ class SoyosourceInverter : public PollingComponent, public soyosource_modbus::So
   void publish_device_offline_();
 };
 
-}  // namespace soyosource_inverter
-}  // namespace esphome
+}  // namespace esphome::soyosource_inverter
