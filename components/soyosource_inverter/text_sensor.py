@@ -1,6 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import text_sensor
 import esphome.config_validation as cv
+from esphome.const import ENTITY_CATEGORY_DIAGNOSTIC
 
 from . import CONF_SOYOSOURCE_INVERTER_ID, SOYOSOURCE_INVERTER_COMPONENT_SCHEMA
 
@@ -19,7 +20,8 @@ TEXT_SENSORS = [
 CONFIG_SCHEMA = SOYOSOURCE_INVERTER_COMPONENT_SCHEMA.extend(
     {
         cv.Optional(CONF_OPERATION_STATUS): text_sensor.text_sensor_schema(
-            icon=ICON_OPERATION_STATUS
+            icon=ICON_OPERATION_STATUS,
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
     }
 )
