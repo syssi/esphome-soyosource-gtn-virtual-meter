@@ -1,8 +1,7 @@
 #include "soyosource_number.h"
 #include "esphome/core/log.h"
 
-namespace esphome {
-namespace soyosource_virtual_meter {
+namespace esphome::soyosource_virtual_meter {
 
 static const char *const TAG = "soyosource_virtual_meter.number";
 
@@ -49,5 +48,4 @@ void SoyosourceNumber::apply_and_publish_(float value) {
 
 void SoyosourceNumber::dump_config() { LOG_NUMBER("", "SoyosourceVirtualMeter Number", this); }
 
-}  // namespace soyosource_virtual_meter
-}  // namespace esphome
+}  // namespace esphome::soyosource_virtual_meter

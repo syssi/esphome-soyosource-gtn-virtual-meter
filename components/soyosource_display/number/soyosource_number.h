@@ -4,8 +4,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/number/number.h"
 
-namespace esphome {
-namespace soyosource_display {
+namespace esphome::soyosource_display {
 
 class SoyosourceDisplay;
 
@@ -22,5 +21,4 @@ class SoyosourceNumber : public number::Number, public Component {
   uint8_t holding_register_;
 };
 
-}  // namespace soyosource_display
-}  // namespace esphome
+}  // namespace esphome::soyosource_display

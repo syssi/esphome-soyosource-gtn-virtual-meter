@@ -4,8 +4,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/switch/switch.h"
 
-namespace esphome {
-namespace soyosource_virtual_meter {
+namespace esphome::soyosource_virtual_meter {
 
 enum SoyosourceSwitchRestoreMode {
   SOYOSOURCE_SWITCH_RESTORE_DEFAULT_OFF,
@@ -30,5 +29,4 @@ class SoyosourceSwitch : public switch_::Switch, public Component {
   SoyosourceSwitchRestoreMode restore_mode_{SOYOSOURCE_SWITCH_RESTORE_DEFAULT_OFF};
 };
 
-}  // namespace soyosource_virtual_meter
-}  // namespace esphome
+}  // namespace esphome::soyosource_virtual_meter

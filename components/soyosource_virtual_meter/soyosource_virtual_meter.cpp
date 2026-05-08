@@ -1,8 +1,7 @@
 #include "soyosource_virtual_meter.h"
 #include "esphome/core/log.h"
 
-namespace esphome {
-namespace soyosource_virtual_meter {
+namespace esphome::soyosource_virtual_meter {
 
 static const char *const TAG = "soyosource_virtual_meter";
 
@@ -205,5 +204,4 @@ void SoyosourceVirtualMeter::publish_state_(text_sensor::TextSensor *text_sensor
   text_sensor->publish_state(state);
 }
 
-}  // namespace soyosource_virtual_meter
-}  // namespace esphome
+}  // namespace esphome::soyosource_virtual_meter

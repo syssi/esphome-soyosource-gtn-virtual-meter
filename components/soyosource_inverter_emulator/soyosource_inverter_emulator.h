@@ -3,8 +3,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 
-namespace esphome {
-namespace soyosource_inverter_emulator {
+namespace esphome::soyosource_inverter_emulator {
 
 enum ProtocolVersion {
   SOYOSOURCE_WIFI_VERSION,
@@ -41,5 +40,4 @@ class SoyosourceInverterEmulator : public uart::UARTDevice, public Component {
   std::string operation_status_to_string_(const uint8_t &operation_status);
 };
 
-}  // namespace soyosource_inverter_emulator
-}  // namespace esphome
+}  // namespace esphome::soyosource_inverter_emulator

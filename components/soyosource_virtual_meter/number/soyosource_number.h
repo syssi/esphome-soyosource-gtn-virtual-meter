@@ -5,8 +5,7 @@
 #include "esphome/components/number/number.h"
 #include "esphome/core/preferences.h"
 
-namespace esphome {
-namespace soyosource_virtual_meter {
+namespace esphome::soyosource_virtual_meter {
 
 class SoyosourceVirtualMeter;
 
@@ -32,5 +31,4 @@ class SoyosourceNumber : public number::Number, public Component {
   ESPPreferenceObject pref_;
 };
 
-}  // namespace soyosource_virtual_meter
-}  // namespace esphome
+}  // namespace esphome::soyosource_virtual_meter

@@ -2,8 +2,7 @@
 #include "esphome/core/log.h"
 #include "esphome/core/helpers.h"
 
-namespace esphome {
-namespace soyosource_inverter_emulator {
+namespace esphome::soyosource_inverter_emulator {
 
 static const char *const TAG = "soyosource_inverter_emulator";
 
@@ -339,5 +338,4 @@ void SoyosourceInverterEmulator::send_settings_(const uint16_t &unknown1, const 
   this->flush();
 }
 
-}  // namespace soyosource_inverter_emulator
-}  // namespace esphome
+}  // namespace esphome::soyosource_inverter_emulator

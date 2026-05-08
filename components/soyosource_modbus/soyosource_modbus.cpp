@@ -2,8 +2,7 @@
 #include "esphome/core/log.h"
 #include "esphome/core/helpers.h"
 
-namespace esphome {
-namespace soyosource_modbus {
+namespace esphome::soyosource_modbus {
 
 static const char *const TAG = "soyosource_modbus";
 
@@ -144,5 +143,4 @@ void SoyosourceModbus::query_status() {
     this->flow_control_pin_->digital_write(false);
 }
 
-}  // namespace soyosource_modbus
-}  // namespace esphome
+}  // namespace esphome::soyosource_modbus

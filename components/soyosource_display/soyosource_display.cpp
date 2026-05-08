@@ -2,8 +2,7 @@
 #include "esphome/core/log.h"
 #include "esphome/core/helpers.h"
 
-namespace esphome {
-namespace soyosource_display {
+namespace esphome::soyosource_display {
 
 static const char *const TAG = "soyosource_display";
 
@@ -908,5 +907,4 @@ void SoyosourceDisplay::publish_state_(text_sensor::TextSensor *text_sensor, con
   text_sensor->publish_state(state);
 }
 
-}  // namespace soyosource_display
-}  // namespace esphome
+}  // namespace esphome::soyosource_display

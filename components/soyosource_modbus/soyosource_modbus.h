@@ -3,8 +3,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 
-namespace esphome {
-namespace soyosource_modbus {
+namespace esphome::soyosource_modbus {
 
 class SoyosourceModbusDevice;
 
@@ -59,5 +58,4 @@ class SoyosourceModbusDevice {
   uint8_t address_;
 };
 
-}  // namespace soyosource_modbus
-}  // namespace esphome
+}  // namespace esphome::soyosource_modbus
