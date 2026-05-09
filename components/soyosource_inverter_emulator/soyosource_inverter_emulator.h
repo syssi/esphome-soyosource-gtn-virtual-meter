@@ -25,7 +25,7 @@ class SoyosourceInverterEmulator : public uart::UARTDevice, public Component {
   uint16_t status_counter_{0};
   uint16_t settings_counter_{0};
 
-  void on_soyosource_inverter_emulator_data_(const uint8_t &function, const std::vector<uint8_t> &data);
+  virtual void on_soyosource_inverter_emulator_data_(const uint8_t &function, const std::vector<uint8_t> &data);
   void on_wifi_version_data_(const uint8_t &function, const std::vector<uint8_t> &data);
   void on_display_version_data_(const uint8_t &function, const std::vector<uint8_t> &data);
   bool parse_soyosource_inverter_emulator_byte_(uint8_t byte);

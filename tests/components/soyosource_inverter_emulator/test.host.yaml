@@ -1,0 +1,7 @@
+uart:
+  - id: uart_bus
+    baud_rate: 4800
+
+soyosource_inverter_emulator:
+  id: test_emulator
+  uart_id: uart_bus
