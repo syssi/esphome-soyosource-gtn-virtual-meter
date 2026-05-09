@@ -15,8 +15,11 @@ class TestableSoyosourceInverterEmulator : public SoyosourceInverterEmulator {
 
   bool feed(const std::vector<uint8_t> &frame) {
     bool result = false;
-    for (uint8_t byte : frame)
+    for (uint8_t byte : frame) {
       result = parse_soyosource_inverter_emulator_byte_(byte);
+      if (!result)
+        rx_buffer_.clear();
+    }
     return result;
   }
 
