@@ -116,7 +116,7 @@ TEST(DisplayVersionTest, WifiFrameTooShortIgnored) {
 TEST(ParserStateTest, BufferResetAfterBadHeader) {
   TestableSoyosourceInverterEmulator emu;
   emu.set_protocol_version(SOYOSOURCE_WIFI_VERSION);
-  emu.parse_soyosource_inverter_emulator_byte_(0xAA);  // bad header -> buffer cleared
+  emu.feed({0xAA});  // bad header -> buffer cleared via feed()
   // After reset, a valid frame starting fresh should work
   emu.feed(wifi_frame(0x01));
   EXPECT_EQ(emu.last_function, 0x01);
