@@ -21,8 +21,7 @@ class TestableSoyosourceInverterEmulator : public SoyosourceInverterEmulator {
   }
 
  protected:
-  void on_soyosource_inverter_emulator_data_(const uint8_t &function,
-                                             const std::vector<uint8_t> &data) override {
+  void on_soyosource_inverter_emulator_data_(const uint8_t &function, const std::vector<uint8_t> &data) override {
     last_function = function;
     last_data = data;
   }
