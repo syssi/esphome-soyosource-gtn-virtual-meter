@@ -9,6 +9,7 @@
 #include "ms51_v2_settings.h"
 #include "soyo_settings_display_version.h"
 #include "soyo_settings_wifi_version.h"
+#include "soyo_status_display_and_wifi_version.h"
 #include "soyo_status_display_version.h"
 #include "soyo_status_wifi_version.h"
 
