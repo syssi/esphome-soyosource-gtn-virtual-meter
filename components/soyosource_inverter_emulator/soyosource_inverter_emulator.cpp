@@ -85,7 +85,7 @@ bool SoyosourceInverterEmulator::parse_soyosource_inverter_emulator_byte_(uint8_
   return false;
 }
 void SoyosourceInverterEmulator::on_soyosource_inverter_emulator_data(const uint8_t &function,
-                                                                       const std::vector<uint8_t> &data) {
+                                                                      const std::vector<uint8_t> &data) {
   if (this->protocol_version_ == SOYOSOURCE_DISPLAY_VERSION) {
     this->on_display_version_data_(function, data);
     return;
