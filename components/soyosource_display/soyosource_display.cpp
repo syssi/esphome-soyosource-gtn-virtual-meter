@@ -856,7 +856,7 @@ std::string SoyosourceDisplay::device_type_to_string_(const uint8_t &device_type
 }
 
 std::string SoyosourceDisplay::error_bits_to_string_(const uint8_t &mask) {
-  std::string values = "";
+  std::string values;
   if (mask) {
     for (int i = 0; i < ERRORS_SIZE; i++) {
       if (mask & (1 << i)) {
