@@ -79,12 +79,12 @@ bool SoyosourceInverterEmulator::parse_soyosource_inverter_emulator_byte_(uint8_
 
   std::vector<uint8_t> data(this->rx_buffer_.begin(), this->rx_buffer_.begin() + frame_len);
 
-  this->on_soyosource_inverter_emulator_data_(function, data);
+  this->on_soyosource_inverter_emulator_data(function, data);
 
   // return false to reset buffer
   return false;
 }
-void SoyosourceInverterEmulator::on_soyosource_inverter_emulator_data_(const uint8_t &function,
+void SoyosourceInverterEmulator::on_soyosource_inverter_emulator_data(const uint8_t &function,
                                                                        const std::vector<uint8_t> &data) {
   if (this->protocol_version_ == SOYOSOURCE_DISPLAY_VERSION) {
     this->on_display_version_data_(function, data);
