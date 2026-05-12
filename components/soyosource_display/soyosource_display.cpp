@@ -195,7 +195,7 @@ void SoyosourceDisplay::on_ms51_status_data_(const std::vector<uint8_t> &data) {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
 
-  ESP_LOGI(TAG, "Status frame (MS51, %d bytes) received", data.size());
+  ESP_LOGI(TAG, "Status frame (MS51, %zu bytes) received", data.size());
   ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
 
   if (soyosource_get_16bit(8) == 0x0000 && data[15] == 0x00) {
@@ -266,7 +266,7 @@ void SoyosourceDisplay::on_soyosource_status_data_(const std::vector<uint8_t> &d
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
 
-  ESP_LOGI(TAG, "Status frame (Soyo, %d bytes) received", data.size());
+  ESP_LOGI(TAG, "Status frame (Soyo, %zu bytes) received", data.size());
   ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
 
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
@@ -336,7 +336,7 @@ void SoyosourceDisplay::on_ms51_settings_data_(const std::vector<uint8_t> &data)
 
   // Settings response example   0x5A 0x01 0xD3 0x02 0xD4 0x30 0x31 0x2F 0x00 0xE6 0x64 0x5A 0x00 0x06 0x37 0x5A 0x8A
 
-  ESP_LOGI(TAG, "Settings (MS51, %d bytes):", data.size());
+  ESP_LOGI(TAG, "Settings (MS51, %zu bytes):", data.size());
   ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
 
   if (data[4] == 0x00 && data[5] == 0x00) {
@@ -416,7 +416,7 @@ void SoyosourceDisplay::on_ms51_settings_data_(const std::vector<uint8_t> &data)
 }
 
 void SoyosourceDisplay::on_ms51_v2_settings_data_(const std::vector<uint8_t> &data) {
-  ESP_LOGI(TAG, "V2 Settings (%d bytes):", data.size());
+  ESP_LOGI(TAG, "V2 Settings (%zu bytes):", data.size());
   ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
 
   if (data[4] == 0x00 && data[5] == 0x00) {
@@ -500,7 +500,7 @@ void SoyosourceDisplay::on_soyosource_settings_data_(const std::vector<uint8_t> 
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
 
-  ESP_LOGI(TAG, "Settings (Soyo, %d bytes):", data.size());
+  ESP_LOGI(TAG, "Settings (Soyo, %zu bytes):", data.size());
   ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
 
   // Byte Len  Payload                Content              Coeff.      Unit        Example value

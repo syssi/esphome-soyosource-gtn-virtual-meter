@@ -96,7 +96,7 @@ void SoyosourceInverterEmulator::on_soyosource_inverter_emulator_data(const uint
 
 void SoyosourceInverterEmulator::on_wifi_version_data_(const uint8_t &function, const std::vector<uint8_t> &data) {
   if (data.size() != 12) {
-    ESP_LOGW(TAG, "Invalid response size: %d", data.size());
+    ESP_LOGW(TAG, "Invalid response size: %zu", data.size());
     return;
   }
 
@@ -182,7 +182,7 @@ void SoyosourceInverterEmulator::on_wifi_version_data_(const uint8_t &function, 
 
 void SoyosourceInverterEmulator::on_display_version_data_(const uint8_t &function, const std::vector<uint8_t> &data) {
   if (data.size() != 6) {
-    ESP_LOGW(TAG, "Invalid request size: %d", data.size());
+    ESP_LOGW(TAG, "Invalid request size: %zu", data.size());
     return;
   }
 
