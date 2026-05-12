@@ -34,7 +34,7 @@ void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &d
     return;
   }
 
-  ESP_LOGI(TAG, "Status frame (RS485, %d bytes) received", data.size());
+  ESP_LOGI(TAG, "Status frame (RS485, %zu bytes) received", data.size());
   ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
 
   auto soyosource_get_16bit = [&](size_t i) -> uint16_t {
