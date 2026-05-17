@@ -25,6 +25,7 @@ from components.soyosource_virtual_meter import (  # noqa: E402
     switch as vm_switch,  # noqa: E402
     text_sensor as vm_text_sensor,
 )
+import components.soyosource_virtual_meter.sensor as vm_sensor  # noqa: E402
 
 
 class TestHubConstants:
@@ -101,6 +102,15 @@ class TestInverterSensorLists:
             in inverter_text_sensor.TEXT_SENSORS
         )
         assert len(inverter_text_sensor.TEXT_SENSORS) == 1
+
+
+class TestVirtualMeterSensorDefs:
+    def test_sensor_defs_completeness(self):
+        assert vm_sensor.CONF_POWER_DEMAND in vm_sensor.SENSOR_DEFS
+        assert len(vm_sensor.SENSOR_DEFS) == 1
+
+    def test_sensor_defs_keys_match_schema(self):
+        assert set(vm_sensor.SENSOR_DEFS.keys()) == {vm_sensor.CONF_POWER_DEMAND}
 
 
 class TestVirtualMeterConstants:
