@@ -22,10 +22,10 @@ from components.soyosource_inverter import (  # noqa: E402
 import components.soyosource_virtual_meter as hub_vm  # noqa: E402
 from components.soyosource_virtual_meter import (  # noqa: E402
     number as vm_number,  # noqa: E402
-    sensor as vm_sensor,  # noqa: E402
     switch as vm_switch,  # noqa: E402
     text_sensor as vm_text_sensor,
 )
+import components.soyosource_virtual_meter.sensor as vm_sensor  # noqa: E402
 
 
 class TestHubConstants:
