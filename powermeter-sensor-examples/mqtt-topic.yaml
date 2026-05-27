@@ -12,5 +12,6 @@ sensor:
     accuracy_decimals: 2
     unit_of_measurement: W
     device_class: power
+    state_class: measurement
     filters:
       - throttle_average: 15s
