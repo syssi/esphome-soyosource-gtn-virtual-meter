@@ -13,6 +13,7 @@ sensor:
     name: "Instantaneous Power"
     unit_of_measurement: W
     device_class: "power"
+    state_class: measurement
     accuracy_decimals: 2
     update_interval: never
 
@@ -28,7 +29,13 @@ interval:
           on_response:
             then:
               - lambda: |-
-                  json::parse_json(body, [](JsonObject root) -> bool {
-                    id(powermeter0).publish_state(root["total_power"]);
-                    return true;
-                  });
+                  if (response->status_code == 200 && !body.empty()) {
+                    json::parse_json(body, [](JsonObject root) -> bool {
+                      auto value = root["total_power"];
+                      if (!value.isNull()) {
+                        id(powermeter0).publish_state(value.as<float>());
+                        return true;
+                      }
+                      return false;
+                    });
+                  }
