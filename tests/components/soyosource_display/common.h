@@ -22,11 +22,21 @@ class TestableNumber : public number::Number {
 
 class TestableSoyosourceDisplay : public SoyosourceDisplay {
  public:
+  int send_command_calls{0};
+  uint8_t last_send_command_arg{0};
+
   void update() override {}
+  void send_command(uint8_t function) override {
+    send_command_calls++;
+    last_send_command_arg = function;
+  }
 
   // Direct handler accessors bypass send_command() (which would crash with null UART parent).
   void on_soyo_status(const std::vector<uint8_t> &data) { this->on_soyosource_status_data_(data); }
   void on_soyo_settings(const std::vector<uint8_t> &data) { this->on_soyosource_settings_data_(data); }
+  void on_soyo_display_data(uint8_t function, const std::vector<uint8_t> &data) {
+    this->on_soyosource_display_data_(function, data);
+  }
   void on_ms51_status(const std::vector<uint8_t> &data) { this->on_ms51_status_data_(data); }
   void on_ms51_settings(const std::vector<uint8_t> &data) { this->on_ms51_settings_data_(data); }
   void on_ms51_v2_settings(const std::vector<uint8_t> &data) { this->on_ms51_v2_settings_data_(data); }
