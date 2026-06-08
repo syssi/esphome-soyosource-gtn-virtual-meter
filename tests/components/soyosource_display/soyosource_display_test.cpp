@@ -343,6 +343,24 @@ TEST(SoyoStatusDisplayAndWifiVersionTest, NullSensorsDoNotCrash) {
   d.on_soyo_status(SOYO_STATUS_DISPLAY_AND_WIFI_VERSION);
 }
 
+TEST(SoyoStatusDisplayAndWifiVersionTest, NoSettingsRequestSentAfterStatus) {
+  TestableSoyosourceDisplay d;
+  d.set_protocol(SOYOSOURCE_DISPLAY_AND_WIFI_VERSION);
+
+  d.on_soyo_display_data(0x01, SOYO_STATUS_DISPLAY_AND_WIFI_VERSION);
+
+  EXPECT_EQ(d.send_command_calls, 0);
+}
+
+TEST(SoyoStatusWifiVersionTest, SettingsRequestSentAfterStatus) {
+  TestableSoyosourceDisplay d;
+
+  d.on_soyo_display_data(0x01, SOYO_STATUS_WIFI_VERSION);
+
+  EXPECT_EQ(d.send_command_calls, 1);
+  EXPECT_EQ(d.last_send_command_arg, 0x03);  // SETTINGS_COMMAND
+}
+
 // ── MS51 status ───────────────────────────────────────────────────────────────
 
 TEST(Ms51StatusTest, StandbyWithNoLoad) {

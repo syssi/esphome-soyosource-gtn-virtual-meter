@@ -88,7 +88,7 @@ class SoyosourceDisplay : public uart::UARTDevice, public PollingComponent {
 
   SoyosourceSettingsFrameT get_current_settings() { return current_settings_; }
   void register_select_listener(uint8_t holding_register, const std::function<void(uint8_t)> &func);
-  void send_command(uint8_t function);
+  virtual void send_command(uint8_t function);
   void display_version_send_command(uint8_t function, uint8_t value1, uint8_t value2, uint8_t value3);
   void update_setting(uint8_t holding_register, float value);
   void loop() override;

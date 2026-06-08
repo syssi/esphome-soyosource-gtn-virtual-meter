@@ -179,7 +179,8 @@ void SoyosourceDisplay::on_soyosource_display_data_(const uint8_t &function, con
     switch (function) {
       case STATUS_COMMAND:
         this->on_soyosource_status_data_(data);
-        this->send_command(SETTINGS_COMMAND);
+        if (this->protocol_version_ != SOYOSOURCE_DISPLAY_AND_WIFI_VERSION)
+          this->send_command(SETTINGS_COMMAND);
         return;
       case SETTINGS_COMMAND:
         this->on_soyosource_settings_data_(data);
