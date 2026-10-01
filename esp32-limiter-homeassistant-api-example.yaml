@@ -1,0 +1,156 @@
+substitutions:
+  name: soyosource-gtn-virtual-meter
+  friendly_name: "Soyosource GTN Virtual Meter"
+  device_description: "Control the power output of a Soyosource GTN on demand via RS485 using Home Assistant Native API"
+  external_components_source: github://syssi/esphome-soyosource-gtn-virtual-meter@main
+  # RS485 Hardware UART Pins (Using UART2 to keep USB GPIO1/3 free for serial logging and flashing)
+  tx_pin: GPIO17
+  rx_pin: GPIO16
+  # Power consumption imported from Home Assistant (e.g. Shelly 3EM, Shelly Pro 3EM, or any grid power sensor)
+  # Positive value (+W) = Importing from grid, Negative value (-W) = Exporting to grid
+  power_sensor_name: "Grid Total Active Power"
+  power_sensor_entity_id: sensor.shellypro3em_total_active_power
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  comment: ${device_description}
+  project:
+    name: "syssi.esphome-soyosource-gtn-virtual-meter"
+    version: 2.6.0
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+    advanced:
+      minimum_chip_revision: "3.1"
+      sram1_as_iram: true
+
+external_components:
+  - source: ${external_components_source}
+    refresh: 0s
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  min_auth_mode: WPA2
+  ap:
+    ssid: "Soyosource-Limiter-Fallback"
+    password: !secret fallback_password
+
+captive_portal:
+
+ota:
+  platform: esphome
+
+# USB Serial Logging (stays active at 115200 baud via USB port because UART2 is used for RS485)
+logger:
+  level: INFO
+
+# Home Assistant Native API (fast sub-second push communication)
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+uart:
+  - id: uart_0
+    baud_rate: 4800
+    tx_pin: ${tx_pin}
+    rx_pin: ${rx_pin}
+
+soyosource_modbus:
+  - id: modbus0
+    uart_id: uart_0
+    name: inverter_0
+
+soyosource_virtual_meter:
+  - id: virtualmeter0
+    soyosource_modbus_id: modbus0
+    power_id: powermeter0
+
+    # Safety: If no power reading is received from Home Assistant within 20s,
+    # immediately drop inverter output to 0W to avoid unmonitored grid export.
+    power_sensor_inactivity_timeout: 20s
+
+    # Power demand calculation modes:
+    #
+    # NEGATIVE_MEASUREMENTS_REQUIRED:
+    #   Gradually steps down demand on load drop: demand = (consumption - buffer) + last_demand.
+    #   For large sudden load drops (e.g., ovens, dryers), this can cause multiple seconds
+    #   of trailing grid export before reaching 0W.
+    #
+    # RESTART_ON_CROSSING_ZERO (Recommended for strict zero-export):
+    #   Immediately clamps demand to 0W on the very first cycle export is detected (consumption <= 0),
+    #   then restarts demand once the home returns to net grid consumption. This cuts export spike
+    #   duration in half during sudden load drops.
+    power_demand_calculation: RESTART_ON_CROSSING_ZERO
+
+    min_power_demand: 0
+    max_power_demand: 900          # 900W recommended max continuous power for GTN-1200
+    zero_output_on_min_power_demand: true
+    power_demand_divider: 1        # 1 inverter on this RS485 bus
+
+    # Positive buffer (20W) targets 20W continuous grid import to prevent accidental export
+    buffer: 20
+
+    # Inverter requires packets every 1-3 seconds. 1s provides faster reaction to load changes.
+    update_interval: 1s
+
+number:
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter0
+    buffer:
+      name: "Buffer"
+      initial_value: 20
+      min_value: -100
+      max_value: 100
+      step: 5
+      restore_value: true
+    manual_power_demand:
+      name: "Manual Power Demand"
+      min_value: 0
+      max_value: 900
+      step: 10
+    max_power_demand:
+      name: "Max Power Demand"
+      initial_value: 850
+      min_value: 100
+      max_value: 950
+      step: 25
+      restore_value: true
+    power_demand_divider:
+      name: "Power Demand Divider"
+      initial_value: 1
+      restore_value: true
+
+sensor:
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter0
+    power_demand:
+      name: "Power Demand"
+
+  # Import grid power reading from Home Assistant
+  - platform: homeassistant
+    id: powermeter0
+    name: ${power_sensor_name}
+    entity_id: ${power_sensor_entity_id}
+    filters:
+      # Throttle slightly to keep communication smooth without overloading
+      - throttle: 1s
+
+switch:
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter0
+    manual_mode:
+      name: "Manual Mode"
+      restore_mode: RESTORE_DEFAULT_OFF
+    emergency_power_off:
+      name: "Emergency Power Off"
+      restore_mode: RESTORE_DEFAULT_OFF
+
+text_sensor:
+  - platform: soyosource_virtual_meter
+    soyosource_virtual_meter_id: virtualmeter0
+    operation_mode:
+      name: "Limiter Operation Mode"
