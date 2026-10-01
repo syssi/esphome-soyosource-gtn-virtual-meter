@@ -132,6 +132,9 @@ sensor:
     id: powermeter0
     name: ${power_sensor_name}
     entity_id: ${power_sensor_entity_id}
+    filters:
+      # Throttle slightly to keep communication smooth without overloading
+      - throttle: 1s
 
 switch:
   - platform: soyosource_virtual_meter
