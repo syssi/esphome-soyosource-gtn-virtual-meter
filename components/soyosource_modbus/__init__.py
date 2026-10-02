@@ -31,6 +31,16 @@ CONFIG_SCHEMA = cv.All(
     .extend(uart.UART_DEVICE_SCHEMA),
 )
 
+FINAL_VALIDATE_SCHEMA = uart.final_validate_device_schema(
+    "soyosource_modbus",
+    baud_rate=4800,
+    data_bits=8,
+    parity="NONE",
+    stop_bits=1,
+    require_tx=True,
+    require_rx=True,
+)
+
 
 async def to_code(config):
     cg.add_global(soyosource_modbus_ns.using)

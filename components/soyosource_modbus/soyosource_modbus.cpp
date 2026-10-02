@@ -80,8 +80,6 @@ bool SoyosourceModbus::parse_soyosource_modbus_byte_(uint8_t byte) {
 void SoyosourceModbus::dump_config() {
   ESP_LOGCONFIG(TAG, "SoyosourceModbus:");
   LOG_PIN("  Flow Control Pin: ", this->flow_control_pin_);
-
-  this->check_uart_settings(4800);
 }
 
 float SoyosourceModbus::get_setup_priority() const {

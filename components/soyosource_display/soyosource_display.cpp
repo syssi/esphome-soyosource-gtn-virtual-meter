@@ -581,8 +581,6 @@ void SoyosourceDisplay::dump_config() {
   LOG_SENSOR("", "Temperature", this->temperature_sensor_);
   LOG_BINARY_SENSOR("", "Fan Running", this->fan_running_binary_sensor_);
   LOG_BINARY_SENSOR("", "Limiter Connected", this->limiter_connected_binary_sensor_);
-
-  this->check_uart_settings(9600);
 }
 
 float SoyosourceDisplay::get_setup_priority() const {
