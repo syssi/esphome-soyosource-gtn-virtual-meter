@@ -125,7 +125,11 @@ In Home Assistant (**Settings > Devices & Services > Helpers > Add Helper > Stat
 * **Characteristic:** `percentile`
 * **Percentile value:** `20`
 * **Max age:** `00:45:00`
-* **Sampling size:** `100`
+* **Sampling size:** `2000`
+
+> [!NOTE]
+> **Buffer Sizing for Real-Time Telemetry:**  
+> Whole-home power meters (such as the Shelly Pro 3EM) report measurements every 1–2 seconds, generating ~1,350 to 2,700 samples in a 45-minute window. Home Assistant's Statistics integration caps its internal FIFO circular buffer to whichever limit is reached first: `max_age` or `sampling_size`. Setting `sampling_size` too low (such as 100) causes the buffer to overflow in under 3 minutes, silently truncating the time window and allowing cycling appliances to falsely inflate the baseload. A `sampling_size` of `2000` ensures the full 45-minute window is retained.
 
 ### Step 3: Supervisory Ceiling Automation
 Create an automation that runs periodically (e.g., every 15 minutes) and on Home Assistant startup. It clamps the ceiling between a nighttime floor (e.g., 150W) and a hardware safety ceiling (e.g., 450W), adding a small offset (+15W) to track baseline load cleanly.
