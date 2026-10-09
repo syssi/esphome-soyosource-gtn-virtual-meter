@@ -33,7 +33,7 @@ CONFIG_SCHEMA = cv.All(
 )
 
 FINAL_VALIDATE_SCHEMA = uart.final_validate_device_schema(
-    "soyosource_modbus",
+    DOMAIN,
     baud_rate=4800,
     data_bits=8,
     parity="NONE",
