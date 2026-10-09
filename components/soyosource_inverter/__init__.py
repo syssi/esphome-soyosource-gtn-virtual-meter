@@ -5,6 +5,7 @@ from esphome.const import CONF_ID
 
 AUTO_LOAD = ["soyosource_modbus", "binary_sensor", "sensor", "text_sensor"]
 CODEOWNERS = ["@syssi"]
+DOMAIN = "soyosource_inverter"
 MULTI_CONF = True
 
 CONF_SOYOSOURCE_INVERTER_ID = "soyosource_inverter_id"
