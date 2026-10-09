@@ -1,9 +1,14 @@
 #include "soyosource_inverter.h"
 #include "esphome/core/log.h"
 
+// Fallback for ESPHome < 2026.10.0
+#ifndef ESPHOME_LOG_TAG
+#define ESPHOME_LOG_TAG(name, tag) static const char *const name = tag
+#endif
+
 namespace esphome::soyosource_inverter {
 
-static const char *const TAG = "soyosource_inverter";
+ESPHOME_LOG_TAG(TAG, "soyosource_inverter");
 
 static const uint8_t OPERATION_STATUS_SIZE = 13;
 static constexpr const char *const OPERATION_STATUS[OPERATION_STATUS_SIZE] = {

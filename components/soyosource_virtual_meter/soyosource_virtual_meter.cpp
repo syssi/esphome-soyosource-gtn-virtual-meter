@@ -1,9 +1,14 @@
 #include "soyosource_virtual_meter.h"
 #include "esphome/core/log.h"
 
+// Fallback for ESPHome < 2026.10.0
+#ifndef ESPHOME_LOG_TAG
+#define ESPHOME_LOG_TAG(name, tag) static const char *const name = tag
+#endif
+
 namespace esphome::soyosource_virtual_meter {
 
-static const char *const TAG = "soyosource_virtual_meter";
+ESPHOME_LOG_TAG(TAG, "soyosource_virtual_meter");
 
 void SoyosourceVirtualMeter::on_soyosource_modbus_data(const std::vector<uint8_t> &data) {
   ESP_LOGW(TAG, "'%s': Unknown message received!", this->get_modbus_name());

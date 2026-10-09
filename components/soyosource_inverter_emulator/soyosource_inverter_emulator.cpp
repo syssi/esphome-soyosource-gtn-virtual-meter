@@ -2,9 +2,14 @@
 #include "esphome/core/log.h"
 #include "esphome/core/helpers.h"
 
+// Fallback for ESPHome < 2026.10.0
+#ifndef ESPHOME_LOG_TAG
+#define ESPHOME_LOG_TAG(name, tag) static const char *const name = tag
+#endif
+
 namespace esphome::soyosource_inverter_emulator {
 
-static const char *const TAG = "soyosource_inverter_emulator";
+ESPHOME_LOG_TAG(TAG, "soyosource_inverter_emulator");
 
 static const uint8_t STATUS_ALT_COMMAND = 0x00;
 static const uint8_t STATUS_COMMAND = 0x01;

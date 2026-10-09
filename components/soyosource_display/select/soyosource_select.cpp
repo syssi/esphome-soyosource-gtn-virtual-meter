@@ -1,9 +1,14 @@
 #include "soyosource_select.h"
 #include "esphome/core/log.h"
 
+// Fallback for ESPHome < 2026.10.0
+#ifndef ESPHOME_LOG_TAG
+#define ESPHOME_LOG_TAG(name, tag) static const char *const name = tag
+#endif
+
 namespace esphome::soyosource_display {
 
-static const char *const TAG = "soyosource_display.select";
+ESPHOME_LOG_TAG(TAG, "soyosource_display.select");
 
 void SoyosourceSelect::setup() {
   this->parent_->register_select_listener(this->holding_register_, [this](const uint8_t &enum_value) {
