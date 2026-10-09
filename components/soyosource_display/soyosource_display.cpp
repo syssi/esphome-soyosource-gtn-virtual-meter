@@ -2,9 +2,14 @@
 #include "esphome/core/log.h"
 #include "esphome/core/helpers.h"
 
+// Fallback for ESPHome < 2026.10.0
+#ifndef ESPHOME_LOG_TAG
+#define ESPHOME_LOG_TAG(name, tag) static const char *const name = tag
+#endif
+
 namespace esphome::soyosource_display {
 
-static const char *const TAG = "soyosource_display";
+ESPHOME_LOG_TAG(TAG, "soyosource_display");
 
 static const uint8_t SOF_REQUEST = 0x55;
 static const uint8_t SOF_SOYO_RESPONSE = 0xA6;

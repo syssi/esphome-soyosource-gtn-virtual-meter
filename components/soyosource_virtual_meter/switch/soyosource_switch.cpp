@@ -2,9 +2,14 @@
 #include "esphome/core/log.h"
 #include "esphome/core/application.h"
 
+// Fallback for ESPHome < 2026.10.0
+#ifndef ESPHOME_LOG_TAG
+#define ESPHOME_LOG_TAG(name, tag) static const char *const name = tag
+#endif
+
 namespace esphome::soyosource_virtual_meter {
 
-static const char *const TAG = "soyosource_virtual_meter.switch";
+ESPHOME_LOG_TAG(TAG, "soyosource_virtual_meter.switch");
 
 void SoyosourceSwitch::setup() {
   ESP_LOGCONFIG(TAG, "Setting up Soyosource Switch '%s'...", this->name_.c_str());
