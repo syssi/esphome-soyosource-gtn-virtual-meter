@@ -4,6 +4,7 @@ import esphome.config_validation as cv
 from esphome.const import CONF_ID
 
 CODEOWNERS = ["@syssi"]
+DOMAIN = "soyosource_inverter_emulator"
 
 DEPENDENCIES = ["uart"]
 MULTI_CONF = True
