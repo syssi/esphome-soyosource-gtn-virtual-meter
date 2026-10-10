@@ -1,5 +1,6 @@
 #include "soyosource_inverter.h"
 #include "esphome/core/log.h"
+#include "esphome/core/helpers.h"
 
 // Fallback for ESPHome < 2026.10.0
 #ifndef ESPHOME_LOG_TAG
@@ -9,6 +10,14 @@
 namespace esphome::soyosource_inverter {
 
 ESPHOME_LOG_TAG(TAG, "soyosource_inverter");
+
+static void log_hex_chunked(const char *tag, const uint8_t *data, size_t size) {
+  char buf[format_hex_pretty_size(100)];
+  for (size_t i = 0; i < size; i += 100) {
+    size_t len = std::min<size_t>(100, size - i);
+    ESP_LOGD(tag, "  %s", format_hex_pretty_to(buf, sizeof(buf), data + i, len, '.'));
+  }
+}
 
 static const uint8_t OPERATION_STATUS_SIZE = 13;
 static constexpr const char *const OPERATION_STATUS[OPERATION_STATUS_SIZE] = {
@@ -40,7 +49,7 @@ void SoyosourceInverter::on_soyosource_modbus_data(const std::vector<uint8_t> &d
   }
 
   ESP_LOGI(TAG, "Status frame (RS485, %zu bytes) received", data.size());
-  ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
+  log_hex_chunked(TAG, data.data(), data.size());
 
   auto soyosource_get_16bit = [&](size_t i) -> uint16_t {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
