@@ -11,6 +11,16 @@ namespace esphome::soyosource_display {
 
 ESPHOME_LOG_TAG(TAG, "soyosource_display");
 
+static constexpr size_t MAX_HEX_DUMP_BYTES = 100;
+
+static void log_hex_chunked(const char *tag, const uint8_t *data, size_t size) {
+  char buf[format_hex_pretty_size(100)];
+  for (size_t i = 0; i < size; i += 100) {
+    size_t len = std::min<size_t>(100, size - i);
+    ESP_LOGD(tag, "  %s", format_hex_pretty_to(buf, sizeof(buf), data + i, len, '.'));
+  }
+}
+
 static const uint8_t SOF_REQUEST = 0x55;
 static const uint8_t SOF_SOYO_RESPONSE = 0xA6;
 static const uint8_t SOF_MS51_RESPONSE = 0x5A;
@@ -193,7 +203,8 @@ void SoyosourceDisplay::on_soyosource_display_data_(const uint8_t &function, con
     }
   }
 
-  ESP_LOGW(TAG, "Unhandled response received: %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
+  char hex_buf[format_hex_pretty_size(MAX_HEX_DUMP_BYTES)];
+  ESP_LOGW(TAG, "Unhandled response received: %s", format_hex_pretty_to(hex_buf, data, '.'));
 }
 
 void SoyosourceDisplay::on_ms51_status_data_(const std::vector<uint8_t> &data) {
@@ -202,7 +213,7 @@ void SoyosourceDisplay::on_ms51_status_data_(const std::vector<uint8_t> &data) {
   };
 
   ESP_LOGI(TAG, "Status frame (MS51, %zu bytes) received", data.size());
-  ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
+  log_hex_chunked(TAG, data.data(), data.size());
 
   if (soyosource_get_16bit(8) == 0x0000 && data[15] == 0x00) {
     ESP_LOGD(TAG, "Empty status frame rejected");
@@ -273,7 +284,7 @@ void SoyosourceDisplay::on_soyosource_status_data_(const std::vector<uint8_t> &d
   };
 
   ESP_LOGI(TAG, "Status frame (Soyo, %zu bytes) received", data.size());
-  ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
+  log_hex_chunked(TAG, data.data(), data.size());
 
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
   // 0     1   0xA6                   Header
@@ -343,7 +354,7 @@ void SoyosourceDisplay::on_ms51_settings_data_(const std::vector<uint8_t> &data)
   // Settings response example   0x5A 0x01 0xD3 0x02 0xD4 0x30 0x31 0x2F 0x00 0xE6 0x64 0x5A 0x00 0x06 0x37 0x5A 0x8A
 
   ESP_LOGI(TAG, "Settings (MS51, %zu bytes):", data.size());
-  ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
+  log_hex_chunked(TAG, data.data(), data.size());
 
   if (data[4] == 0x00 && data[5] == 0x00) {
     ESP_LOGD(TAG, "Empty settings frame rejected");
@@ -423,7 +434,7 @@ void SoyosourceDisplay::on_ms51_settings_data_(const std::vector<uint8_t> &data)
 
 void SoyosourceDisplay::on_ms51_v2_settings_data_(const std::vector<uint8_t> &data) {
   ESP_LOGI(TAG, "V2 Settings (%zu bytes):", data.size());
-  ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
+  log_hex_chunked(TAG, data.data(), data.size());
 
   if (data[4] == 0x00 && data[5] == 0x00) {
     ESP_LOGD(TAG, "Empty V2 settings frame rejected");
@@ -496,7 +507,8 @@ void SoyosourceDisplay::on_ms51_v2_settings_data_(const std::vector<uint8_t> &da
   ESP_LOGV(TAG, "  Unknown (byte 15): 0x%02X", data[15]);
 
   // 16-23     0x00...                V2 data (8 bytes, all zeros in samples)
-  ESP_LOGV(TAG, "  V2 data: %s", format_hex_pretty(&data[16], 8).c_str());  // NOLINT
+  char hex_buf[format_hex_pretty_size(MAX_HEX_DUMP_BYTES)];
+  ESP_LOGV(TAG, "  V2 data: %s", format_hex_pretty_to(hex_buf, &data[16], 8, '.'));
 
   // 24    1   0x15                   Checksum
 }
@@ -507,7 +519,7 @@ void SoyosourceDisplay::on_soyosource_settings_data_(const std::vector<uint8_t> 
   };
 
   ESP_LOGI(TAG, "Settings (Soyo, %zu bytes):", data.size());
-  ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
+  log_hex_chunked(TAG, data.data(), data.size());
 
   // Byte Len  Payload                Content              Coeff.      Unit        Example value
   // 0     1   0xA6                   Header
@@ -616,7 +628,8 @@ void SoyosourceDisplay::send_command(uint8_t function) {
   frame[10] = 0x00;
   frame[11] = chksum(frame, 11);
 
-  ESP_LOGD(TAG, "Send command: %s", format_hex_pretty(frame, sizeof(frame)).c_str());  // NOLINT
+  char hex_buf[format_hex_pretty_size(MAX_HEX_DUMP_BYTES)];
+  ESP_LOGD(TAG, "Send command: %s", format_hex_pretty_to(hex_buf, frame, sizeof(frame), '.'));
 
   this->write_array(frame, 12);
   this->flush();
@@ -632,7 +645,8 @@ void SoyosourceDisplay::display_version_send_command(uint8_t function, uint8_t v
   frame[4] = value3;
   frame[5] = chksum(frame, 5);
 
-  ESP_LOGD(TAG, "Send command: %s", format_hex_pretty(frame, sizeof(frame)).c_str());  // NOLINT
+  char hex_buf[format_hex_pretty_size(MAX_HEX_DUMP_BYTES)];
+  ESP_LOGD(TAG, "Send command: %s", format_hex_pretty_to(hex_buf, frame, sizeof(frame), '.'));
 
   this->write_array(frame, 6);
   this->flush();
@@ -677,7 +691,8 @@ void SoyosourceDisplay::update_setting(uint8_t holding_register, float value) {
 
 void SoyosourceDisplay::display_version_write_settings_(const uint8_t &holding_register,
                                                         SoyosourceSettingsFrameT *new_settings) {
-  ESP_LOGVV(TAG, "Settings frame (raw): %s", format_hex_pretty((const uint8_t *) new_settings, 12).c_str());  // NOLINT
+  char hex_buf[format_hex_pretty_size(MAX_HEX_DUMP_BYTES)];
+  ESP_LOGVV(TAG, "Settings frame (raw): %s", format_hex_pretty_to(hex_buf, (const uint8_t *) new_settings, 12, '.'));
 
   switch (holding_register) {
     case 0x02:
