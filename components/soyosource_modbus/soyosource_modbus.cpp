@@ -11,6 +11,8 @@ namespace esphome::soyosource_modbus {
 
 ESPHOME_LOG_TAG(TAG, "soyosource_modbus");
 
+static constexpr size_t MAX_HEX_DUMP_BYTES = 100;
+
 void SoyosourceModbus::setup() {
   if (this->flow_control_pin_ != nullptr) {
     this->flow_control_pin_->setup();
@@ -62,7 +64,8 @@ bool SoyosourceModbus::parse_soyosource_modbus_byte_(uint8_t byte) {
   if (at < 4 + 10)
     return true;
 
-  ESP_LOGVV(TAG, "RX <- %s", format_hex_pretty(raw, at + 1).c_str());  // NOLINT
+  char hex_buf[format_hex_pretty_size(MAX_HEX_DUMP_BYTES)];
+  ESP_LOGVV(TAG, "RX <- %s", format_hex_pretty_to(hex_buf, raw, at + 1, '.'));
   ESP_LOGVV(TAG, "CRC: 0x%02X", raw[14]);
 
   std::vector<uint8_t> data(this->rx_buffer_.begin() + 4, this->rx_buffer_.begin() + 4 + 10);

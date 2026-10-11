@@ -20,7 +20,7 @@ SoyosourceModbus = soyosource_modbus_ns.class_(
 SoyosourceModbusDevice = soyosource_modbus_ns.class_("SoyosourceModbusDevice")
 
 CONFIG_SCHEMA = cv.All(
-    cv.require_esphome_version(2024, 6, 0),
+    cv.require_esphome_version(2026, 1, 0),
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(SoyosourceModbus),

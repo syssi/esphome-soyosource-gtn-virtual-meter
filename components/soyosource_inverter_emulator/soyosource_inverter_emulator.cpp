@@ -11,6 +11,8 @@ namespace esphome::soyosource_inverter_emulator {
 
 ESPHOME_LOG_TAG(TAG, "soyosource_inverter_emulator");
 
+static constexpr size_t MAX_HEX_DUMP_BYTES = 100;
+
 static const uint8_t STATUS_ALT_COMMAND = 0x00;
 static const uint8_t STATUS_COMMAND = 0x01;
 static const uint8_t SETTINGS_ALT_COMMAND = 0x02;
@@ -175,13 +177,14 @@ void SoyosourceInverterEmulator::on_wifi_version_data_(const uint8_t &function, 
       this->settings_counter_++;
       break;
     case WRITE_SETTINGS_COMMAND:
-      ESP_LOGI(TAG, "Write settings: %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
+      char hex_buf[format_hex_pretty_size(MAX_HEX_DUMP_BYTES)];
+      ESP_LOGI(TAG, "Write settings: %s", format_hex_pretty_to(hex_buf, data, '.'));
       break;
     case REBOOT_COMMAND:
       ESP_LOGI(TAG, "Reboot command received");
       break;
     default:
-      ESP_LOGW(TAG, "Unhandled request received: %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
+      ESP_LOGW(TAG, "Unhandled request received: %s", format_hex_pretty_to(hex_buf, data, '.'));
   }
 }
 
@@ -272,13 +275,14 @@ void SoyosourceInverterEmulator::on_display_version_data_(const uint8_t &functio
       this->settings_counter_++;
       break;
     case WRITE_SETTINGS_COMMAND:
-      ESP_LOGI(TAG, "Write settings: %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
+      char hex_buf[format_hex_pretty_size(MAX_HEX_DUMP_BYTES)];
+      ESP_LOGI(TAG, "Write settings: %s", format_hex_pretty_to(hex_buf, data, '.'));
       break;
     case REBOOT_COMMAND:
       ESP_LOGI(TAG, "Reboot command received");
       break;
     default:
-      ESP_LOGW(TAG, "Unhandled request received: %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
+      ESP_LOGW(TAG, "Unhandled request received: %s", format_hex_pretty_to(hex_buf, data, '.'));
   }
 }
 
