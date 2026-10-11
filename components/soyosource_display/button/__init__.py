@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import button
 import esphome.config_validation as cv
-from esphome.const import CONF_RESTART, DEVICE_CLASS_RESTART
+from esphome.const import CONF_RESTART, DEVICE_CLASS_RESTART, ICON_RESTART
 
 from .. import (
     CONF_SOYOSOURCE_DISPLAY_ID,
@@ -15,7 +15,6 @@ CODEOWNERS = ["@syssi"]
 
 # CONF_RESTART = "restart"
 
-ICON_RESTART = "mdi:restart"
 
 BUTTONS = {
     CONF_RESTART: 0x11,
