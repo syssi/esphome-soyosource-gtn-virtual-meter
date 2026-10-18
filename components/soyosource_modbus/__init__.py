@@ -39,6 +39,7 @@ FINAL_VALIDATE_SCHEMA = uart.final_validate_device_schema(
     parity="NONE",
     stop_bits=1,
     require_tx=True,
+    require_rx=False,
 )
 
 
