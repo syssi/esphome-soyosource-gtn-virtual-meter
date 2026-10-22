@@ -1,9 +1,9 @@
 """Schema structure tests for soyosource ESPHome component modules."""
 
-import os
+from pathlib import Path
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import components.soyosource_display as hub_display  # noqa: E402
 from components.soyosource_display import (  # noqa: E402
