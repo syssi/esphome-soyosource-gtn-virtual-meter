@@ -187,6 +187,8 @@ void SoyosourceDisplay::on_soyosource_display_data_(const uint8_t &function, con
         ESP_LOGE(TAG, "No data from the Soyosource inverter received yet. This should never happen if the dongle is "
                       "plugged into the inverter");
         return;
+      default:
+        break;
     }
   }
 
@@ -200,6 +202,8 @@ void SoyosourceDisplay::on_soyosource_display_data_(const uint8_t &function, con
       case SETTINGS_COMMAND:
         this->on_soyosource_settings_data_(data);
         return;
+      default:
+        break;
     }
   }
 
@@ -793,6 +797,8 @@ std::string SoyosourceDisplay::wifi_version_operation_mode_to_string_(const uint
     case 0x0A:
     case 0x0E:
       return "PV Limit";
+    default:
+      break;
   }
 
   ESP_LOGW(TAG, "  Operation mode: Unknown (%d)", operation_mode);
@@ -829,6 +835,8 @@ std::string SoyosourceDisplay::display_version_operation_mode_to_string_(const u
     case 0x0C:
     case 0x0D:
       return "Battery Limit";
+    default:
+      break;
   }
 
   ESP_LOGW(TAG, "  Operation mode: Unknown (%d)", operation_mode);
@@ -851,6 +859,8 @@ uint8_t SoyosourceDisplay::operation_mode_to_operation_mode_setting_(const uint8
     case 0x0A:
     case 0x0E:
       return 0x11;  // PV Limit
+    default:
+      break;
   }
 
   return 0x00;
@@ -868,6 +878,8 @@ std::string SoyosourceDisplay::device_type_to_string_(const uint8_t &device_type
       return "PV 85-130V / BAT 72V";
     case 0x60:
       return "PV 120-180V / BAT 96V";
+    default:
+      break;
   }
 
   ESP_LOGW(TAG, "  Device type: Unknown (%d)", device_type);
