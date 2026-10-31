@@ -128,6 +128,10 @@ uart:
     direction: BOTH
 ```
 
+## Best Practices & Guides
+
+* [Zero-Export Best Practice: Dynamic Baseload Tracking](docs/zero-export-best-practice.md) — How to eliminate high-frequency backfeed overshoots from cycling pulse loads (microwaves, induction cooktops) by dynamically floating the limiter ceiling. Includes an interactive [Slew Simulator](docs/slew_simulator.html).
+
 ## References
 
 * https://github.com/drcross/virtual-meter
