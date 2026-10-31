@@ -24,6 +24,7 @@ esp32:
   framework:
     type: esp-idf
     advanced:
+      # Allocates SRAM1 memory as IRAM so Bluetooth Proxy and ESP-IDF can run together without IRAM overflow
       minimum_chip_revision: "3.1"
       sram1_as_iram: true
 
@@ -35,23 +36,26 @@ wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
   min_auth_mode: WPA2
-  ap:
-    ssid: "Soyosource-Limiter-Fallback"
-    password: !secret fallback_password
 
-captive_portal:
+# Home Assistant Native API (fast sub-second push communication)
+api:
+  # Optional: Native API encryption key (uncomment if encryption is enabled in Home Assistant)
+  # encryption:
+  #   key: !secret api_encryption_key
 
 ota:
   platform: esphome
 
-# USB Serial Logging (stays active at 115200 baud via USB port because UART2 is used for RS485)
+# Bluetooth Proxy for Remote Shed Telemetry (Batteries, Victron SmartShunt, BTHome sensors)
+esp32_ble_tracker:
+  # The default scan parameters are recommended.
+
+bluetooth_proxy:
+  active: true
+
+# USB Serial Logging (stays active at 115200 baud via USB-C because UART2 is used for RS485)
 logger:
   level: INFO
-
-# Home Assistant Native API (fast sub-second push communication)
-api:
-  encryption:
-    key: !secret api_encryption_key
 
 uart:
   - id: uart_0
@@ -87,7 +91,7 @@ soyosource_virtual_meter:
     power_demand_calculation: RESTART_ON_CROSSING_ZERO
 
     min_power_demand: 0
-    max_power_demand: 900          # 900W recommended max continuous power for GTN-1200
+    max_power_demand: 850          # 850-900W recommended max continuous power for GTN-1200
     zero_output_on_min_power_demand: true
     power_demand_divider: 1        # 1 inverter on this RS485 bus
 
@@ -138,6 +142,14 @@ sensor:
     filters:
       # Throttle slightly to keep communication smooth without overloading
       - throttle: 1s
+
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 30s
+
+  - platform: uptime
+    name: "Uptime"
+    update_interval: 30s
 
 switch:
   - platform: soyosource_virtual_meter

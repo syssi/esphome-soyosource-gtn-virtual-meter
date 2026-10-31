@@ -27,6 +27,13 @@ While `esp32-limiter-example.yaml` is a great reference, it has a few defaults t
 4. **Cleaner Substitutions**:
    - Exposes `power_sensor_entity_id`, `power_sensor_name`, `tx_pin`, and `rx_pin` as clean substitutions at the top of the file for quick plug-and-play adoption.
 
+5. **Bluetooth Proxy & Memory Optimization**:
+   - Includes `bluetooth_proxy` and `esp32_ble_tracker` for gathering remote shed telemetry (e.g., battery BMS, Victron SmartShunt, BTHome sensors).
+   - Configures ESP-IDF `minimum_chip_revision: "3.1"` and `sram1_as_iram: true` to prevent IRAM overflow when running Bluetooth Proxy and Wi-Fi together on ESP32.
+
+6. **Automated CI Compatibility**:
+   - Relies strictly on standard repository secrets (`wifi_ssid`, `wifi_password`), with optional native API encryption commented out so automated CI validation and compilation succeed cleanly out of the box.
+
 ---
 
 ## Hardware & Real-World Validation
