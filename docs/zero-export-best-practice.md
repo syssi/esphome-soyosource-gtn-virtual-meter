@@ -132,7 +132,7 @@ In Home Assistant (**Settings > Devices & Services > Helpers > Add Helper > Stat
 > Whole-home power meters (such as the Shelly Pro 3EM) report measurements every 1–2 seconds, generating ~1,350 to 2,700 samples in a 45-minute window. Home Assistant's Statistics integration caps its internal FIFO circular buffer to whichever limit is reached first: `max_age` or `sampling_size`. Setting `sampling_size` too low (such as 100) causes the buffer to overflow in under 3 minutes, silently truncating the time window and allowing cycling appliances to falsely inflate the baseload. A `sampling_size` of `2000` ensures the full 45-minute window is retained.
 
 ### Step 3: Supervisory Ceiling Automation
-Create an automation that runs periodically (e.g., every 15 minutes) and on Home Assistant startup. It clamps the ceiling between a nighttime floor (e.g., 150W) and a hardware safety ceiling (e.g., 450W), adding a small offset (+15W) to track baseline load cleanly.
+Create an automation that runs periodically (e.g., every 15 minutes) and on Home Assistant startup. It clamps the ceiling between a nighttime floor (e.g., 100W) and a hardware safety ceiling (e.g., 850W), adding a small offset (+15W) to track baseline load cleanly.
 
 ```yaml
 automation:
@@ -155,8 +155,8 @@ automation:
           entity_id: number.soyosource_limiter_max_power_demand
         data:
           value: >
-            {# Bounds: adjust the floor (150W) and ceiling (450W) to your setup #}
-            {{ [150, [450, (states('sensor.house_baseload_45m') | float(200) + 15) | round(0)] | min] | max }}
+            {# Bounds: Hardware floor (100W) and safe continuous inverter ceiling (850W) #}
+            {{ [100, [850, (states('sensor.house_baseload_45m') | float(0) + 15) | round(0)] | min] | max }}
 ```
 
 ---
