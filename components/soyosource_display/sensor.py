@@ -29,7 +29,7 @@ from . import CONF_SOYOSOURCE_DISPLAY_ID, SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA
 
 try:
     from esphome.const import CONF_OUTPUT_POWER
-except ImportError:
+except ImportError:  # ESPHome < 2026.3.0
     CONF_OUTPUT_POWER = "output_power"
 
 DEPENDENCIES = ["soyosource_display"]
