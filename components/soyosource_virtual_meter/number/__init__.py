@@ -26,6 +26,7 @@ from .. import (
     SoyosourceVirtualMeter,
     soyosource_virtual_meter_ns,
 )
+from ..const import CONF_MAX_POWER_DEMAND
 
 DEPENDENCIES = ["soyosource_virtual_meter"]
 CODEOWNERS = ["@syssi"]
@@ -33,7 +34,6 @@ CODEOWNERS = ["@syssi"]
 DEFAULT_STEP = 1
 
 CONF_MANUAL_POWER_DEMAND = "manual_power_demand"
-CONF_MAX_POWER_DEMAND = "max_power_demand"
 
 ICON_BUFFER = "mdi:vector-difference"
 ICON_MANUAL_POWER_DEMAND = "mdi:home-lightning-bolt-outline"
