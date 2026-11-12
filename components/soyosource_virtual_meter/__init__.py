@@ -3,6 +3,8 @@ from esphome.components import sensor, soyosource_modbus
 import esphome.config_validation as cv
 from esphome.const import CONF_ID
 
+from .const import CONF_MAX_POWER_DEMAND
+
 CODEOWNERS = ["@syssi"]
 DOMAIN = "soyosource_virtual_meter"
 
@@ -15,7 +17,6 @@ CONF_POWER_ID = "power_id"
 CONF_POWER_SENSOR_INACTIVITY_TIMEOUT = "power_sensor_inactivity_timeout"
 CONF_POWER_DEMAND_CALCULATION = "power_demand_calculation"
 CONF_MIN_POWER_DEMAND = "min_power_demand"
-CONF_MAX_POWER_DEMAND = "max_power_demand"
 CONF_BUFFER = "buffer"
 CONF_POWER_DEMAND_DIVIDER = "power_demand_divider"
 CONF_OPERATION_STATUS_ID = "operation_status_id"
