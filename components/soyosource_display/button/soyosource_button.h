@@ -13,7 +13,6 @@ class SoyosourceButton : public button::Button, public Component {
   void set_parent(SoyosourceDisplay *parent) { this->parent_ = parent; };
   void set_holding_register(uint8_t holding_register) { this->holding_register_ = holding_register; };
   void dump_config() override;
-  void loop() override {}
   float get_setup_priority() const override { return setup_priority::DATA; }
 
  protected:
