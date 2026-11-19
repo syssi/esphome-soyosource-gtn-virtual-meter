@@ -20,9 +20,7 @@ BUTTONS = {
     CONF_RESTART: 0x11,
 }
 
-SoyosourceButton = soyosource_display_ns.class_(
-    "SoyosourceButton", button.Button, cg.Component
-)
+SoyosourceButton = soyosource_display_ns.class_("SoyosourceButton", button.Button)
 
 CONFIG_SCHEMA = SOYOSOURCE_DISPLAY_COMPONENT_SCHEMA.extend(
     {
@@ -41,6 +39,5 @@ async def to_code(config):
         if key in config:
             conf = config[key]
             var = await button.new_button(conf)
-            await cg.register_component(var, conf)
             cg.add(var.set_parent(hub))
             cg.add(var.set_holding_register(address))
