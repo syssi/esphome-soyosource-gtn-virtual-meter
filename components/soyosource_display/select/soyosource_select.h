@@ -1,7 +1,6 @@
 #pragma once
 
 #include <utility>
-#include <map>
 
 #include "../soyosource_display.h"
 #include "esphome/core/component.h"
