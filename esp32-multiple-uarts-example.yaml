@@ -16,7 +16,7 @@ esphome:
   min_version: "2026.11.0"
   project:
     name: "syssi.esphome-soyosource-gtn-virtual-meter"
-    version: 2.6.0
+    version: 2.7.0
   devices:
     - id: device0
       name: "${device0}"
